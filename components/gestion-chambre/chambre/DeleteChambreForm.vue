@@ -10,7 +10,10 @@
         >Confirmer suppression
       </v-card-title>
       <v-card-text justify="center" align="center">
-        Voulez vous réelement supprimer la chambre {{ item.nom }}
+        Voulez vous réelement supprimer la chambre
+        <b>{{ item.nom.toUpperCase() }}</b
+        ><br />
+        code: <b>{{ item.code }}</b>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -25,6 +28,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -38,7 +42,17 @@ export default {
     }
   },
   methods: {
-    deleteItemConfirm(id) {},
+    ...mapActions('snackbar', ['showSnack']),
+    deleteItemConfirm(id) {
+      this.$axios
+        .delete('api/gestion-chambre/chambres/' + id)
+        .then((result) => {
+          const { message, chambre } = result.data
+          this.showSnack({ text: message, variant: 'success' })
+          this.closeDelete()
+          this.$emit('deleted-chambre', chambre)
+        })
+    },
     closeDelete() {
       this.dialog = false
     },

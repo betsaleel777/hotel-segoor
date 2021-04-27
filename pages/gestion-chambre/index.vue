@@ -3,7 +3,7 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Dashboard gestion des chambres
+          Acceuil gestion des chambres
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -11,7 +11,9 @@
             <v-col cols="12" sm="6" md="3">
               <side-gestion-chambre :modules="modules" />
             </v-col>
-            <v-col cols="12" sm="6" md="9"></v-col>
+            <v-col justify="center" align="center" cols="12" sm="6" md="9">
+              Informations générales liées au chambres
+            </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions> </v-card-actions>

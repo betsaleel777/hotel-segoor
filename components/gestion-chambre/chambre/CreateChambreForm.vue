@@ -75,6 +75,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import CreateCategorieForm from './CreateCategorieForm.vue'
 export default {
   components: { CreateCategorieForm },
@@ -117,13 +118,14 @@ export default {
     pushCategorie(categorie) {
       this.categoriesLocales.push(categorie)
     },
+    ...mapActions('snackbar', ['showSnack']),
     save() {
       this.$axios
         .post('api/gestion-chambre/chambres/new', { ...this.chambre })
         .then((result) => {
           const { message, chambre } = result.data
+          this.showSnack({ text: message, variant: 'success' })
           this.reinitialise()
-          this.$store.commit('SNACKBAR', message)
           this.$emit('new-chambre', chambre)
         })
         .catch((err) => {

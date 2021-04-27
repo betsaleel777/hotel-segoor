@@ -128,10 +128,12 @@ export default {
       const index = this.chambres.findIndex(
         (element) => element.id === chambre.id
       )
-      this.chambres[index] = chambre
+      this.chambres.splice(index, 1, chambre)
     },
     chambreDeleted(chambre) {
-      this.chambres.filter((element) => element.id !== chambre.id)
+      this.chambres = this.chambres.filter(
+        (element) => element.id !== chambre.id
+      )
     },
   },
 }

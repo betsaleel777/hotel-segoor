@@ -43,30 +43,9 @@
     </v-app-bar>
     <v-main>
       <v-container>
-        <v-alert
-          :value="alert"
-          class="my-6"
-          border="right"
-          prominent
-          outlined
-          text
-          :type="variant"
-          dismissible
-        >
-          {{ textAlert }}
-        </v-alert>
+        <alert-component />
         <nuxt />
-        <v-snackbar
-          :value="snackbar"
-          color="primary lighten-2"
-          dark
-          text
-          absolute
-          bottom
-          :timeout="timeout"
-        >
-          {{ textSnack }}
-        </v-snackbar>
+        <snackbar-component />
       </v-container>
     </v-main>
     <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
@@ -95,7 +74,10 @@
 </template>
 
 <script>
+import AlertComponent from '~/components/AlertComponent.vue'
+import SnackbarComponent from '~/components/SnackbarComponent.vue'
 export default {
+  components: { SnackbarComponent, AlertComponent },
   data() {
     return {
       clipped: false,
@@ -119,26 +101,5 @@ export default {
       title: 'Krinjabo Hotel',
     }
   },
-  computed: {
-    textSnack() {
-      return this.$store.state.snackbar.text
-    },
-    textAlert() {
-      return this.$store.state.alert.text
-    },
-    variant() {
-      return this.$store.state.alert.variant
-    },
-    snackbar() {
-      return this.$store.state.snackbar.visible
-    },
-    alert() {
-      return this.$store.state.alert.visible
-    },
-    timeout() {
-      return this.$store.state.snackbar.timeout
-    },
-  },
-  mounted() {},
 }
 </script>

@@ -1,5 +1,10 @@
 export const state = () => ({
   modules: [
+    // {
+    //   icon: 'mdi-home',
+    //   text: 'Acceuil',
+    //   to: '/gestion-chambre',
+    // },
     {
       icon: 'mdi-bed-empty',
       text: 'Chambres',
@@ -11,23 +16,8 @@ export const state = () => ({
       to: '/gestion-chambre/maintenance',
     },
   ],
-  alert: {
-    variant: 'info',
-    text: '',
-    visible: false,
-  },
-  snackbar: {
-    timeout: -1,
-    text: '',
-    visible: false,
-  },
 })
 
-export const mutations = {
-  ALERTER: (state, text, variant = 'info') => {
-    state.alert = { variant, text, visible: true }
-  },
-  SNACKBAR: (state, text, timeout = 4000) => {
-    state.snackbar = { timeout, text, visible: true }
-  },
-}
+export const mutations = {}
+
+export const actions = {}
