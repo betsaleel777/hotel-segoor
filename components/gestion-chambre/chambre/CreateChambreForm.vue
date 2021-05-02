@@ -75,8 +75,12 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import CreateCategorieForm from './CreateCategorieForm.vue'
+import {
+  errorsInitialise,
+  errorsWriting,
+} from '~/components/helper/errorsHandle'
+
 export default {
   components: { CreateCategorieForm },
   props: {
@@ -108,47 +112,28 @@ export default {
   methods: {
     reinitialise() {
       this.$refs.form.reset()
-      this.errors = {
-        categorie: { exist: false, message: null },
-        montant: { exist: false, message: null },
-        nom: { exist: false, message: null },
-      }
+      errorsInitialise(this.errors)
       this.dialog = false
     },
     pushCategorie(categorie) {
       this.categoriesLocales.push(categorie)
     },
-    ...mapActions('snackbar', ['showSnack']),
     save() {
       this.$axios
         .post('api/gestion-chambre/chambres/new', { ...this.chambre })
         .then((result) => {
           const { message, chambre } = result.data
-          this.showSnack({ text: message, variant: 'success' })
+          this.$notifier.show({ text: message, variant: 'success' })
           this.reinitialise()
           this.$emit('new-chambre', chambre)
         })
         .catch((err) => {
           const { data } = err.response
           if (data) {
-            this.$refs.form.reset()
-            this.errorsWriting(data)
+            errorsInitialise(this.errors)
+            errorsWriting(data, this.errors)
           }
         })
-    },
-    errorsWriting(errors) {
-      if (errors.nom) {
-        this.errors.nom.exist = true
-        this.errors.nom.message = errors.nom[0]
-      }
-      if (errors.categorie) {
-        this.errors.categorie.exist = true
-        this.errors.categorie.message = errors.categorie[0]
-      }
-      if (errors.montant) {
-        this.errors.montant.exist = true
-        this.errors.montant.message = errors.montant[0]
-      }
     },
   },
 }

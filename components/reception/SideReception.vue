@@ -3,7 +3,7 @@
     <v-list nav dense>
       <v-list-item-group color="primary">
         <v-list-item
-          v-for="(module, i) in sousModulesChambre"
+          v-for="(module, i) in sousModulesReception"
           :key="i"
           nuxt
           :to="module.to"
@@ -25,7 +25,7 @@
 import { mapGetters } from 'vuex'
 export default {
   computed: {
-    ...mapGetters(['sousModulesChambre']),
+    ...mapGetters(['sousModulesReception']),
   },
 }
 </script>

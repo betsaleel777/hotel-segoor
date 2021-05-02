@@ -2,9 +2,8 @@
   <div>
     <v-snackbar
       :value="show"
-      :color="variant"
+      :color="variantUse"
       :timeout="timeout"
-      dark
       text
       absolute
       bottom
@@ -26,6 +25,11 @@ export default {
       text: '',
       timeout: 3500,
     }
+  },
+  computed: {
+    variantUse() {
+      return this.variant + ' darken-3'
+    },
   },
   created() {
     this.$store.subscribe((mutation, state) => {

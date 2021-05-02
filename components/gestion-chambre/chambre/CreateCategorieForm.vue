@@ -45,6 +45,10 @@
 </template>
 
 <script>
+import {
+  errorsWriting,
+  errorsInitialise,
+} from '~/components/helper/errorsHandle'
 export default {
   data: () => ({
     dialog: false,
@@ -54,30 +58,25 @@ export default {
   methods: {
     reinitialise() {
       this.dialog = false
+      errorsInitialise(this.errors)
       this.$refs.form.reset()
     },
     save() {
       this.$axios
         .post('api/gestion-chambre/categories/new', { nom: this.nom })
         .then((result) => {
-          const { categorie } = result.data
-          // notification
+          const { message, categorie } = result.data
+          this.$notifier.show({ text: message, variant: 'success' })
           this.$emit('new-categorie', categorie)
           this.reinitialise()
         })
         .catch((err) => {
           const { data } = err.response
           if (data) {
-            this.$refs.form.reset()
-            this.errorsWriting(data)
+            errorsInitialise(this.errors)
+            errorsWriting(data, this.errors)
           }
         })
-    },
-    errorsWriting(errors) {
-      if (errors.nom) {
-        this.errors.nom.exist = true
-        this.errors.nom.message = errors.nom[0]
-      }
     },
   },
 }

@@ -6,7 +6,7 @@ export default {
     titleTemplate: '%s - hotel-segoor',
     title: 'hotel-segoor',
     htmlAttrs: {
-      lang: 'en',
+      lang: 'fr',
     },
     meta: [
       { charset: 'utf-8' },
@@ -20,7 +20,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: ['~/plugins/notifier.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

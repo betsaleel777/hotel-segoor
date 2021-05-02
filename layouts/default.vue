@@ -9,17 +9,17 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(module, i) in modules"
           :key="i"
-          :to="item.to"
+          :to="module.to"
           router
           exact
         >
           <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>{{ module.icon }}</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
+            <v-list-item-title v-text="module.title" />
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import AlertComponent from '~/components/AlertComponent.vue'
 import SnackbarComponent from '~/components/SnackbarComponent.vue'
 export default {
@@ -83,23 +84,14 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Dashboard',
-          to: '/',
-        },
-        {
-          icon: 'mdi-home-city',
-          title: 'Gestion des chambres',
-          to: '/gestion-chambre',
-        },
-      ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
       title: 'Krinjabo Hotel',
     }
+  },
+  computed: {
+    ...mapGetters(['modules']),
   },
 }
 </script>

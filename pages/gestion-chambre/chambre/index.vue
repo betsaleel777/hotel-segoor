@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-gestion-chambre :modules="modules" />
+              <side-gestion-chambre />
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-text-field
@@ -27,7 +27,7 @@
                 :items-per-page="12"
               >
                 <template #[`item.status`]="{ item }">
-                  <v-chip :color="getColor(item.status)" dark>
+                  <v-chip outlined small :color="getColor(item.status)" dark>
                     {{ item.status }}
                   </v-chip>
                 </template>
@@ -103,11 +103,6 @@ export default {
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
-  },
-  computed: {
-    modules() {
-      return this.$store.state.modules
-    },
   },
   methods: {
     getColor(status) {

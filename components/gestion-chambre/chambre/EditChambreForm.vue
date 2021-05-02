@@ -77,7 +77,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import CreateCategorieForm from './CreateCategorieForm.vue'
 export default {
   components: { CreateCategorieForm },
@@ -128,7 +127,6 @@ export default {
     pushCategorie(categorie) {
       this.categoriesLocales.push(categorie)
     },
-    ...mapActions('snackbar', ['showSnack']),
     save() {
       this.$axios
         .put('api/gestion-chambre/chambres/' + this.item.id, {
@@ -138,7 +136,7 @@ export default {
           const { message, chambre } = result.data
           this.dialog = false
           if (Object.keys(chambre).length > 0) {
-            this.showSnack({ text: message, variant: 'success' })
+            this.$notifer.show({ text: message, variant: 'success' })
             this.$emit('edited-chambre', chambre)
           }
         })

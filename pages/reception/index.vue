@@ -3,16 +3,16 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Acceuil gestion des chambres
+          Acceuil gestion receptions
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-gestion-chambre />
+              <side-reception />
             </v-col>
             <v-col justify="center" align="center" cols="12" sm="6" md="9">
-              Informations générales liées au chambres
+              Informations générales aux receptions
             </v-col>
           </v-row>
         </v-card-text>
@@ -23,10 +23,10 @@
 </template>
 
 <script>
-import SideGestionChambre from '~/components/gestion-chambre/SideGestionChambre.vue'
+import SideReception from '~/components/reception/SideReception.vue'
 
 export default {
-  components: { SideGestionChambre },
+  components: { SideReception },
 }
 </script>
 
