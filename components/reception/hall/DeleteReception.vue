@@ -6,13 +6,14 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="headline primary--text"
-        >Confirmer suppression
+      <v-card-title class="justify-center error--text headline"
+        ><div>Confirmer suppression</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
         Voulez vous supprimer la réception <b>{{ item.code.toUpperCase() }}</b
         ><br />
-        pour le client: <b>{{ item.client.nom }}</b> ?
+        pour le client: <b>{{ item.client.nom }}</b> ?<br />
+        si une réservation existe elle sera aussi supprimée.
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -41,7 +42,7 @@ export default {
   },
   methods: {
     deleteItemConfirm(id) {
-      this.$axios.delete('api/reception/attributions/' + id).then((result) => {
+      this.$axios.delete('reception/attributions/' + id).then((result) => {
         const { message, attribution } = result.data
         this.$notifier.show({ text: message, variant: 'success' })
         this.closeDelete()

@@ -285,13 +285,13 @@
                     <v-btn text color="primary" @click="menu3 = false">
                       Cancel
                     </v-btn>
-                    <v-btn-btn
+                    <v-btn
                       text
                       color="primary"
                       @click="$refs.menu3.save(piece.expire_le)"
                     >
                       OK
-                    </v-btn-btn>
+                    </v-btn>
                   </v-date-picker>
                 </v-menu>
               </v-col>
@@ -346,13 +346,13 @@
                     <v-btn text color="primary" @click="menu4 = false">
                       Cancel
                     </v-btn>
-                    <v-btn-btn
+                    <v-btn
                       text
                       color="primary"
                       @click="$refs.menu4.save(piece.entree_pays)"
                     >
                       OK
-                    </v-btn-btn>
+                    </v-btn>
                   </v-date-picker>
                 </v-menu>
               </v-col>
@@ -422,7 +422,7 @@ export default {
     },
     save() {
       this.$axios
-        .post('api/reception/clients/new', { ...this.client, ...this.piece })
+        .post('reception/clients/new', { ...this.client, ...this.piece })
         .then((result) => {
           const { message, client } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

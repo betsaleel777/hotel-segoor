@@ -6,8 +6,8 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="headline primary--text"
-        >Confirmer suppression
+      <v-card-title class="justify-center error--text headline"
+        ><div>Confirmer suppression</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
         Voulez vous réelement supprimer la chambre
@@ -44,14 +44,12 @@ export default {
   methods: {
     ...mapActions('snackbar', ['showSnack']),
     deleteItemConfirm(id) {
-      this.$axios
-        .delete('api/gestion-chambre/chambres/' + id)
-        .then((result) => {
-          const { message, chambre } = result.data
-          this.showSnack({ text: message, variant: 'success' })
-          this.closeDelete()
-          this.$emit('deleted-chambre', chambre)
-        })
+      this.$axios.delete('gestion-chambre/chambres/' + id).then((result) => {
+        const { message, chambre } = result.data
+        this.showSnack({ text: message, variant: 'success' })
+        this.closeDelete()
+        this.$emit('deleted-chambre', chambre)
+      })
     },
     closeDelete() {
       this.dialog = false

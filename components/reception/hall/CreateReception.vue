@@ -240,7 +240,7 @@ export default {
     },
     fieldComplete() {
       this.$axios
-        .get('api/reception/reservations/' + this.attribution.reservation)
+        .get('reception/reservations/' + this.attribution.reservation)
         .then((result) => {
           const { reservation } = result.data
           this.attribution.client = reservation.client
@@ -261,7 +261,7 @@ export default {
     },
     save() {
       this.$axios
-        .post('api/reception/attributions/new', { ...this.attribution })
+        .post('reception/attributions/new', { ...this.attribution })
         .then((result) => {
           const { message, attribution } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

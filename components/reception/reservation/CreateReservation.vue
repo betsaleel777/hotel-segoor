@@ -221,7 +221,7 @@ export default {
       if (this.reservation.entree && this.reservation.sortie) {
         this.$axios
           .get(
-            'api/gestion-chambre/chambres/reservation/' +
+            'gestion-chambre/chambres/reservation/' +
               this.reservation.entree +
               '-' +
               this.reservation.sortie
@@ -247,7 +247,7 @@ export default {
     },
     save() {
       this.$axios
-        .post('api/reception/reservations/new', { ...this.reservation })
+        .post('reception/reservations/new', { ...this.reservation })
         .then((result) => {
           const { message, reservation } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

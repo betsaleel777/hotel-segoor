@@ -1,0 +1,109 @@
+<template>
+  <v-row justify="center" align="center">
+    <v-col cols="12" sm="12" md="12">
+      <v-card elevation="2" shaped tile>
+        <v-card-title class="headline grey lighten-1 primary--text">
+          Produits
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" sm="6" md="3">
+              <side-restaurant />
+            </v-col>
+            <v-col cols="12" sm="6" md="9">
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="recherche ..."
+                single-line
+                hide-details
+              ></v-text-field>
+              <v-data-table
+                no-data-text="Aucun produit"
+                :headers="headers"
+                :items="produits"
+                :search="search"
+                :items-per-page="12"
+              >
+                <!-- <template #[`item.status`]="{ item }">
+                  <v-chip small outlined :color="getColor(item.status)" dark>
+                    {{ item.status }}
+                  </v-chip>
+                </template> -->
+                <template #[`item.actions`]="{ item }">
+                  <edit-produit :item="item" @edited-produit="produitEdited" />
+                  <delete-produit
+                    :item="item"
+                    @deleted-produit="produitDeleted"
+                  />
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <create-produit @new-produit="pushProduit" />
+        </v-card-actions>
+      </v-card>
+    </v-col>
+  </v-row>
+</template>
+
+<script>
+import CreateProduit from '~/components/restaurant/produit/CreateProduit.vue'
+import SideRestaurant from '~/components/restaurant/SideRestaurant'
+export default {
+  components: {
+    SideRestaurant,
+    CreateProduit,
+  },
+  async asyncData({ $axios }) {
+    const calebasse = await $axios.get('restaurant/produits')
+    const produits = calebasse.data.produits.map((produit) => {
+      return {
+        id: produit.id,
+        code: produit.code,
+        nom: produit.nom,
+        image: produit.image,
+        seuil: produit.seuil,
+        mode: produit.mode,
+        type: produit.type,
+      }
+    })
+    return { produits }
+  },
+  data() {
+    return {
+      search: '',
+      headers: [
+        { text: 'Code', value: 'code', sortable: false },
+        { text: 'Image', value: 'image', sortable: false },
+        { text: 'Nom', value: 'nom' },
+        { text: 'Seuil', value: 'seuil', sortable: false },
+        { text: 'mode', value: 'mode', sortable: false },
+        { text: 'Type', value: 'type' },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+    }
+  },
+  methods: {
+    pushProduit(produit) {
+      this.produits.push(produit)
+    },
+    produitEdited(produit) {
+      const index = this.produits.findIndex(
+        (element) => element.id === produit.id
+      )
+      this.produits.splice(index, 1, produit)
+    },
+    produitDeleted(produit) {
+      this.produits = this.produits.filter(
+        (element) => element.id !== produit.id
+      )
+    },
+  },
+}
+</script>
+
+<style></style>

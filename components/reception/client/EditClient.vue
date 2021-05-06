@@ -414,7 +414,7 @@ export default {
     },
     save() {
       this.$axios
-        .put('api/reception/clients/' + this.item.id, {
+        .put('reception/clients/' + this.item.id, {
           ...this.client,
           ...this.piece,
         })

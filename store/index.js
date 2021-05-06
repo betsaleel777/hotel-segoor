@@ -32,8 +32,8 @@ export const state = () => ({
     {
       name: 'reception',
       link: {
-        icon: 'mdi-apps',
-        title: 'Reception',
+        icon: 'mdi-human-greeting',
+        title: 'Gestion de la Réception',
         to: '/reception',
       },
       sousModules: [
@@ -54,6 +54,31 @@ export const state = () => ({
         },
       ],
     },
+    {
+      name: 'restaurant',
+      link: {
+        icon: 'mdi-silverware-clean',
+        title: 'Gestion Du Restaurant',
+        to: '/restaurant',
+      },
+      sousModules: [
+        {
+          icon: 'mdi-cart',
+          text: 'Produits',
+          to: '/restaurant/produit',
+        },
+        {
+          icon: 'mdi-basket-plus',
+          text: 'Approvisionements',
+          to: '/restaurant/achat',
+        },
+        {
+          icon: 'mdi-food-turkey',
+          text: 'Plats',
+          to: '/restaurant/plat',
+        },
+      ],
+    },
   ],
 })
 
@@ -68,6 +93,9 @@ export const getters = {
   },
   sousModulesReception: (state) => {
     return state.modules[2].sousModules
+  },
+  sousModulesRestaurant: (state) => {
+    return state.modules[3].sousModules
   },
 }
 

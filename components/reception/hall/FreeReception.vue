@@ -6,8 +6,8 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="headline primary--text"
-        >Confirmer libération
+      <v-card-title class="justify-center error--text headline"
+        ><div>Confirmer libération</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
         Voulez vous libérer la réception <b>{{ item.code.toUpperCase() }}</b
@@ -20,8 +20,8 @@
         justify="center"
         align="center"
       >
-        Cette libération est prématurée, prière de bien vérifier car l'action
-        est irréversible
+        Vous essayez de libérer la chambre avant la date de sortie, prière de
+        bien vérifier car l'action est irréversible.
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-// import moment from 'moment'
+import moment from 'moment'
 export default {
   props: {
     item: {
@@ -51,20 +51,17 @@ export default {
   },
   methods: {
     freeItemConfirm(id) {
-      this.$axios
-        .put('api/reception/attributions/free/' + id)
-        .then((result) => {
-          const { message, attribution } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.closeDelete()
-          this.$emit('free-attribution', attribution)
-        })
+      this.$axios.put('reception/attributions/free/' + id).then((result) => {
+        const { message, attribution } = result.data
+        this.$notifier.show({ text: message, variant: 'success' })
+        this.closeDelete()
+        this.$emit('free-attribution', attribution)
+      })
     },
     checkDate(fin) {
-      // moment.locale('fr')
-      // const now = moment().format('ll')
-      // const sortie = moment(fin)
-      // return sortie.isAfter(now)
+      const current = moment()
+      const end = moment(fin)
+      return current < end
     },
     closeDelete() {
       this.dialog = false

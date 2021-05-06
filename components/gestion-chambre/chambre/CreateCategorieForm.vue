@@ -63,7 +63,7 @@ export default {
     },
     save() {
       this.$axios
-        .post('api/gestion-chambre/categories/new', { nom: this.nom })
+        .post('gestion-chambre/categories/new', { nom: this.nom })
         .then((result) => {
           const { message, categorie } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

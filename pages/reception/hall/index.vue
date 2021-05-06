@@ -81,9 +81,9 @@ export default {
   },
   async asyncData({ $axios }) {
     moment.locale('fr')
-    let calebasse = await $axios.get('api/reception/clients')
+    let calebasse = await $axios.get('reception/clients')
     const clients = calebasse.data.clients
-    calebasse = await $axios.get('api/reception/attributions')
+    calebasse = await $axios.get('reception/attributions')
     const attributions = calebasse.data.attributions.map((attribution) => {
       // eslint-disable-next-line camelcase
       const { chambre_linked, client_linked, ...rest } = attribution
@@ -94,17 +94,19 @@ export default {
         status,
         chambre: { id: chambre_linked.id, nom: chambre_linked.nom },
         client: { id: client_linked.id, nom: client_linked.nom },
-        entree: moment(entree).format('ll'),
-        sortie: moment(sortie).format('ll'),
+        entreeDisplay: moment(entree).format('ll'),
+        sortieDisplay: moment(sortie).format('ll'),
+        entree,
+        sortie,
       }
     })
-    calebasse = await $axios.get('api/reception/reservations/reserved')
+    calebasse = await $axios.get('reception/reservations/reserved')
     let reservations = calebasse.data.reservations.map((reservation) => {
       const { id, code, entree, sortie } = reservation
       return { id, nom: code, entree, sortie }
     })
     reservations = checkReservationDate(reservations)
-    calebasse = await $axios.get('api/gestion-chambre/chambres/passage')
+    calebasse = await $axios.get('gestion-chambre/chambres/passage')
     const chambres = calebasse.data.chambres
     return { clients, attributions, reservations, chambres }
   },
@@ -115,8 +117,8 @@ export default {
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Client', value: 'client.nom', sortable: false },
         { text: 'Chambre', value: 'chambre.nom', sortable: false },
-        { text: 'Debut', value: 'entree' },
-        { text: 'Fin', value: 'sortie' },
+        { text: 'Debut', value: 'entreeDisplay' },
+        { text: 'Fin', value: 'sortieDisplay' },
         { text: 'status', value: 'status' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
@@ -132,14 +134,14 @@ export default {
     },
     pushAttribution(attribution) {
       moment().locale('fr')
-      attribution.entree = moment(attribution.entree).format('ll')
-      attribution.sortie = moment(attribution.sortie).format('ll')
+      attribution.entreeDisplay = moment(attribution.entree).format('ll')
+      attribution.sortieDisplay = moment(attribution.sortie).format('ll')
       this.attributions.push(attribution)
     },
     attributionEdited(attribution) {
       moment().locale('fr')
-      attribution.entree = moment(attribution.entree).format('ll')
-      attribution.sortie = moment(attribution.sortie).format('ll')
+      attribution.entreeDisplay = moment(attribution.entree).format('ll')
+      attribution.sortieDisplay = moment(attribution.sortie).format('ll')
       const index = this.attributions.findIndex(
         (element) => element.id === attribution.id
       )

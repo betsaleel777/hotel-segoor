@@ -62,7 +62,7 @@ export default {
     CreateClient,
   },
   async asyncData({ $axios }) {
-    const calebasse = await $axios.get('api/reception/clients')
+    const calebasse = await $axios.get('reception/clients')
     const clients = calebasse.data.clients.map((client) => {
       const { pieces, ...rest } = client
       return {

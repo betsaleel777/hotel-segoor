@@ -6,8 +6,8 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="headline primary--text"
-        >Confirmer suppression
+      <v-card-title class="justify-center error--text headline"
+        ><div>Confirmer suppression</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
         Voulez vous réelement supprimer le client
@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     deleteItemConfirm(id) {
-      this.$axios.delete('api/reception/clients/' + id).then((result) => {
+      this.$axios.delete('reception/clients/' + id).then((result) => {
         const { message, client } = result.data
         this.$notifier.show({ text: message, variant: 'success' })
         this.closeDelete()

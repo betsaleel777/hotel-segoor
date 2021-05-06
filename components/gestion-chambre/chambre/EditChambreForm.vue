@@ -129,7 +129,7 @@ export default {
     },
     save() {
       this.$axios
-        .put('api/gestion-chambre/chambres/' + this.item.id, {
+        .put('gestion-chambre/chambres/' + this.item.id, {
           ...this.chambre,
         })
         .then((result) => {

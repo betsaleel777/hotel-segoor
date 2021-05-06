@@ -20,7 +20,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/notifier.js'],
+  plugins: [{ src: '~/plugins/notifier.js', ssr: false }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -37,18 +37,11 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/proxy',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    proxy: true, // Can be also an object with default options
-  },
-  proxy: {
-    '/api/': {
-      target: 'http://localhost:8000',
-      pathRewrite: { '^/api/': '' },
-    },
+    baseURL: 'http://localhost:8000', // Can be also an object with default options
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {

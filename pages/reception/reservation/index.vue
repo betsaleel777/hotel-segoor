@@ -73,9 +73,9 @@ export default {
   },
   async asyncData({ $axios }) {
     moment.locale('fr')
-    // let calebasse = await $axios.get('api/reception/clients')
+    // let calebasse = await $axios.get('reception/clients')
     // const clients = calebasse.data.clients
-    let calebasse = await $axios.get('api/reception/reservations')
+    let calebasse = await $axios.get('reception/reservations')
     const reservations = calebasse.data.reservations.map((reservation) => {
       const { chambre_linked, client_linked, ...rest } = reservation
       return {
@@ -88,7 +88,7 @@ export default {
         sortie: moment(rest.sortie).format('ll'),
       }
     })
-    calebasse = await $axios.get('api/gestion-chambre/chambres/passage')
+    calebasse = await $axios.get('gestion-chambre/chambres/passage')
     const chambres = calebasse.data.chambres.map((chambre) => {
       return {
         id: chambre.id,

@@ -6,8 +6,8 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="headline primary--text"
-        >Confirmer annulation
+      <v-card-title class="justify-center error--text headline"
+        ><div>Confirmer annulation</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
         Voulez vous annuler la reservation <b>{{ item.code.toUpperCase() }}</b
@@ -42,14 +42,12 @@ export default {
   },
   methods: {
     freeItemConfirm(id) {
-      this.$axios
-        .put('api/reception/reservations/abort/' + id)
-        .then((result) => {
-          const { message, reservation } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.closeDelete()
-          this.$emit('free-reservation', reservation)
-        })
+      this.$axios.put('reception/reservations/abort/' + id).then((result) => {
+        const { message, reservation } = result.data
+        this.$notifier.show({ text: message, variant: 'success' })
+        this.closeDelete()
+        this.$emit('free-reservation', reservation)
+      })
     },
     checkDate(fin) {
       // moment.locale('fr')

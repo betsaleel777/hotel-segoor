@@ -71,7 +71,7 @@ export default {
     DeleteChambreForm,
   },
   async asyncData({ $axios }) {
-    let calebasse = await $axios.get('api/gestion-chambre/chambres')
+    let calebasse = await $axios.get('gestion-chambre/chambres')
     const chambres = calebasse.data.chambres.map((chambre) => {
       // eslint-disable-next-line camelcase
       const { prix_list, categorie_linked, ...rest } = chambre
@@ -87,7 +87,7 @@ export default {
       }
     })
 
-    calebasse = await $axios.get('api/gestion-chambre/categories')
+    calebasse = await $axios.get('gestion-chambre/categories')
     const categories = calebasse.data.categories
     return { categories, chambres }
   },
