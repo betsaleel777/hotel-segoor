@@ -10,9 +10,8 @@
         ><div>Confirmer suppression</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
-        Voulez vous réelement supprimer le produits
-        <b>{{ item.nom.toUpperCase() }}</b
-        ><br />
+        Voulez vous réelement supprimer l'achat
+        <!-- <b>{{ item.nom.toUpperCase() }}</b><br /> -->
         code: <b>{{ item.code }}</b>
       </v-card-text>
       <v-card-actions>
@@ -42,11 +41,11 @@ export default {
   },
   methods: {
     deleteItemConfirm(id) {
-      this.$axios.delete('/restaurant/produits/' + id).then((result) => {
-        const { message, produit } = result.data
+      this.$axios.delete('restaurant/achats/' + id).then((result) => {
+        const { message, achat } = result.data
         this.$notifier.show({ text: message, variant: 'success' })
         this.closeDelete()
-        this.$emit('deleted-produit', produit)
+        this.$emit('deleted-achat', achat)
       })
     },
     closeDelete() {

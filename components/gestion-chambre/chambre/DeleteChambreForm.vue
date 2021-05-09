@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -42,11 +41,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions('snackbar', ['showSnack']),
     deleteItemConfirm(id) {
       this.$axios.delete('gestion-chambre/chambres/' + id).then((result) => {
         const { message, chambre } = result.data
-        this.showSnack({ text: message, variant: 'success' })
+        this.$notifier.show({ text: message, variant: 'success' })
         this.closeDelete()
         this.$emit('deleted-chambre', chambre)
       })

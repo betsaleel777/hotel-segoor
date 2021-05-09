@@ -70,9 +70,24 @@ export default {
     EditChambreForm,
     DeleteChambreForm,
   },
-  async asyncData({ $axios }) {
-    let calebasse = await $axios.get('gestion-chambre/chambres')
-    const chambres = calebasse.data.chambres.map((chambre) => {
+  data() {
+    return {
+      search: '',
+      chambres: [],
+      categories: [],
+      headers: [
+        { text: 'Code', value: 'code', sortable: false },
+        { text: 'Nom', value: 'nom', sortable: false },
+        { text: 'Standing', value: 'standing', sortable: false },
+        { text: 'Status', value: 'status', sortable: false },
+        { text: 'Montant', value: 'montant' },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+    }
+  },
+  async mounted() {
+    let calebasse = await this.$axios.get('gestion-chambre/chambres')
+    this.chambres = calebasse.data.chambres.map((chambre) => {
       // eslint-disable-next-line camelcase
       const { prix_list, categorie_linked, ...rest } = chambre
       const { id, nom, status, code } = rest
@@ -86,23 +101,8 @@ export default {
         status,
       }
     })
-
-    calebasse = await $axios.get('gestion-chambre/categories')
-    const categories = calebasse.data.categories
-    return { categories, chambres }
-  },
-  data() {
-    return {
-      search: '',
-      headers: [
-        { text: 'Code', value: 'code', sortable: false },
-        { text: 'Nom', value: 'nom', sortable: false },
-        { text: 'Standing', value: 'standing', sortable: false },
-        { text: 'Status', value: 'status', sortable: false },
-        { text: 'Montant', value: 'montant' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
-    }
+    calebasse = await this.$axios.get('gestion-chambre/categories')
+    this.categories = calebasse.data.categories
   },
   methods: {
     getColor(status) {

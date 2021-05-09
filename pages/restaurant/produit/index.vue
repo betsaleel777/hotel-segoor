@@ -26,11 +26,9 @@
                 :search="search"
                 :items-per-page="12"
               >
-                <!-- <template #[`item.status`]="{ item }">
-                  <v-chip small outlined :color="getColor(item.status)" dark>
-                    {{ item.status }}
-                  </v-chip>
-                </template> -->
+                <template #[`item.seuil`]="{ item }">
+                  {{ item.seuil + ' ' }}{{ item.mesure }}
+                </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-produit :item="item" @edited-produit="produitEdited" />
                   <delete-produit
@@ -52,20 +50,27 @@
 
 <script>
 import CreateProduit from '~/components/restaurant/produit/CreateProduit.vue'
+import DeleteProduit from '~/components/restaurant/produit/DeleteProduit.vue'
+import EditProduit from '~/components/restaurant/produit/EditProduit.vue'
 import SideRestaurant from '~/components/restaurant/SideRestaurant'
 export default {
   components: {
     SideRestaurant,
     CreateProduit,
+    DeleteProduit,
+    EditProduit,
   },
   async asyncData({ $axios }) {
-    const calebasse = await $axios.get('restaurant/produits')
+    const calebasse = await $axios.get('/restaurant/produits')
     const produits = calebasse.data.produits.map((produit) => {
+      const imageData = produit.image ? produit.image : []
+      const mesureData = produit.mesure ? produit.mesure : ''
       return {
         id: produit.id,
         code: produit.code,
+        mesure: mesureData,
         nom: produit.nom,
-        image: produit.image,
+        image: imageData,
         seuil: produit.seuil,
         mode: produit.mode,
         type: produit.type,
@@ -78,7 +83,6 @@ export default {
       search: '',
       headers: [
         { text: 'Code', value: 'code', sortable: false },
-        { text: 'Image', value: 'image', sortable: false },
         { text: 'Nom', value: 'nom' },
         { text: 'Seuil', value: 'seuil', sortable: false },
         { text: 'mode', value: 'mode', sortable: false },

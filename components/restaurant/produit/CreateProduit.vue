@@ -19,11 +19,27 @@
         <span class="headline primary--text">créer un produit</span>
       </v-card-title>
       <v-card-text>
-        <v-form ref="form">
+        <v-form id="form" ref="form" enctype="multipart/form-data">
           <v-container>
             <v-row>
               <!-- image -->
-              <v-col cols="6">
+              <v-col cols="4"></v-col>
+              <v-col cols="4">
+                <div>
+                  <v-img v-if="imagePreview" :src="imagePreview" />
+                </div>
+              </v-col>
+              <v-col cols="4"></v-col>
+              <v-col cols="12">
+                <v-file-input
+                  ref="image"
+                  v-model="produit.image"
+                  label="Image du produit"
+                  required
+                  @change="onFileChange"
+                ></v-file-input>
+              </v-col>
+              <v-col cols="5">
                 <v-text-field
                   v-model="produit.nom"
                   :errors="errors.nom.exist"
@@ -34,24 +50,14 @@
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="produit.seuil"
-                  :errors="errors.seuil.exist"
-                  :error-messages="errors.seuil.message"
-                  dense
-                  outlined
-                  type="number"
-                  label="Seuil"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="5">
+              <v-col cols="7">
                 <v-radio-group
                   v-model="produit.mode"
                   :error="errors.mode.exist"
                   :error-messages="errors.mode.message"
+                  dense
                   row
+                  @change="mesureCheck"
                 >
                   <v-radio
                     label="Unité"
@@ -65,15 +71,36 @@
                   ></v-radio>
                 </v-radio-group>
               </v-col>
+              <v-col v-if="mesurable" cols="12">
+                <v-select
+                  v-model="produit.mesure"
+                  :items="mesures"
+                  label="Mesuré en"
+                ></v-select>
+              </v-col>
+              <v-col cols="5">
+                <v-text-field
+                  v-model="produit.seuil"
+                  :errors="errors.seuil.exist"
+                  :error-messages="errors.seuil.message"
+                  dense
+                  :suffix="`${produit.mesure}`"
+                  outlined
+                  type="number"
+                  label="Seuil"
+                  required
+                ></v-text-field>
+              </v-col>
               <v-col cols="7">
                 <v-radio-group
                   v-model="produit.type"
                   :error="errors.type.exist"
                   :error-messages="errors.type.message"
+                  dense
                   row
                 >
                   <v-radio
-                    label="standard"
+                    label="Standard"
                     color="primary"
                     value="standard"
                   ></v-radio>
@@ -102,26 +129,31 @@ import {
   errorsInitialise,
   errorsWriting,
 } from '~/components/helper/errorsHandle'
+import imagePreviewMixin from '~/components/mixins/ImagePreviewMixin'
 
 export default {
-  // components: { CreateCategorieForm },
+  mixins: [imagePreviewMixin],
   data: () => {
-    const defaultForm = Object.freeze({
-      mode: null,
-      type: null,
-      image: null,
-      seuil: null,
-      nom: null,
-    })
+    const defaultForm = {
+      mode: '',
+      type: '',
+      image: '',
+      seuil: '',
+      nom: '',
+      mesure: '',
+    }
     return {
       dialog: false,
-      produit: Object.assign({}, defaultForm),
+      mesurable: false,
+      mesures: ['kg', 'g', 'dg'],
+      produit: defaultForm,
       errors: {
         mode: { exist: false, message: null },
         type: { exist: false, message: null },
         image: { exist: false, message: null },
         seuil: { exist: false, message: null },
         nom: { exist: false, message: null },
+        mesure: { exist: false, message: null },
       },
     }
   },
@@ -131,11 +163,28 @@ export default {
       errorsInitialise(this.errors)
       this.dialog = false
     },
+    mesureCheck() {
+      if (this.produit.mode === 'poids') {
+        this.mesurable = true
+      } else {
+        this.mesurable = false
+        this.produit.mesure = ''
+      }
+    },
     save() {
       this.$axios
-        .post('api/restaurant/produits/new', { ...this.produit })
+        .post(
+          'restaurant/produits/new',
+          { ...this.produit },
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
         .then((result) => {
           const { message, produit } = result.data
+          // copier l'image upload
           this.$notifier.show({ text: message, variant: 'success' })
           this.reinitialise()
           this.$emit('new-produit', produit)
