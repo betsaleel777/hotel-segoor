@@ -73,9 +73,9 @@
               </v-col>
               <v-col cols="12">
                 <v-textarea
-                  v-model="plat.commentaire"
+                  v-model="plat.description"
                   outlined
-                  label="Commentaire"
+                  label="Description"
                 ></v-textarea>
               </v-col>
               <v-col cols="12">
@@ -83,10 +83,10 @@
               </v-col>
             </v-row>
             <!-- liste des ingredients -->
-            <ingredient-list />
+            <ingredient-list :ingredients="[]" @new-in-list="listeUpdate" />
             <v-row>
               <v-btn
-                :disabled="!(listes().length > 0)"
+                :disabled="!(ingredients.length > 0)"
                 dark
                 class="my-10"
                 color="primary"
@@ -132,7 +132,6 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
 import CreateCategorie from './CreateCategorie.vue'
 import IngredientList from './IngredientList'
 import {
@@ -162,6 +161,7 @@ export default {
     return {
       dialog: false,
       plat: Object.assign({}, defaultForm),
+      ingredients: [],
       errors: {
         categorie: { exist: false, message: null },
         achat: { exist: false, message: null },
@@ -179,28 +179,26 @@ export default {
   methods: {
     reinitialise() {
       this.$refs.form.reset()
+      this.ingredients.splice(0)
       errorsInitialise(this.errors)
       this.dialog = false
     },
     pushCategorie(categorie) {
       this.categoriesLocales.push(categorie)
     },
-    ...mapGetters('plat', ['listes']),
-    ...mapActions('plat', ['videList']),
     price() {
       this.$axios
         .post('restaurant/plats/prix-minimal', {
-          ingredients: this.listes(),
+          ingredients: this.ingredients,
         })
         .then((result) => {
           this.plat.achat = result.data.achat
           this.plat.vente = result.data.vente
           this.$notifier.show({ text: result.data.message, variant: 'success' })
-          this.videList()
         })
     },
     save() {
-      const ingredients = this.listes()
+      const ingredients = this.ingredients
       if (ingredients.length > 0) {
         this.$axios
           .post('restaurant/plats/new', { ...this.plat, ingredients })
@@ -223,6 +221,9 @@ export default {
           variant: 'error',
         })
       }
+    },
+    listeUpdate(ingredients) {
+      this.ingredients = ingredients
     },
   },
 }

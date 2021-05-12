@@ -24,7 +24,7 @@
                 :headers="headers"
                 :items="plats"
                 :search="search"
-                :items-per-page="12"
+                :items-per-page="10"
               >
                 <template #[`item.achat`]="{ item }">
                   {{ item.achat + ' FCFA' }}
@@ -53,6 +53,7 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
 import CreatePlat from '~/components/restaurant/plat/CreatePlat.vue'
 import DeletePlat from '~/components/restaurant/plat/DeletePlat.vue'
 import EditPlat from '~/components/restaurant/plat/EditPlat.vue'
@@ -83,6 +84,16 @@ export default {
     let calebasse = await this.$axios.get('/restaurant/plats')
     const plats = calebasse.data.plats.map((plat) => {
       const imageData = plat.image ? plat.image : []
+      const ingredients = plat.produits.map((ingredient) => {
+        return {
+          id: ingredient.id,
+          ingredient: ingredient.nom,
+          type: ingredient.type,
+          quantite: ingredient.pivot.quantite,
+          commentaire: ingredient.commentaire ? ingredient.commentaire : '',
+          mesure: ingredient.mesure,
+        }
+      })
       return {
         id: plat.id,
         code: plat.code,
@@ -93,6 +104,7 @@ export default {
         description: plat.description,
         achat: plat.prix[0].achat,
         vente: plat.prix[0].vente,
+        ingredients,
       }
     })
     calebasse = await this.$axios.get('restaurant/categories')

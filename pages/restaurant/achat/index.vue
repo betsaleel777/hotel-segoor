@@ -24,7 +24,7 @@
                 :headers="headers"
                 :items="achats"
                 :search="search"
-                :items-per-page="12"
+                :items-per-page="10"
               >
                 <template #[`item.quantite`]="{ item }">
                   {{ item.quantite + ' ' }}{{ item.mesure }}

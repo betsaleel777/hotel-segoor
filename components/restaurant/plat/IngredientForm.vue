@@ -97,8 +97,7 @@ export default {
     this.getProducts()
   },
   methods: {
-    ...mapGetters('plat', ['listes']),
-    ...mapActions('plat', ['getProducts', 'ajouter']),
+    ...mapActions('plat', ['getProducts']),
     addItem() {
       let mesure = ''
       if (this.ingredient.mesure) mesure = this.ingredient.mesure
@@ -112,7 +111,7 @@ export default {
         commentaire: this.commentaire,
         mesure,
       }
-      this.ajouter(payload)
+      this.$emit('new-list', payload)
       this.$refs.form.reset()
       this.dialog = false
     },

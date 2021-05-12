@@ -24,7 +24,7 @@
                 :headers="headers"
                 :items="chambres"
                 :search="search"
-                :items-per-page="12"
+                :items-per-page="10"
               >
                 <template #[`item.status`]="{ item }">
                   <v-chip outlined small :color="getColor(item.status)" dark>

@@ -88,18 +88,19 @@ export default {
     handleSelect(info) {
       const end = moment(info.endStr).subtract(1, 'days')
       const start = moment(info.startStr)
-      // this.delais = end.diff(start, 'days')
+      console.log(end.diff(start, 'days'))
       if (end.diff(start, 'days') === 0) {
         const message = `le délais ainsi choisit ne nécessite pas l'enregistrement d'une réservation`
-        this.$notifier.show({ text: message, variant: 'warning' })
+        this.$toast.info(message)
       } else {
         // this.timeInterval.debut = start.format('YYYY-MM-DD').toString()
         // this.timeInterval.fin = end.format('YYYY-MM-DD').toString()
         // lancer ajouter reception
+        this.$toast.info('lancement attribution ou reservation')
       }
     },
     handleEventClick(info) {
-      // const { event } = info
+      this.$toast.show("détail de l'element")
     },
   },
 }

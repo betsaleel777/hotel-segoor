@@ -24,7 +24,7 @@
                 :headers="headers"
                 :items="produits"
                 :search="search"
-                :items-per-page="12"
+                :items-per-page="10"
               >
                 <template #[`item.seuil`]="{ item }">
                   {{ item.seuil + ' ' }}{{ item.mesure }}

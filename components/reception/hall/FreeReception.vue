@@ -14,14 +14,9 @@
         ><br />
         pour le client: <b>{{ item.client.nom }}</b> ?
       </v-card-text>
-      <v-card-text
-        v-if="checkDate(item.sortie)"
-        class="error--text"
-        justify="center"
-        align="center"
-      >
-        Vous essayez de libérer la chambre avant la date de sortie, prière de
-        bien vérifier car l'action est irréversible.
+      <v-card-text class="error--text" justify="center" align="center">
+        prière de bien vérifier car cette action est irréversible et se fait en
+        dehors des délais d'attribution de la chambre.
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -36,7 +31,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+// import moment from 'moment'
 export default {
   props: {
     item: {
@@ -57,11 +52,6 @@ export default {
         this.closeDelete()
         this.$emit('free-attribution', attribution)
       })
-    },
-    checkDate(fin) {
-      const current = moment()
-      const end = moment(fin)
-      return current < end
     },
     closeDelete() {
       this.dialog = false
