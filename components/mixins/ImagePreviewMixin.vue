@@ -7,12 +7,12 @@ export default {
   },
   methods: {
     onFileChange(payload) {
-      if (payload) {
-        this.imagePreview = URL.createObjectURL(payload)
-        URL.revokeObjectURL(payload) // free memory
-      } else {
-        this.imagePreview = null
-      }
+      // if (payload) {
+      //   this.imagePreview = URL.createObjectURL(payload)
+      //   URL.revokeObjectURL(payload) // free memory
+      // } else {
+      //   this.imagePreview = null
+      // }
     },
   },
 }

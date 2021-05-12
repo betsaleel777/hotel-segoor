@@ -11,7 +11,7 @@
             <v-col cols="12" sm="6" md="3">
               <side-restaurant />
             </v-col>
-            <v-col cols="8">
+            <v-col cols="9">
               <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import CreateAchat from '~/components/restaurant/achat/CreateAchat.vue'
 import DeleteAchat from '~/components/restaurant/achat/DeleteAchat.vue'
 import SideRestaurant from '~/components/restaurant/SideRestaurant'
@@ -68,8 +69,10 @@ export default {
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Quantité', value: 'quantite' },
+        { text: 'Produit', value: 'nom' },
         { text: 'Prix Achat', value: 'prix_achat', sortable: false },
         { text: 'Prix vente', value: 'prix_vente', sortable: false },
+        { text: 'Date', value: 'laDate' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
@@ -87,6 +90,7 @@ export default {
     this.produits = produits
     calebasse = await this.$axios.get('/restaurant/achats')
     const achats = calebasse.data.achats.map((achat) => {
+      moment.locales('fr')
       return {
         id: achat.id,
         code: achat.code,
@@ -97,6 +101,7 @@ export default {
         nom: achat.produit.nom,
         mesure: achat.produit.mesure,
         type: achat.produit.type,
+        laDate: moment(achat.created_at).format('DD-MM-yyyy'),
       }
     })
     this.achats = achats

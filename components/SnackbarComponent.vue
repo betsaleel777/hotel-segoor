@@ -7,6 +7,7 @@
       text
       absolute
       bottom
+      elevation="24"
     >
       {{ text }}
       <template #action="{ attrs }">

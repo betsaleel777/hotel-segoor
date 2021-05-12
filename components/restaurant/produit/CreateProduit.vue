@@ -137,7 +137,7 @@ export default {
     const defaultForm = {
       mode: '',
       type: '',
-      image: '',
+      image: [],
       seuil: '',
       nom: '',
       mesure: '',
@@ -175,12 +175,12 @@ export default {
       this.$axios
         .post(
           'restaurant/produits/new',
-          { ...this.produit },
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
+          { ...this.produit }
+          // {
+          //   headers: {
+          //     'Content-Type': 'multipart/form-data',
+          //   },
+          // }
         )
         .then((result) => {
           const { message, produit } = result.data

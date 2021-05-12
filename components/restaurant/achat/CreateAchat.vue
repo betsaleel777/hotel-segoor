@@ -26,12 +26,13 @@
             <v-row>
               <v-col cols="6">
                 <v-autocomplete
-                  v-model="achat.ingredient"
+                  v-model="produit"
                   :errors="errors.ingredient.exist"
                   :error-messages="errors.ingredient.message"
                   :items="produits"
                   item-value="id"
                   item-text="nom"
+                  return-object
                   dense
                   outlined
                   label="Ingredient"
@@ -43,6 +44,7 @@
                   v-model="achat.quantite"
                   :errors="errors.quantite.exist"
                   :error-messages="errors.quantite.message"
+                  :suffix="suffixQuantite"
                   dense
                   type="number"
                   outlined
@@ -55,7 +57,7 @@
                   v-model="achat.prix_achat"
                   :errors="errors.prix_achat.exist"
                   :error-messages="errors.prix_achat.message"
-                  suffix="FCFA"
+                  :suffix="suffixPrix"
                   type="number"
                   dense
                   outlined
@@ -66,9 +68,10 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="achat.prix_vente"
+                  :disabled="!produit.mesure"
                   :errors="errors.prix_vente.exist"
                   :error-messages="errors.prix_vente.message"
-                  suffix="FCFA"
+                  :suffix="suffixPrix"
                   type="number"
                   dense
                   outlined
@@ -90,6 +93,7 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
 import {
   errorsInitialise,
   errorsWriting,
@@ -107,11 +111,12 @@ export default {
       ingredient: null,
       quantite: null,
       prix_achat: null,
-      prix_vente: null,
+      prix_vente: 0,
     })
     return {
       dialog: false,
       achat: Object.assign({}, defaultForm),
+      produit: { mesure: '' },
       errors: {
         ingredient: { exist: false, message: null },
         quantite: { exist: false, message: null },
@@ -120,13 +125,27 @@ export default {
       },
     }
   },
+  computed: {
+    suffixPrix() {
+      if (this.produit.mesure) {
+        return `FCFA/${this.produit.mesure}`
+      } else return 'FCFA'
+    },
+    suffixQuantite() {
+      if (this.produit.mesure) {
+        return this.produit.mesure
+      } else return "l'unité"
+    },
+  },
   methods: {
     reinitialise() {
       this.$refs.form.reset()
+      this.produit = { mesure: '' }
       errorsInitialise(this.errors)
       this.dialog = false
     },
     save() {
+      this.achat.ingredient = this.produit.id
       this.$axios
         .post('restaurant/achats/new', { ...this.achat })
         .then((result) => {
