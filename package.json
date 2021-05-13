@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^5.6.0",
-    "@fullcalendar/interaction": "^5.6.0",
+    "@fullcalendar/interaction": "^5.7.0",
     "@fullcalendar/resource-timeline": "^5.6.0",
     "@fullcalendar/vue": "^5.6.0",
     "@nuxt/http": "^0.6.4",

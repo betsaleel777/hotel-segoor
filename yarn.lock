@@ -908,6 +908,13 @@
   dependencies:
     tslib "^2.0.3"
 
+"@fullcalendar/common@~5.7.0":
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/common/-/common-5.7.0.tgz#fe83f6dbf631c4170654386e9b522ee85c2c064b"
+  integrity sha512-8zKa4q9cQ5xjuAyN0d8AlpCrEC9Kmar5Oq3iMcPbPIO2AtNXTvifzCG44VIgm3/skjDBZ/wYvjJyyB+4WdmT6g==
+  dependencies:
+    tslib "^2.0.3"
+
 "@fullcalendar/core@~5.6.0":
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-5.6.0.tgz#c0ea59235047828c9d0409432966bebc71df0bec"
@@ -925,12 +932,12 @@
     "@fullcalendar/common" "~5.6.0"
     tslib "^2.0.3"
 
-"@fullcalendar/interaction@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/interaction/-/interaction-5.6.0.tgz#4af3d976aea258a6e3354b3f7609f008b2c046fa"
-  integrity sha512-2Jlr3e9hKanctmwXKio84Wv070bJn1Im+ZVWjdzUcF/wtUrsD1Kd5dcPBfl9jfTwl2jX/eCWBU3o6ZCLdgoaDg==
+"@fullcalendar/interaction@^5.7.0":
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/interaction/-/interaction-5.7.0.tgz#856073b32f230f501f14d03bc30d971f82066c38"
+  integrity sha512-GSIMP+b+fN6DZQ6VFkoZvLX94r3o5MmCMRvHfUVWx4XcOF1T1rytcKtPpLv/7HQJpXwX7LAQXEJnywBcXUTbXQ==
   dependencies:
-    "@fullcalendar/common" "~5.6.0"
+    "@fullcalendar/common" "~5.7.0"
     tslib "^2.0.3"
 
 "@fullcalendar/premium-common@~5.6.0":
