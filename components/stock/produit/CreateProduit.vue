@@ -2,26 +2,24 @@
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template #activator="{ on, attrs }">
       <v-btn
-        elevation="1"
-        icon
-        fab
-        dark
-        x-small
-        color="primary"
         v-bind="attrs"
+        color="primary"
+        dark
+        absolute
+        bottom
+        right
+        fab
         v-on="on"
       >
-        <v-icon small> mdi-pencil </v-icon>
+        <v-icon>mdi-plus</v-icon>
       </v-btn>
     </template>
     <v-card>
       <v-card-title>
-        <span class="headline primary--text"
-          >modifier le produit {{ produit.code }}</span
-        >
+        <span class="headline primary--text">créer un produit</span>
       </v-card-title>
       <v-card-text>
-        <v-form ref="form">
+        <v-form id="form" ref="form" enctype="multipart/form-data">
           <v-container>
             <v-row>
               <!-- image -->
@@ -34,6 +32,7 @@
               <v-col cols="4"></v-col>
               <v-col cols="12">
                 <v-file-input
+                  ref="image"
                   v-model="produit.image"
                   label="Image du produit"
                   required
@@ -119,7 +118,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Modifier </v-btn>
+        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -134,26 +133,20 @@ import imagePreviewMixin from '~/components/mixins/ImagePreviewMixin'
 
 export default {
   mixins: [imagePreviewMixin],
-  props: {
-    item: {
-      type: Object,
-      required: true,
-    },
-  },
   data: () => {
-    const defaultForm = Object.freeze({
+    const defaultForm = {
       mode: '',
       type: '',
       image: [],
       seuil: '',
       nom: '',
       mesure: '',
-    })
+    }
     return {
       dialog: false,
       mesurable: false,
       mesures: ['kg', 'g', 'dg'],
-      produit: Object.assign({}, defaultForm),
+      produit: defaultForm,
       errors: {
         mode: { exist: false, message: null },
         type: { exist: false, message: null },
@@ -164,15 +157,9 @@ export default {
       },
     }
   },
-  mounted() {
-    this.produit = Object.assign({}, this.item)
-    if (this.item.mode === 'poids') {
-      this.mesurable = true
-    }
-  },
   methods: {
     reinitialise() {
-      this.produit = Object.assign({}, this.item)
+      this.$refs.form.reset()
       errorsInitialise(this.errors)
       this.dialog = false
     },
@@ -186,14 +173,21 @@ export default {
     },
     save() {
       this.$axios
-        .put('restaurant/produits/' + this.item.id, { ...this.produit })
+        .post(
+          'stock/produits/new',
+          { ...this.produit }
+          // {
+          //   headers: {
+          //     'Content-Type': 'multipart/form-data',
+          //   },
+          // }
+        )
         .then((result) => {
           const { message, produit } = result.data
-          this.dialog = false
-          if (Object.keys(produit).length > 0) {
-            this.$notifier.show({ text: message, variant: 'success' })
-            this.$emit('edited-produit', produit)
-          }
+          // copier l'image upload
+          this.$notifier.show({ text: message, variant: 'success' })
+          this.reinitialise()
+          this.$emit('new-produit', produit)
         })
         .catch((err) => {
           const { data } = err.response

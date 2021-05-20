@@ -168,7 +168,7 @@ export default {
     return {
       dialog: false,
       plat: Object.assign({}, defaultForm),
-      ingredients: [],
+      ingredients: Object.freeze([]),
       errors: {
         categorie: { exist: false, message: null },
         achat: { exist: false, message: null },
@@ -181,14 +181,16 @@ export default {
     }
   },
   mounted() {
-    this.plat = this.item
-    this.ingredients = this.item.ingredients
+    this.plat = Object.assign({}, this.item)
+    this.ingredients = Object.assign([], this.item.ingredients)
   },
   beforeUpdate() {
     this.categoriesLocales = this.categories
   },
   methods: {
     reinitialise() {
+      this.plat = Object.assign({}, this.item)
+      this.ingredients = Object.assign([], this.item.ingredients)
       errorsInitialise(this.errors)
       this.dialog = false
     },

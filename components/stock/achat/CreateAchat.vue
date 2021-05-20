@@ -147,7 +147,7 @@ export default {
     save() {
       this.achat.ingredient = this.produit.id
       this.$axios
-        .post('restaurant/achats/new', { ...this.achat })
+        .post('stock/achats/new', { ...this.achat })
         .then((result) => {
           const { message, achat } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

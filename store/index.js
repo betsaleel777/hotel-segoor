@@ -55,6 +55,26 @@ export const state = () => ({
       ],
     },
     {
+      name: 'stock',
+      link: {
+        icon: 'mdi-package-variant-closed',
+        title: 'Gestion Du Stock',
+        to: '/stock',
+      },
+      sousModules: [
+        {
+          icon: 'mdi-cart',
+          text: 'Produits',
+          to: '/stock/produit',
+        },
+        {
+          icon: 'mdi-basket-plus',
+          text: 'Approvisionements',
+          to: '/stock/achat',
+        },
+      ],
+    },
+    {
       name: 'restaurant',
       link: {
         icon: 'mdi-silverware-clean',
@@ -62,16 +82,6 @@ export const state = () => ({
         to: '/restaurant',
       },
       sousModules: [
-        {
-          icon: 'mdi-cart',
-          text: 'Produits',
-          to: '/restaurant/produit',
-        },
-        {
-          icon: 'mdi-basket-plus',
-          text: 'Approvisionements',
-          to: '/restaurant/achat',
-        },
         {
           icon: 'mdi-food-turkey',
           text: 'Plats',
@@ -94,8 +104,11 @@ export const getters = {
   sousModulesReception: (state) => {
     return state.modules[2].sousModules
   },
-  sousModulesRestaurant: (state) => {
+  sousModulesStock: (state) => {
     return state.modules[3].sousModules
+  },
+  sousModulesRestaurant: (state) => {
+    return state.modules[4].sousModules
   },
 }
 

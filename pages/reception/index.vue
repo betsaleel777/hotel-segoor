@@ -20,6 +20,27 @@
         <v-card-actions> </v-card-actions>
       </v-card>
     </v-col>
+    <v-dialog v-model="dialog" max-width="300">
+      <template #activator="{ on, attrs }">
+        <v-btn v-show="dialog" color="primary" dark v-bind="attrs" v-on="on">
+          Open Dialog
+        </v-btn>
+      </template>
+      <v-card>
+        <v-card-title class="headline">
+          <h6>Choix du mode d'enregistrement</h6>
+        </v-card-title>
+        <v-card-text
+          >Voulez enregistrer une reservation ou attribuer une chambre à un
+          client</v-card-text
+        >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <create-reception :clients="clients" :infos="infos" />
+          <create-reservation :clients="clients" :infos="infos" />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 
@@ -27,26 +48,37 @@
 /* eslint-disable camelcase */
 import moment from 'moment'
 import FullCalendar from '@fullcalendar/vue'
-// import dayGridPlugin from '@fullcalendar/daygrid'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import interactionPlugin from '@fullcalendar/interaction'
+import dayGridPlugin from '@fullcalendar/daygrid'
 import frLocale from '@fullcalendar/core/locales/fr'
+import CreateReservation from '~/components/reception/dashboard/CreateReservation'
+import CreateReception from '~/components/reception/dashboard/CreateReception'
 import SideReception from '~/components/reception/SideReception.vue'
 
 export default {
-  components: { SideReception, FullCalendar },
+  components: {
+    SideReception,
+    FullCalendar,
+    CreateReservation,
+    CreateReception,
+  },
   data({ $axios }) {
     return {
+      dialog: false,
+      clients: [],
       events: [],
+      infos: {},
+      update: false,
       calendarOptions: {
         schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
         locale: frLocale,
-        plugins: [interactionPlugin, resourceTimelinePlugin],
+        plugins: [interactionPlugin, resourceTimelinePlugin, dayGridPlugin],
         initialView: 'resourceTimelineMonth',
         headerToolbar: {
           left: 'today prev,next',
           center: 'title',
-          right: 'resourceTimelineWeek,resourceTimelineMonth',
+          right: 'resourceTimelineMonth',
         },
         editable: true,
         selectable: true,
@@ -66,16 +98,21 @@ export default {
           })
         },
         events(fetchInfo, successCallback, failureCallback) {
-          $axios.get('reception/reservations').then((result) => {
-            const events = result.data.reservations.map((reservation) => {
+          $axios.get('reception/reservations/events').then((result) => {
+            const events = result.data.events.map((event) => {
               return {
-                id: reservation.id,
-                resourceId: reservation.chambre,
-                title: `${reservation.code} ${reservation.client_linked.nom}-${reservation.client_linked.contact}`,
-                start: moment(reservation.entree)
-                  .format('YYYY-MM-DD')
-                  .toString(),
-                end: moment(reservation.sortie).format('YYYY-MM-DD').toString(),
+                id: event.id,
+                resourceId: event.chambre,
+                title: `${event.code} ${event.client_linked.nom}-${event.client_linked.contact}`,
+                start: moment(event.entree).format('YYYY-MM-DD').toString(),
+                end: moment(event.sortie).format('YYYY-MM-DD').toString(),
+                // eventColor: event.reservation ? '#2962ff' : '#d32f2f',
+                backgroundColor:
+                  event.reservation === null || event.attribution !== null
+                    ? 'red'
+                    : 'blue',
+                // eventBorderColor:
+                // eventTextColor:
               }
             })
             successCallback(events)
@@ -84,23 +121,66 @@ export default {
       },
     }
   },
+  async mounted() {
+    let calebasse = await this.$axios.get('reception/clients')
+    const clients = calebasse.data.clients
+    calebasse = await this.$axios.get('reception/reservations/events')
+    const events = calebasse.data.events.map((event) => {
+      return {
+        id: event.id,
+        resourceId: event.chambre,
+        code: event.code,
+        title: `${event.code} ${event.client_linked.nom}-${event.client_linked.contact}`,
+        start: moment(event.entree).format('YYYY-MM-DD').toString(),
+        end: moment(event.sortie).format('YYYY-MM-DD').toString(),
+        reservation: event.reservation,
+      }
+    })
+    // console.log(events)
+    this.events = events
+    this.clients = clients
+  },
   methods: {
     handleSelect(info) {
+      const { coincide, code } = this.coincide(info)
       const end = moment(info.endStr).subtract(1, 'days')
       const start = moment(info.startStr)
-      console.log(end.diff(start, 'days'))
-      if (end.diff(start, 'days') === 0) {
-        const message = `le délais ainsi choisit ne nécessite pas l'enregistrement d'une réservation`
-        this.$toast.info(message)
-      } else {
-        // this.timeInterval.debut = start.format('YYYY-MM-DD').toString()
-        // this.timeInterval.fin = end.format('YYYY-MM-DD').toString()
-        // lancer ajouter reception
-        this.$toast.info('lancement attribution ou reservation')
+      const endStr = end.format('YYYY-MM-DD').toString()
+      if (end.diff(start, 'days') !== 0) {
+        if (!coincide) {
+          const { id, title } = info.resource
+          this.infos = { id, title, sortie: endStr, entree: info.startStr }
+          this.dialog = true
+        } else {
+          this.$toast.info(
+            "coincidence de dates détecté avec l'entrée: " + code + '.'
+          )
+        }
       }
     },
     handleEventClick(info) {
       this.$toast.show("détail de l'element")
+    },
+    coincide({ endStr, startStr, resource }) {
+      const events = this.events.filter(
+        (event) => event.resourceId === parseInt(resource.id)
+      )
+      let coincide = false
+      let code = null
+      if (events.length > 0) {
+        for (const event of events) {
+          coincide =
+            (event.start <= startStr && startStr <= event.end) ||
+            (event.start <= endStr && endStr <= event.end)
+          if (coincide) {
+            code = event.code
+            break
+          }
+        }
+        return { coincide, code }
+      } else {
+        return { coincide, code }
+      }
     },
   },
 }

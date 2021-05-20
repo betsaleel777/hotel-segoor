@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-restaurant />
+              <side-stock />
             </v-col>
             <v-col cols="9">
               <v-text-field
@@ -52,12 +52,12 @@
 
 <script>
 import moment from 'moment'
-import CreateAchat from '~/components/restaurant/achat/CreateAchat.vue'
-import DeleteAchat from '~/components/restaurant/achat/DeleteAchat.vue'
-import SideRestaurant from '~/components/restaurant/SideRestaurant'
+import CreateAchat from '~/components/stock/achat/CreateAchat.vue'
+import DeleteAchat from '~/components/stock/achat/DeleteAchat.vue'
+import SideStock from '~/components/stock/SideStock'
 export default {
   components: {
-    SideRestaurant,
+    SideStock,
     CreateAchat,
     DeleteAchat,
   },
@@ -78,7 +78,7 @@ export default {
     }
   },
   async mounted() {
-    let calebasse = await this.$axios.get('/restaurant/produits')
+    let calebasse = await this.$axios.get('stock/produits')
     const produits = calebasse.data.produits.map((produit) => {
       return {
         id: produit.id,
@@ -88,7 +88,7 @@ export default {
       }
     })
     this.produits = produits
-    calebasse = await this.$axios.get('/restaurant/achats')
+    calebasse = await this.$axios.get('stock/achats')
     const achats = calebasse.data.achats.map((achat) => {
       moment.locales('fr')
       return {
@@ -101,7 +101,7 @@ export default {
         nom: achat.produit.nom,
         mesure: achat.produit.mesure,
         type: achat.produit.type,
-        laDate: moment(achat.created_at).format('DD-MM-yyyy'),
+        laDate: moment(achat.created_at).format('DD-MM-YYYY'),
       }
     })
     this.achats = achats

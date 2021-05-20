@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     deleteItemConfirm(id) {
-      this.$axios.delete('/restaurant/produits/' + id).then((result) => {
+      this.$axios.delete('/stock/produits/' + id).then((result) => {
         const { message, produit } = result.data
         this.$notifier.show({ text: message, variant: 'success' })
         this.closeDelete()

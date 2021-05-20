@@ -366,7 +366,6 @@ import {
 
 export default {
   mixins: [formPiece],
-  /* eslint-disable camelcase */
   props: {
     item: {
       type: Object,
@@ -404,12 +403,13 @@ export default {
   }),
   mounted() {
     this.client = Object.assign({}, this.item)
-    this.piece = Object.assign({}, this.item.piece)
+    this.piece = this.chambre = Object.assign({}, this.item.piece)
   },
   methods: {
     reinitialise() {
+      this.client = Object.assign({}, this.item)
+      this.piece = this.chambre = Object.assign({}, this.item.piece)
       errorsInitialise(this.errors)
-      this.$refs.form.reset()
       this.dialog = false
     },
     save() {

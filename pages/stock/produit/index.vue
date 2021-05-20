@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-restaurant />
+              <side-stock />
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-text-field
@@ -49,19 +49,19 @@
 </template>
 
 <script>
-import CreateProduit from '~/components/restaurant/produit/CreateProduit.vue'
-import DeleteProduit from '~/components/restaurant/produit/DeleteProduit.vue'
-import EditProduit from '~/components/restaurant/produit/EditProduit.vue'
-import SideRestaurant from '~/components/restaurant/SideRestaurant'
+import CreateProduit from '~/components/stock/produit/CreateProduit.vue'
+import DeleteProduit from '~/components/stock/produit/DeleteProduit.vue'
+import EditProduit from '~/components/stock/produit/EditProduit.vue'
+import SideStock from '~/components/stock/SideStock'
 export default {
   components: {
-    SideRestaurant,
+    SideStock,
     CreateProduit,
     DeleteProduit,
     EditProduit,
   },
   async asyncData({ $axios }) {
-    const calebasse = await $axios.get('/restaurant/produits')
+    const calebasse = await $axios.get('stock/produits')
     const produits = calebasse.data.produits.map((produit) => {
       const imageData = produit.image ? produit.image : []
       const mesureData = produit.mesure ? produit.mesure : ''
