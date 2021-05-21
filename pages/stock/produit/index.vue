@@ -30,7 +30,11 @@
                   {{ item.seuil + ' ' }}{{ item.mesure }}
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <edit-produit :item="item" @edited-produit="produitEdited" />
+                  <edit-produit
+                    :categories="categories"
+                    :item="item"
+                    @edited-produit="produitEdited"
+                  />
                   <delete-produit
                     :item="item"
                     @deleted-produit="produitDeleted"
@@ -41,7 +45,7 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-produit @new-produit="pushProduit" />
+          <create-produit :categories="categories" @new-produit="pushProduit" />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -61,7 +65,7 @@ export default {
     EditProduit,
   },
   async asyncData({ $axios }) {
-    const calebasse = await $axios.get('stock/produits')
+    let calebasse = await $axios.get('stock/produits')
     const produits = calebasse.data.produits.map((produit) => {
       const imageData = produit.image ? produit.image : []
       const mesureData = produit.mesure ? produit.mesure : ''
@@ -74,19 +78,27 @@ export default {
         seuil: produit.seuil,
         mode: produit.mode,
         type: produit.type,
+        etagere: produit.etagere ? produit.etagere : '',
+        description: produit.description ? produit.description : '',
+        categorie: {
+          id: produit.categorie_linked.id,
+          nom: produit.categorie_linked.nom,
+        },
       }
     })
-    return { produits }
+    calebasse = await $axios.get('stock/categories')
+    const categories = calebasse.data.categories.map((categorie) => {
+      return { id: categorie.id, nom: categorie.nom }
+    })
+    return { produits, categories }
   },
   data() {
     return {
       search: '',
       headers: [
         { text: 'Code', value: 'code', sortable: false },
-        { text: 'Nom', value: 'nom' },
-        { text: 'Seuil', value: 'seuil', sortable: false },
-        { text: 'mode', value: 'mode', sortable: false },
-        { text: 'Type', value: 'type' },
+        { text: 'Description', value: 'nom' },
+        { text: 'Famille', value: 'categorie.nom' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }

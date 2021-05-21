@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+// import moment from 'moment'
 import CreateAchat from '~/components/stock/achat/CreateAchat.vue'
 import DeleteAchat from '~/components/stock/achat/DeleteAchat.vue'
 import SideStock from '~/components/stock/SideStock'
@@ -69,10 +69,9 @@ export default {
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Quantité', value: 'quantite' },
-        { text: 'Produit', value: 'nom' },
+        { text: 'Description', value: 'nom' },
         { text: 'Prix Achat', value: 'prix_achat', sortable: false },
         { text: 'Prix vente', value: 'prix_vente', sortable: false },
-        { text: 'Date', value: 'laDate' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
@@ -90,18 +89,18 @@ export default {
     this.produits = produits
     calebasse = await this.$axios.get('stock/achats')
     const achats = calebasse.data.achats.map((achat) => {
-      moment.locales('fr')
+      const pvente = isNaN(parseInt(achat.prix_vente)) ? 0 : achat.prix_vente
+      const pachat = isNaN(parseInt(achat.prix_achat)) ? 0 : achat.prix_achat
       return {
         id: achat.id,
         code: achat.code,
         quantite: achat.quantite,
-        prix_achat: achat.prix_achat,
-        prix_vente: achat.prix_vente,
+        prix_achat: pachat,
+        prix_vente: pvente,
         ingredient: achat.ingredient,
         nom: achat.produit.nom,
         mesure: achat.produit.mesure,
         type: achat.produit.type,
-        laDate: moment(achat.created_at).format('DD-MM-YYYY'),
       }
     })
     this.achats = achats

@@ -46,7 +46,7 @@
                   :error-messages="errors.nom.message"
                   dense
                   outlined
-                  label="libelle"
+                  label="Description"
                   required
                 ></v-text-field>
               </v-col>
@@ -65,7 +65,7 @@
                     value="unité"
                   ></v-radio>
                   <v-radio
-                    label="Poids"
+                    label="Mesure"
                     color="primary"
                     value="poids"
                   ></v-radio>
@@ -111,6 +111,42 @@
                   ></v-radio>
                 </v-radio-group>
               </v-col>
+              <v-col cols="5">
+                <v-text-field
+                  v-model="produit.etagere"
+                  dense
+                  outlined
+                  label="Etagere"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-autocomplete
+                  v-model="produit.categorie"
+                  :errors="errors.categorie.exist"
+                  :error-messages="errors.categorie.message"
+                  :items="categoriesLocales"
+                  return-object
+                  item-value="id"
+                  item-text="nom"
+                  dense
+                  outlined
+                  label="Categorie"
+                  required
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="1">
+                <create-categorie @new-categorie="pushCategorie" />
+              </v-col>
+              <v-col>
+                <v-textarea
+                  v-model="produit.description"
+                  label="Commentaire"
+                  auto-grow
+                  outlined
+                  rows="5"
+                ></v-textarea>
+              </v-col>
             </v-row>
           </v-container>
         </v-form>
@@ -125,14 +161,23 @@
 </template>
 
 <script>
+import CreateCategorie from './CreateCategorie'
 import {
   errorsInitialise,
   errorsWriting,
 } from '~/components/helper/errorsHandle'
 import imagePreviewMixin from '~/components/mixins/ImagePreviewMixin'
-
 export default {
+  components: {
+    CreateCategorie,
+  },
   mixins: [imagePreviewMixin],
+  props: {
+    categories: {
+      type: Array,
+      required: true,
+    },
+  },
   data: () => {
     const defaultForm = {
       mode: '',
@@ -141,11 +186,14 @@ export default {
       seuil: '',
       nom: '',
       mesure: '',
+      description: '',
+      etagere: '',
+      categorie: {},
     }
     return {
       dialog: false,
       mesurable: false,
-      mesures: ['kg', 'g', 'dg'],
+      mesures: ['kg', 'g', 'dg', 'l', 'cl'],
       produit: defaultForm,
       errors: {
         mode: { exist: false, message: null },
@@ -154,8 +202,13 @@ export default {
         seuil: { exist: false, message: null },
         nom: { exist: false, message: null },
         mesure: { exist: false, message: null },
+        categorie: { exist: false, message: null },
       },
+      categoriesLocales: [],
     }
+  },
+  beforeUpdate() {
+    this.categoriesLocales = this.categories
   },
   methods: {
     reinitialise() {
@@ -171,7 +224,11 @@ export default {
         this.produit.mesure = ''
       }
     },
+    pushCategorie(categorie) {
+      this.categoriesLocales.push(categorie)
+    },
     save() {
+      this.produit.categorie = this.produit.categorie.id
       this.$axios
         .post(
           'stock/produits/new',
