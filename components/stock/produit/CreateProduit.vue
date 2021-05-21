@@ -16,7 +16,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="headline primary--text">créer un produit</span>
+        <span class="headline primary--text">Créer un article</span>
       </v-card-title>
       <v-card-text>
         <v-form id="form" ref="form" enctype="multipart/form-data">
@@ -39,7 +39,7 @@
                   @change="onFileChange"
                 ></v-file-input>
               </v-col>
-              <v-col cols="5">
+              <v-col cols="12">
                 <v-text-field
                   v-model="produit.nom"
                   :errors="errors.nom.exist"
@@ -50,7 +50,7 @@
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="7">
+              <v-col cols="5">
                 <v-radio-group
                   v-model="produit.mode"
                   :error="errors.mode.exist"
@@ -71,26 +71,6 @@
                   ></v-radio>
                 </v-radio-group>
               </v-col>
-              <v-col v-if="mesurable" cols="12">
-                <v-select
-                  v-model="produit.mesure"
-                  :items="mesures"
-                  label="Mesuré en"
-                ></v-select>
-              </v-col>
-              <v-col cols="5">
-                <v-text-field
-                  v-model="produit.seuil"
-                  :errors="errors.seuil.exist"
-                  :error-messages="errors.seuil.message"
-                  dense
-                  :suffix="`${produit.mesure}`"
-                  outlined
-                  type="number"
-                  label="Seuil"
-                  required
-                ></v-text-field>
-              </v-col>
               <v-col cols="7">
                 <v-radio-group
                   v-model="produit.type"
@@ -110,6 +90,15 @@
                     value="assaisonement"
                   ></v-radio>
                 </v-radio-group>
+              </v-col>
+              <v-col v-if="mesurable" cols="12">
+                <v-text-field
+                  v-model="produit.mesure"
+                  outlined
+                  dense
+                  label="Mesuré en"
+                  placeholder="Veuillez spécifier l'unité de mesure de l'article"
+                ></v-text-field>
               </v-col>
               <v-col cols="5">
                 <v-text-field
@@ -183,7 +172,6 @@ export default {
       mode: '',
       type: '',
       image: [],
-      seuil: '',
       nom: '',
       mesure: '',
       description: '',
@@ -193,13 +181,11 @@ export default {
     return {
       dialog: false,
       mesurable: false,
-      mesures: ['kg', 'g', 'dg', 'l', 'cl'],
       produit: defaultForm,
       errors: {
         mode: { exist: false, message: null },
         type: { exist: false, message: null },
         image: { exist: false, message: null },
-        seuil: { exist: false, message: null },
         nom: { exist: false, message: null },
         mesure: { exist: false, message: null },
         categorie: { exist: false, message: null },
@@ -228,7 +214,9 @@ export default {
       this.categoriesLocales.push(categorie)
     },
     save() {
-      this.produit.categorie = this.produit.categorie.id
+      this.produit.categorie = this.produit.categorie
+        ? this.produit.categorie.id
+        : null
       this.$axios
         .post(
           'stock/produits/new',

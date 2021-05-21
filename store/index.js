@@ -18,7 +18,7 @@ export const state = () => ({
       },
       sousModules: [
         {
-          icon: 'mdi-bed-empty',
+          icon: 'mdi-bed',
           text: 'Chambres',
           to: '/gestion-chambre/chambre',
         },
@@ -32,7 +32,7 @@ export const state = () => ({
     {
       name: 'reception',
       link: {
-        icon: 'mdi-human-greeting',
+        icon: 'mdi-card-account-details',
         title: 'Gestion de la Réception',
         to: '/reception',
       },
@@ -64,7 +64,7 @@ export const state = () => ({
       sousModules: [
         {
           icon: 'mdi-cart',
-          text: 'Produits',
+          text: 'Articles',
           to: '/stock/produit',
         },
         {

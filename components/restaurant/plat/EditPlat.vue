@@ -96,7 +96,8 @@
                 block
                 outlined
                 @click="price"
-                ><v-icon dark small>mdi-cog</v-icon> proposition de prix</v-btn
+                ><v-icon dark small>mdi-cog</v-icon> calcul du prix minimal de
+                revient du plat</v-btn
               >
               <!-- prix d'achat et de vente -->
               <v-col cols="6">
@@ -106,7 +107,7 @@
                   :error-messages="errors.achat.message"
                   dense
                   outlined
-                  label="Prix d'achat"
+                  label="Coût de revient"
                   required
                 ></v-text-field>
               </v-col>
@@ -168,7 +169,7 @@ export default {
     return {
       dialog: false,
       plat: Object.assign({}, defaultForm),
-      ingredients: Object.freeze([]),
+      ingredients: [],
       errors: {
         categorie: { exist: false, message: null },
         achat: { exist: false, message: null },
@@ -190,7 +191,7 @@ export default {
   methods: {
     reinitialise() {
       this.plat = Object.assign({}, this.item)
-      this.ingredients = Object.assign([], this.item.ingredients)
+      this.ingredients = this.item.ingredients
       errorsInitialise(this.errors)
       this.dialog = false
     },
@@ -204,8 +205,9 @@ export default {
         })
         .then((result) => {
           this.plat.achat = result.data.achat
-          this.plat.vente = result.data.vente
-          this.$notifier.show({ text: result.data.message, variant: 'success' })
+        })
+        .catch((err) => {
+          this.$toast.warning(err.response.data.message)
         })
     },
     save() {

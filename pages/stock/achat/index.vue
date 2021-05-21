@@ -30,10 +30,7 @@
                   {{ item.quantite + ' ' }}{{ item.mesure }}
                 </template>
                 <template #[`item.prix_achat`]="{ item }">
-                  {{ displayPrice(item.prix_achat, item.mesure) }}
-                </template>
-                <template #[`item.prix_vente`]="{ item }">
-                  {{ displayPrice(item.prix_vente, item.mesure) }}
+                  {{ item.prix_achat + ' FCFA' }}
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <delete-achat :item="item" @deleted-achat="achatDeleted" />
@@ -70,8 +67,7 @@ export default {
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Quantité', value: 'quantite' },
         { text: 'Description', value: 'nom' },
-        { text: 'Prix Achat', value: 'prix_achat', sortable: false },
-        { text: 'Prix vente', value: 'prix_vente', sortable: false },
+        { text: 'Prix revient', value: 'prix_achat', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
@@ -89,30 +85,22 @@ export default {
     this.produits = produits
     calebasse = await this.$axios.get('stock/achats')
     const achats = calebasse.data.achats.map((achat) => {
-      const pvente = isNaN(parseInt(achat.prix_vente)) ? 0 : achat.prix_vente
       const pachat = isNaN(parseInt(achat.prix_achat)) ? 0 : achat.prix_achat
       return {
         id: achat.id,
         code: achat.code,
         quantite: achat.quantite,
         prix_achat: pachat,
-        prix_vente: pvente,
         ingredient: achat.ingredient,
         nom: achat.produit.nom,
         mesure: achat.produit.mesure,
+        contenance: achat.produit.contenance,
         type: achat.produit.type,
       }
     })
     this.achats = achats
   },
   methods: {
-    displayPrice(prix, mesure) {
-      if (mesure) {
-        return `${prix} FCFA/${mesure}`
-      } else {
-        return `${prix} FCFA`
-      }
-    },
     pushAchat(achat) {
       this.achats.push(achat)
     },

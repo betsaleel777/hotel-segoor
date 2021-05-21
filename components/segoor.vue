@@ -1,11 +1,11 @@
 <template>
-  <img class="VuetifyLogo" alt="Vuetify Logo" src="/vuetify-logo.svg" />
+  <img class="SegoorLogo" alt="Segoor Logo" src="/segoor.jpeg" />
 </template>
 
 <style>
-.VuetifyLogo {
-  height: 180px;
-  width: 180px;
+.SegoorLogo {
+  height: 380px;
+  width: 380px;
   transform: rotateY(560deg);
   animation: turn 3.5s ease-out forwards 1s;
 }

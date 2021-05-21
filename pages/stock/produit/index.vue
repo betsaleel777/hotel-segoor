@@ -3,7 +3,7 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Produits
+          Articles
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -75,7 +75,7 @@ export default {
         mesure: mesureData,
         nom: produit.nom,
         image: imageData,
-        seuil: produit.seuil,
+        contenance: produit.contenance,
         mode: produit.mode,
         type: produit.type,
         etagere: produit.etagere ? produit.etagere : '',

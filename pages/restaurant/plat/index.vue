@@ -74,8 +74,8 @@ export default {
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Nom', value: 'nom' },
         { text: 'Categorie', value: 'categorieNom', sortable: false },
-        { text: 'Prix achat', value: 'achat' },
-        { text: 'Prix vente', value: 'vente' },
+        { text: 'Coût de revient', value: 'achat' },
+        { text: 'Prix de vente', value: 'vente' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }

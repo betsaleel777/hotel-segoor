@@ -16,7 +16,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="headline primary--text">créer une plat</span>
+        <span class="headline primary--text">créer un plat</span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -93,7 +93,8 @@
                 block
                 outlined
                 @click="price"
-                ><v-icon dark small>mdi-cog</v-icon> proposition de prix</v-btn
+                ><v-icon dark small>mdi-cog</v-icon> calcul du prix minimal de
+                revient du plat</v-btn
               >
               <!-- prix d'achat et de vente -->
               <v-col cols="6">
@@ -103,7 +104,7 @@
                   :error-messages="errors.achat.message"
                   dense
                   outlined
-                  label="Prix d'achat"
+                  label="Coût de revient"
                   required
                 ></v-text-field>
               </v-col>
@@ -193,8 +194,6 @@ export default {
         })
         .then((result) => {
           this.plat.achat = result.data.achat
-          this.plat.vente = result.data.vente
-          this.$notifier.show({ text: result.data.message, variant: 'success' })
         })
     },
     save() {
@@ -216,10 +215,7 @@ export default {
             }
           })
       } else {
-        this.$notifier.show({
-          text: 'Aucun ingrédients de préparation indiqué.',
-          variant: 'error',
-        })
+        this.$toast.warning('Aucun ingrédients de préparation indiqués.')
       }
     },
     listeUpdate(ingredients) {

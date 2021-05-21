@@ -10,7 +10,7 @@ export const getters = {
 
 export const actions = {
   async getProducts({ commit }) {
-    const calebasse = await this.$axios.get('restaurant/produits')
+    const calebasse = await this.$axios.get('stock/produits')
     commit('SET_PRODUCTS', calebasse.data.produits)
   },
   videProducts({ commit }) {

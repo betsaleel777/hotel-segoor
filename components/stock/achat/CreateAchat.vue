@@ -16,9 +16,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="headline primary--text"
-          >Approvisionner le stock cuisine</span
-        >
+        <span class="headline primary--text">Approvisionner le stock</span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -35,7 +33,7 @@
                   return-object
                   dense
                   outlined
-                  label="Ingredient"
+                  label="Article"
                   required
                 ></v-autocomplete>
               </v-col>
@@ -52,30 +50,16 @@
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="6">
+              <v-col cols="12">
                 <v-text-field
                   v-model="achat.prix_achat"
                   :errors="errors.prix_achat.exist"
                   :error-messages="errors.prix_achat.message"
-                  :suffix="suffixPrix"
+                  suffix="FCFA"
                   type="number"
                   dense
                   outlined
-                  label="Prix d'achat"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="achat.prix_vente"
-                  :disabled="!produit.mesure"
-                  :errors="errors.prix_vente.exist"
-                  :error-messages="errors.prix_vente.message"
-                  :suffix="suffixPrix"
-                  type="number"
-                  dense
-                  outlined
-                  label="Prix de vente"
+                  label="Prix de revient"
                   required
                 ></v-text-field>
               </v-col>
@@ -126,11 +110,6 @@ export default {
     }
   },
   computed: {
-    suffixPrix() {
-      if (this.produit.mesure) {
-        return `FCFA/${this.produit.mesure}`
-      } else return 'FCFA'
-    },
     suffixQuantite() {
       if (this.produit.mesure) {
         return this.produit.mesure
