@@ -31,6 +31,7 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    '@nuxtjs/moment',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -42,23 +43,22 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
+    // baseURL: 'http://hapi.segoor.net',
     baseURL: 'http://localhost:8000', // Can be also an object with default options
     headers: {
       'Content-type': 'application/json',
     },
   },
+  // toast global configuration
   toast: {
     position: 'top-right',
-    register: [
-      // Register custom toasts
-      {
-        name: 'my-error',
-        message: 'Oops...Something went wrong',
-        options: {
-          type: 'error',
-        },
-      },
-    ],
+    theme: 'toasted-primary',
+    duration: 5000,
+  },
+  // moment global configuration
+  moment: {
+    defaultLocale: 'fr',
+    locales: ['fr'],
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {

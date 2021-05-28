@@ -140,6 +140,7 @@ import CreateCategorie from './CreateCategorie.vue'
 import IngredientList from './IngredientList'
 import {
   errorsInitialise,
+  // eslint-disable-next-line no-unused-vars
   errorsWriting,
 } from '~/components/helper/errorsHandle'
 import imagePreviewMixin from '~/components/mixins/ImagePreviewMixin'
@@ -166,10 +167,11 @@ export default {
       image: [],
       description: '',
     })
+    const defaultTab = Object.freeze([])
     return {
       dialog: false,
       plat: Object.assign({}, defaultForm),
-      ingredients: [],
+      ingredients: Object.assign([], defaultTab),
       errors: {
         categorie: { exist: false, message: null },
         achat: { exist: false, message: null },
@@ -191,7 +193,7 @@ export default {
   methods: {
     reinitialise() {
       this.plat = Object.assign({}, this.item)
-      this.ingredients = this.item.ingredients
+      this.ingredients = Object.assign([], this.item.ingredients)
       errorsInitialise(this.errors)
       this.dialog = false
     },
@@ -207,7 +209,7 @@ export default {
           this.plat.achat = result.data.achat
         })
         .catch((err) => {
-          this.$toast.warning(err.response.data.message)
+          this.$toast.error(err.response.data.message)
         })
     },
     save() {

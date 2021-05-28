@@ -2,28 +2,15 @@
   <v-row>
     <v-col v-if="listes.length > 0" cols="12">
       <v-list-item v-for="(liste, index) in listes" :key="index" dense>
-        <v-list-item-avatar>
-          <v-btn icon>
-            <v-icon color="primary lighten-1" @click="show = true"
-              >mdi-information</v-icon
-            >
-          </v-btn>
-        </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title
             >{{
-              liste.ingredient.charAt(0).toUpperCase() +
-              liste.ingredient.slice(1) +
+              liste.article.charAt(0).toUpperCase() +
+              liste.article.slice(1) +
               ' '
-            }}{{
-              '(' + liste.quantite + ' ' + liste.mesure + ')'
-            }}</v-list-item-title
+            }}{{ 'x' + liste.quantite + ' ' + liste.mesure }}</v-list-item-title
           >
-          <v-divider></v-divider>
         </v-list-item-content>
-        <v-tooltip v-model="show" top>
-          <span>{{ liste.description }}</span>
-        </v-tooltip>
         <v-list-item-action>
           <v-btn icon>
             <v-icon color="error lighten-1" @click="retirer(liste)"
@@ -33,18 +20,20 @@
         </v-list-item-action>
       </v-list-item>
     </v-col>
-    <ingredient-form @new-list="ajouterListe" />
+    <v-col cols="12">
+      <demande-form @new-list="ajouterListe" />
+    </v-col>
   </v-row>
 </template>
 
 <script>
-import IngredientForm from './IngredientForm'
+import DemandeForm from './DemandeForm'
 export default {
   components: {
-    IngredientForm,
+    DemandeForm,
   },
   props: {
-    ingredients: {
+    articles: {
       type: Array,
       required: true,
       default: () => {
@@ -59,8 +48,8 @@ export default {
     }
   },
   mounted() {
-    if (this.ingredients.length > 0) {
-      this.listes = this.ingredients
+    if (this.articles.length > 0) {
+      this.listes = this.articles
     }
   },
   methods: {

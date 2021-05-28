@@ -68,6 +68,11 @@ export const state = () => ({
           to: '/stock/produit',
         },
         {
+          icon: 'mdi-message-arrow-right',
+          text: 'Demandes',
+          to: '/stock/demande',
+        },
+        {
           icon: 'mdi-basket-plus',
           text: 'Approvisionements',
           to: '/stock/achat',
@@ -86,6 +91,11 @@ export const state = () => ({
           icon: 'mdi-food-turkey',
           text: 'Plats',
           to: '/restaurant/plat',
+        },
+        {
+          icon: 'mdi-message-arrow-right',
+          text: 'Demandes',
+          to: '/restaurant/demande',
         },
       ],
     },

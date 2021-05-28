@@ -21,6 +21,8 @@
               ></v-text-field>
               <v-data-table
                 no-data-text="Aucune Chambre"
+                :loading="$fetchState.pending"
+                loading-text="En chargement ..."
                 :headers="headers"
                 :items="chambres"
                 :search="search"
@@ -85,7 +87,7 @@ export default {
       ],
     }
   },
-  async mounted() {
+  async fetch() {
     let calebasse = await this.$axios.get('gestion-chambre/chambres')
     this.chambres = calebasse.data.chambres.map((chambre) => {
       // eslint-disable-next-line camelcase

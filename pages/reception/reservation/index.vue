@@ -21,6 +21,8 @@
               ></v-text-field>
               <v-data-table
                 no-data-text="Aucune reception"
+                :loading="$fetchState.pending"
+                loading-text="En chargement ..."
                 :headers="headers"
                 :items="reservations"
                 :search="search"
@@ -71,11 +73,27 @@ export default {
     FreeReservation,
     DeleteReservation,
   },
-  async asyncData({ $axios }) {
+  data() {
+    return {
+      search: '',
+      chambres: [],
+      reservations: [],
+      headers: [
+        { text: 'Code', value: 'code', sortable: false },
+        { text: 'Client', value: 'client.nom', sortable: false },
+        { text: 'Chambre', value: 'chambre.nom', sortable: false },
+        { text: 'Debut', value: 'entree' },
+        { text: 'Fin', value: 'sortie' },
+        { text: 'status', value: 'status' },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+    }
+  },
+  async fetch() {
     moment.locale('fr')
     // let calebasse = await $axios.get('reception/clients')
     // const clients = calebasse.data.clients
-    let calebasse = await $axios.get('reception/reservations')
+    let calebasse = await this.$axios.get('reception/reservations')
     const reservations = calebasse.data.reservations.map((reservation) => {
       const { chambre_linked, client_linked, ...rest } = reservation
       return {
@@ -88,28 +106,15 @@ export default {
         sortie: moment(rest.sortie).format('ll'),
       }
     })
-    calebasse = await $axios.get('gestion-chambre/chambres/passage')
+    calebasse = await this.$axios.get('gestion-chambre/chambres/passage')
     const chambres = calebasse.data.chambres.map((chambre) => {
       return {
         id: chambre.id,
         nom: `libelle: ${chambre.nom} ---${chambre.prix_list[0].montant} FCFA`,
       }
     })
-    return { reservations, chambres }
-  },
-  data() {
-    return {
-      search: '',
-      headers: [
-        { text: 'Code', value: 'code', sortable: false },
-        { text: 'Client', value: 'client.nom', sortable: false },
-        { text: 'Chambre', value: 'chambre.nom', sortable: false },
-        { text: 'Debut', value: 'entree' },
-        { text: 'Fin', value: 'sortie' },
-        { text: 'status', value: 'status' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
-    }
+    this.reservations = reservations
+    this.chambres = chambres
   },
   methods: {
     getColor(status) {

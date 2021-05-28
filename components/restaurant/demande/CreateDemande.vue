@@ -1,0 +1,118 @@
+<template>
+  <v-dialog v-model="dialog" persistent max-width="600px">
+    <template #activator="{ on, attrs }">
+      <v-btn
+        v-bind="attrs"
+        color="primary"
+        dark
+        absolute
+        bottom
+        right
+        fab
+        v-on="on"
+      >
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
+    </template>
+    <v-card>
+      <v-card-title>
+        <span class="headline primary--text">Créer une demande</span>
+      </v-card-title>
+      <v-card-text>
+        <v-form ref="form">
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <div class="text-center"><h4>Liste des Articles</h4></div>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="titre"
+                  :error="errors.titre.exist"
+                  :error-messages="errors.titre.message"
+                  dense
+                  label="Titre"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <!-- liste des article demandés -->
+            <article-list :articles="[]" @new-in-list="listeUpdate" />
+          </v-container>
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script>
+import ArticleList from './ArticleList'
+import {
+  errorsInitialise,
+  errorsWriting,
+} from '~/components/helper/errorsHandle'
+
+export default {
+  components: { ArticleList },
+  data: () => {
+    return {
+      dialog: false,
+      articles: [],
+      departement: null,
+      titre: null,
+      errors: {
+        titre: { exist: false, message: null },
+      },
+    }
+  },
+  mounted() {
+    // doit recuperer le departement de l'utilisateur
+    this.$axios.get('parametre/departements/' + 'restaurant').then((result) => {
+      this.departement = result.data.departement.id
+    })
+  },
+  methods: {
+    reinitialise() {
+      this.$refs.form.reset()
+      this.articles.splice(0)
+      errorsInitialise(this.errors)
+      this.dialog = false
+    },
+    save() {
+      const articles = this.articles
+      if (articles.length > 0) {
+        this.$axios
+          .post('stock/demandes/new', {
+            articles,
+            departement: this.departement,
+            titre: this.titre,
+          })
+          .then((result) => {
+            const { message, demande } = result.data
+            this.$notifier.show({ text: message, variant: 'success' })
+            this.$emit('new-demande', demande)
+            this.reinitialise()
+          })
+          .catch((err) => {
+            const { data } = err.response
+            if (data) {
+              errorsInitialise(this.errors)
+              errorsWriting(data, this.errors)
+            }
+          })
+      } else {
+        this.$toast.show('la demande doit contenir au moins un article')
+      }
+    },
+    listeUpdate(articles) {
+      this.articles = articles
+    },
+  },
+}
+</script>
+
+<style></style>

@@ -21,6 +21,8 @@
               ></v-text-field>
               <v-data-table
                 no-data-text="Aucun achat éffectué"
+                :loading="$fetchState.pending"
+                loading-text="En chargement ..."
                 :headers="headers"
                 :items="achats"
                 :search="search"
@@ -72,7 +74,7 @@ export default {
       ],
     }
   },
-  async mounted() {
+  async fetch() {
     let calebasse = await this.$axios.get('stock/produits')
     const produits = calebasse.data.produits.map((produit) => {
       return {

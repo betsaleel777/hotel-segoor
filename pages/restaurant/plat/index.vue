@@ -21,6 +21,8 @@
               ></v-text-field>
               <v-data-table
                 no-data-text="Aucun plat"
+                loading-text="En chargement ..."
+                :loading="$fetchState.pending"
                 :headers="headers"
                 :items="plats"
                 :search="search"
@@ -80,7 +82,7 @@ export default {
       ],
     }
   },
-  async mounted() {
+  async fetch() {
     let calebasse = await this.$axios.get('/restaurant/plats')
     const plats = calebasse.data.plats.map((plat) => {
       const imageData = plat.image ? plat.image : []

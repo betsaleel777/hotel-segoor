@@ -21,6 +21,8 @@
               ></v-text-field>
               <v-data-table
                 no-data-text="Aucun produit"
+                :loading="$fetchState.pending"
+                loading-text="En chargement ..."
                 :headers="headers"
                 :items="produits"
                 :search="search"
@@ -64,8 +66,21 @@ export default {
     DeleteProduit,
     EditProduit,
   },
-  async asyncData({ $axios }) {
-    let calebasse = await $axios.get('stock/produits')
+  data() {
+    return {
+      search: '',
+      produits: [],
+      categories: [],
+      headers: [
+        { text: 'Code', value: 'code', sortable: false },
+        { text: 'Description', value: 'nom' },
+        { text: 'Famille', value: 'categorie.nom' },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+    }
+  },
+  async fetch() {
+    let calebasse = await this.$axios.get('stock/produits')
     const produits = calebasse.data.produits.map((produit) => {
       const imageData = produit.image ? produit.image : []
       const mesureData = produit.mesure ? produit.mesure : ''
@@ -86,22 +101,12 @@ export default {
         },
       }
     })
-    calebasse = await $axios.get('stock/categories')
+    calebasse = await this.$axios.get('stock/categories')
     const categories = calebasse.data.categories.map((categorie) => {
       return { id: categorie.id, nom: categorie.nom }
     })
-    return { produits, categories }
-  },
-  data() {
-    return {
-      search: '',
-      headers: [
-        { text: 'Code', value: 'code', sortable: false },
-        { text: 'Description', value: 'nom' },
-        { text: 'Famille', value: 'categorie.nom' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
-    }
+    this.produits = produits
+    this.categories = categories
   },
   methods: {
     pushProduit(produit) {

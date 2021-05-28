@@ -21,6 +21,8 @@
               ></v-text-field>
               <v-data-table
                 no-data-text="Aucun client"
+                :loading="$fetchState.pending"
+                loading-text="En chargement ..."
                 :headers="headers"
                 :items="clients"
                 :search="search"
@@ -61,8 +63,23 @@ export default {
     DeleteClient,
     CreateClient,
   },
-  async asyncData({ $axios }) {
-    const calebasse = await $axios.get('reception/clients')
+  data() {
+    return {
+      search: '',
+      clients: [],
+      headers: [
+        { text: 'Code', value: 'code', sortable: false },
+        { text: 'Prenom', value: 'prenom' },
+        { text: 'Contact', value: 'contact', sortable: false },
+        { text: 'Pays', value: 'pays', sortable: false },
+        { text: 'Domicile', value: 'domicile', sortable: false },
+        { text: 'Né le', value: 'naissance' },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+    }
+  },
+  async fetch() {
+    const calebasse = await this.$axios.get('reception/clients')
     const clients = calebasse.data.clients.map((client) => {
       const { pieces, ...rest } = client
       return {
@@ -81,21 +98,7 @@ export default {
         piece: pieces[0],
       }
     })
-    return { clients }
-  },
-  data() {
-    return {
-      search: '',
-      headers: [
-        { text: 'Code', value: 'code', sortable: false },
-        { text: 'Prenom', value: 'prenom' },
-        { text: 'Contact', value: 'contact', sortable: false },
-        { text: 'Pays', value: 'pays', sortable: false },
-        { text: 'Domicile', value: 'domicile', sortable: false },
-        { text: 'Né le', value: 'naissance' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
-    }
+    this.clients = clients
   },
   methods: {
     // getColor(status) {

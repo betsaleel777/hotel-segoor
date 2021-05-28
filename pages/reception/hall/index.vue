@@ -21,6 +21,8 @@
               ></v-text-field>
               <v-data-table
                 no-data-text="Aucune reception"
+                :loading="$fetchState.pending"
+                loading-text="En chargement ..."
                 :headers="headers"
                 :items="attributions"
                 :search="search"
@@ -80,11 +82,29 @@ export default {
     EditAttributionForm,
     FreeAttribution,
   },
-  async asyncData({ $axios }) {
+  data() {
+    return {
+      search: '',
+      clients: [],
+      attributions: [],
+      reservations: [],
+      chambres: [],
+      headers: [
+        { text: 'Code', value: 'code', sortable: false },
+        { text: 'Client', value: 'client.nom', sortable: false },
+        { text: 'Chambre', value: 'chambre.nom', sortable: false },
+        { text: 'Debut', value: 'entreeDisplay' },
+        { text: 'Fin', value: 'sortieDisplay' },
+        { text: 'status', value: 'status' },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+    }
+  },
+  async fetch() {
     moment.locale('fr')
-    let calebasse = await $axios.get('reception/clients')
+    let calebasse = await this.$axios.get('reception/clients')
     const clients = calebasse.data.clients
-    calebasse = await $axios.get('reception/attributions')
+    calebasse = await this.$axios.get('reception/attributions')
     const attributions = calebasse.data.attributions.map((attribution) => {
       // eslint-disable-next-line camelcase
       const { chambre_linked, client_linked, ...rest } = attribution
@@ -101,29 +121,18 @@ export default {
         sortie,
       }
     })
-    calebasse = await $axios.get('reception/reservations/reserved')
+    calebasse = await this.$axios.get('reception/reservations/reserved')
     let reservations = calebasse.data.reservations.map((reservation) => {
       const { id, code, entree, sortie } = reservation
       return { id, nom: code, entree, sortie }
     })
     reservations = checkReservationDate(reservations)
-    calebasse = await $axios.get('gestion-chambre/chambres/passage')
+    calebasse = await this.$axios.get('gestion-chambre/chambres/passage')
     const chambres = calebasse.data.chambres
-    return { clients, attributions, reservations, chambres }
-  },
-  data() {
-    return {
-      search: '',
-      headers: [
-        { text: 'Code', value: 'code', sortable: false },
-        { text: 'Client', value: 'client.nom', sortable: false },
-        { text: 'Chambre', value: 'chambre.nom', sortable: false },
-        { text: 'Debut', value: 'entreeDisplay' },
-        { text: 'Fin', value: 'sortieDisplay' },
-        { text: 'status', value: 'status' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
-    }
+    this.clients = clients
+    this.attributions = attributions
+    this.reservations = reservations
+    this.chambres = chambres
   },
   methods: {
     getColor(status) {
