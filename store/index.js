@@ -97,6 +97,11 @@ export const state = () => ({
           text: 'Demandes',
           to: '/restaurant/demande',
         },
+        {
+          icon: 'mdi-message-arrow-right',
+          text: 'Inventaire',
+          to: '/restaurant/inventaire',
+        },
       ],
     },
   ],

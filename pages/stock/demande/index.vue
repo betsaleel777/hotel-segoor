@@ -12,13 +12,6 @@
               <side-stock />
             </v-col>
             <v-col cols="12" sm="6" md="9">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="recherche ..."
-                single-line
-                hide-details
-              ></v-text-field>
               <v-data-table
                 no-data-text="Aucun Demande"
                 :loading="$fetchState.pending"
@@ -51,7 +44,9 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions> </v-card-actions>
+        <v-card-actions>
+          <create-sortie @new-demande="pushDemande" />
+        </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
@@ -63,6 +58,7 @@ import SideStock from '~/components/stock/SideStock.vue'
 import ProcessDemande from '~/components/stock/demande/ProcessDemande'
 import DeliverDemande from '~/components/stock/demande/DeliverDemande'
 import ShowDemande from '~/components/restaurant/demande/ShowDemande.vue'
+import CreateSortie from '~/components/stock/demande/CreateSortie.vue'
 
 export default {
   components: {
@@ -70,6 +66,7 @@ export default {
     ProcessDemande,
     DeliverDemande,
     ShowDemande,
+    CreateSortie,
   },
   data() {
     return {

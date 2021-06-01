@@ -1,5 +1,5 @@
 <template>
-  <img class="SegoorLogo" alt="Segoor Logo" src="/segoor.jpeg" />
+  <img class="SegoorLogo" alt="Segoor Logo" src="/segoor.jpg" />
 </template>
 
 <style>

@@ -3,9 +3,9 @@
     <v-col cols="12" sm="8" md="6">
       <div class="text-center justify-center">
         <segoor-logo />
-        <v-alert outlined type="info" prominent border="right">
+        <!-- <v-alert outlined type="info" prominent border="right">
           l'avenir nous appartient, l'avenir c'est Segoor
-        </v-alert>
+        </v-alert> -->
       </div>
     </v-col>
   </v-row>

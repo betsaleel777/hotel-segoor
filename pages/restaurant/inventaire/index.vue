@@ -3,13 +3,13 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Inventaire
+          Inventaire du Restaurant
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-stock />
+              <side-restaurant />
             </v-col>
             <v-col cols="9">
               <v-text-field
@@ -20,11 +20,11 @@
                 hide-details
               ></v-text-field>
               <v-data-table
-                no-data-text="Aucun achat éffectué"
+                no-data-text="Inventaire vide"
                 :loading="$fetchState.pending"
                 loading-text="En chargement ..."
                 :headers="headers"
-                :items="achats"
+                :items="demandes"
                 :search="search"
                 :items-per-page="10"
               >
@@ -33,7 +33,7 @@
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <v-btn
-                    :to="'/stock/achat/' + item.id"
+                    :to="'/restaurant/inventaire/' + item.id"
                     color="pink"
                     elevation="1"
                     icon
@@ -47,9 +47,7 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <create-achat :produits="produits" @new-achat="pushAchat" />
-        </v-card-actions>
+        <v-card-actions> </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
@@ -57,18 +55,16 @@
 
 <script>
 // import moment from 'moment'
-import CreateAchat from '~/components/stock/achat/CreateAchat.vue'
-import SideStock from '~/components/stock/SideStock'
+import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
 export default {
   components: {
-    SideStock,
-    CreateAchat,
+    SideRestaurant,
   },
   data() {
     return {
       search: '',
-      produits: [],
-      achats: [],
+      demandes: [],
+      departement: null,
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Description', value: 'nom' },
@@ -78,32 +74,24 @@ export default {
     }
   },
   async fetch() {
-    let calebasse = await this.$axios.get('stock/produits')
-    const produits = calebasse.data.produits.map((produit) => {
+    // doit recuperer le departement de l'utilisateur
+    let calebasse = await this.$axios.get(
+      'parametre/departements/' + 'restaurant'
+    )
+    this.departement = calebasse.data.departement
+    calebasse = await this.$axios.get(
+      'stock/demandes/inventaire/' + this.departement.id
+    )
+    const demandes = calebasse.data.inventaire.map((ligne) => {
       return {
-        id: produit.id,
-        mesure: produit.mesure,
-        nom: produit.nom,
-        type: produit.type,
+        id: ligne.id,
+        nom: ligne.nom,
+        code: ligne.code,
+        quantite: ligne.quantite,
+        mesure: ligne.mesure,
       }
     })
-    calebasse = await this.$axios.get('stock/achats')
-    const achats = calebasse.data.achats.map((achat) => {
-      return {
-        id: achat.produit,
-        code: achat.code,
-        quantite: achat.quantite,
-        nom: achat.nom,
-        mesure: achat.mesure,
-      }
-    })
-    this.achats = achats
-    this.produits = produits
-  },
-  methods: {
-    pushAchat(achat) {
-      this.achats.push(achat)
-    },
+    this.demandes = demandes
   },
 }
 </script>

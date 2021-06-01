@@ -3,7 +3,7 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Inventaire
+          {{ produit.nom }} - {{ produit.code }}
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -29,27 +29,19 @@
                 :items-per-page="10"
               >
                 <template #[`item.quantite`]="{ item }">
-                  {{ item.quantite + ' ' }}{{ item.mesure }}
+                  {{ item.quantite + ' ' }}{{ produit.mesure }}
+                </template>
+                <template #[`item.prix`]="{ item }">
+                  {{ item.prix + ' FCFA' }}
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <v-btn
-                    :to="'/stock/achat/' + item.id"
-                    color="pink"
-                    elevation="1"
-                    icon
-                    fab
-                    dark
-                    x-small
-                    ><v-icon small> mdi-eye</v-icon></v-btn
-                  >
+                  <delete-achat :item="item" @deleted-achat="achatDeleted" />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <create-achat :produits="produits" @new-achat="pushAchat" />
-        </v-card-actions>
+        <v-card-actions> </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
@@ -57,52 +49,48 @@
 
 <script>
 // import moment from 'moment'
-import CreateAchat from '~/components/stock/achat/CreateAchat.vue'
+import DeleteAchat from '~/components/stock/achat/DeleteAchat.vue'
 import SideStock from '~/components/stock/SideStock'
 export default {
   components: {
     SideStock,
-    CreateAchat,
+    DeleteAchat,
   },
   data() {
     return {
       search: '',
-      produits: [],
       achats: [],
+      produit: {},
       headers: [
         { text: 'Code', value: 'code', sortable: false },
-        { text: 'Description', value: 'nom' },
         { text: 'Quantité', value: 'quantite' },
+        { text: 'Prix de revient', value: 'prix' },
+        { text: 'Date', value: 'created_at' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
   },
   async fetch() {
-    let calebasse = await this.$axios.get('stock/produits')
-    const produits = calebasse.data.produits.map((produit) => {
+    const calebasse = await this.$axios.get(
+      'stock/achats/produit/' + this.$route.params.produit
+    )
+    const listeAchats = calebasse.data.achats
+    const produit = calebasse.data.produit
+    const achats = listeAchats.map((achat) => {
       return {
-        id: produit.id,
-        mesure: produit.mesure,
-        nom: produit.nom,
-        type: produit.type,
-      }
-    })
-    calebasse = await this.$axios.get('stock/achats')
-    const achats = calebasse.data.achats.map((achat) => {
-      return {
-        id: achat.produit,
+        id: achat.id,
         code: achat.code,
         quantite: achat.quantite,
-        nom: achat.nom,
-        mesure: achat.mesure,
+        prix: achat.prix_achat,
+        created_at: this.$moment(achat.created_at).format('ll'),
       }
     })
     this.achats = achats
-    this.produits = produits
+    this.produit = produit
   },
   methods: {
-    pushAchat(achat) {
-      this.achats.push(achat)
+    achatDeleted(achat) {
+      this.achats = this.achats.filter((element) => element.id !== achat.id)
     },
   },
 }
