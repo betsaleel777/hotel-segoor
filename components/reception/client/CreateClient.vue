@@ -384,6 +384,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    raise: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     menu1: false,

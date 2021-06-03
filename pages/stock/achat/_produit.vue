@@ -34,9 +34,6 @@
                 <template #[`item.prix`]="{ item }">
                   {{ item.prix + ' FCFA' }}
                 </template>
-                <template #[`item.actions`]="{ item }">
-                  <delete-achat :item="item" @deleted-achat="achatDeleted" />
-                </template>
               </v-data-table>
             </v-col>
           </v-row>
@@ -48,13 +45,10 @@
 </template>
 
 <script>
-// import moment from 'moment'
-import DeleteAchat from '~/components/stock/achat/DeleteAchat.vue'
 import SideStock from '~/components/stock/SideStock'
 export default {
   components: {
     SideStock,
-    DeleteAchat,
   },
   data() {
     return {
@@ -66,7 +60,6 @@ export default {
         { text: 'Quantité', value: 'quantite' },
         { text: 'Prix de revient', value: 'prix' },
         { text: 'Date', value: 'created_at' },
-        { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
   },

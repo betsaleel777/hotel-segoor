@@ -34,11 +34,6 @@
                   </v-chip>
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <revive-demande
-                    v-if="item.status === 'rejettée'"
-                    :item="item"
-                    @revived-demande="demandeRevived"
-                  />
                   <show-demande :item="item" />
                 </template>
               </v-data-table>
@@ -56,7 +51,6 @@
 <script>
 /* eslint-disable camelcase */
 import CreateDemande from '~/components/restaurant/demande/CreateDemande.vue'
-import ReviveDemande from '~/components/restaurant/demande/ReviveDemande.vue'
 import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
 import ShowDemande from '~/components/restaurant/demande/ShowDemande.vue'
 
@@ -64,7 +58,6 @@ export default {
   components: {
     SideRestaurant,
     CreateDemande,
-    ReviveDemande,
     ShowDemande,
   },
   data() {
@@ -120,13 +113,6 @@ export default {
       }
     },
     pushDemande(demande) {
-      demande.created_at = this.$moment(demande.created_at).format('ll')
-      this.demandes.push(demande)
-    },
-    demandeRevived(demande, old) {
-      old.created_at = this.$moment(old.created_at).format('ll')
-      const index = this.demandes.findIndex((element) => element.id === old.id)
-      this.demandes.splice(index, 1, old)
       demande.created_at = this.$moment(demande.created_at).format('ll')
       this.demandes.push(demande)
     },

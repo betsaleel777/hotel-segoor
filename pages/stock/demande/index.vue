@@ -21,12 +21,22 @@
                 :search="search"
                 :items-per-page="10"
               >
+                <template #[`top`]>
+                  <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="recherche ..."
+                    single-line
+                    hide-details
+                  ></v-text-field>
+                </template>
                 <template #[`item.status`]="{ item }">
                   <v-chip small outlined :color="getColor(item.status)" dark>
                     {{ item.status }}
                   </v-chip>
                 </template>
                 <template #[`item.actions`]="{ item }">
+                  <show-demande :item="item" />
                   <deliver-demande
                     v-if="item.status === 'acceptée'"
                     :item="item"
@@ -38,15 +48,12 @@
                     @accepted-demande="demandeChanged"
                     @rejected-demande="demandeChanged"
                   />
-                  <show-demande :item="item" />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <create-sortie @new-demande="pushDemande" />
-        </v-card-actions>
+        <v-card-actions> </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
@@ -58,7 +65,6 @@ import SideStock from '~/components/stock/SideStock.vue'
 import ProcessDemande from '~/components/stock/demande/ProcessDemande'
 import DeliverDemande from '~/components/stock/demande/DeliverDemande'
 import ShowDemande from '~/components/restaurant/demande/ShowDemande.vue'
-import CreateSortie from '~/components/stock/demande/CreateSortie.vue'
 
 export default {
   components: {
@@ -66,7 +72,6 @@ export default {
     ProcessDemande,
     DeliverDemande,
     ShowDemande,
-    CreateSortie,
   },
   data() {
     return {

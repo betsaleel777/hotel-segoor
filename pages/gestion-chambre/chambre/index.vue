@@ -12,13 +12,6 @@
               <side-gestion-chambre />
             </v-col>
             <v-col cols="12" sm="6" md="9">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="recherche ..."
-                single-line
-                hide-details
-              ></v-text-field>
               <v-data-table
                 no-data-text="Aucune Chambre"
                 :loading="$fetchState.pending"
@@ -28,6 +21,23 @@
                 :search="search"
                 :items-per-page="10"
               >
+                <template #[`top`]>
+                  <v-toolbar flat>
+                    <create-form-modal
+                      :categories="categories"
+                      :floating="false"
+                      @new-chambre="pushChambre"
+                    />
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="recherche ..."
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </v-toolbar>
+                </template>
                 <template #[`item.status`]="{ item }">
                   <v-chip outlined small :color="getColor(item.status)" dark>
                     {{ item.status }}

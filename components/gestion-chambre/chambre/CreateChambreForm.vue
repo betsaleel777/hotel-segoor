@@ -2,6 +2,7 @@
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template #activator="{ on, attrs }">
       <v-btn
+        v-if="floating"
         v-bind="attrs"
         color="primary"
         dark
@@ -12,6 +13,10 @@
         v-on="on"
       >
         <v-icon>mdi-plus</v-icon>
+      </v-btn>
+      <v-btn v-else v-bind="attrs" dark color="primary" v-on="on">
+        <v-icon small>mdi-plus</v-icon>
+        AJOUTER
       </v-btn>
     </template>
     <v-card>
@@ -87,6 +92,10 @@ export default {
     categories: {
       type: Array,
       required: true,
+    },
+    floating: {
+      type: Boolean,
+      default: true,
     },
   },
   data: () => {

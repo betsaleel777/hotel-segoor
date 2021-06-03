@@ -18,39 +18,47 @@
         ><div>Demande {{ item.code }} du {{ item.created_at }}</div>
       </v-card-title>
       <v-card-text>
-        <v-list-item v-for="(article, index) in articles" :key="index" dense>
-          <v-list-item-content>
-            <v-list-item-title
-              >{{
-                article.nom.charAt(0).toUpperCase() +
-                article.nom.slice(1) +
-                ' '
-              }}{{
-                'x' + article.pivot.quantite + ' ' + article.mesure
-              }}</v-list-item-title
-            >
-            <v-text-field
-              v-model="article.pivot.quantite"
-              :suffix="article.mesure"
-              :rules="[rules.required]"
-              dense
-              prepend-icon="mdi-pencil"
-            ></v-text-field>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-btn icon>
-              <v-icon color="error lighten-1" @click="retirer(article)"
-                >mdi-trash-can-outline</v-icon
-              >
-            </v-btn>
-          </v-list-item-action>
-        </v-list-item>
+        <v-simple-table>
+          <template #default>
+            <thead>
+              <tr>
+                <th class="text-left">Réference</th>
+                <th class="text-left">Description</th>
+                <th class="text-left">Quantité</th>
+                <th class="text-left">Disponible</th>
+                <th class="text-left">Valeur</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(article, index) in articles" :key="index" dense>
+                <td>{{ article.code }}</td>
+                <td style="width: 30%">{{ article.nom }}</td>
+                <td>{{ article.quantite + article.mesure }}</td>
+                <td>{{ article.disponible + article.mesure }}</td>
+                <td>
+                  <v-text-field
+                    v-model="reponses[index].valeur"
+                    dense
+                    type="number"
+                    :error="quantiteCheck(index, article.disponible)"
+                    :suffix="article.mesure"
+                  >
+                  </v-text-field>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-4" text @click="close">Fermer</v-btn>
-        <v-btn color="green darken-4" text @click="accept(item.id)"
-          >Accepter</v-btn
+        <v-btn
+          :disabled="errorFound"
+          color="green darken-4"
+          text
+          @click="accept(item.id)"
+          >Valider</v-btn
         >
         <v-btn color="error darken-4" text @click="reject(item.id)"
           >Rejetter</v-btn
@@ -72,17 +80,40 @@ export default {
   data: () => ({
     dialog: false,
     articles: [],
-    rules: {
-      required: (value) => !!value || 'Required.',
-    },
+    reponses: [],
   }),
-  mounted() {
-    this.articles = Object.freeze(this.item.produits)
+  computed: {
+    errorFound() {
+      let found = false
+      for (const reponse of this.reponses) {
+        if (reponse.error === true) {
+          found = true
+          break
+        }
+      }
+      return found
+    },
+  },
+  async mounted() {
+    const calebasse = await this.$axios.get(
+      'stock/demandes/traitement/' + this.item.id
+    )
+    this.articles = calebasse.data.articles
+    this.reponses = calebasse.data.articles.map((article) => {
+      return { ...article, valeur: article.quantite, error: false }
+    })
   },
   methods: {
+    quantiteCheck(index, dispo) {
+      const check = this.reponses[index].valeur > parseInt(dispo)
+      check
+        ? (this.reponses[index].error = true)
+        : (this.reponses[index].error = false)
+      return check
+    },
     accept(id) {
       this.$axios
-        .put('stock/demandes/accept/' + id, { articles: this.articles })
+        .put('stock/demandes/accept/' + id, { articles: this.reponses })
         .then((result) => {
           const { message, demande } = result.data
           this.$notifier.show({ text: message, variant: 'success' })
@@ -101,12 +132,8 @@ export default {
         this.$emit('rejected-demande', demande)
       })
     },
-    retirer(item) {
-      const index = this.articles.findIndex((element) => element.id === item.id)
-      this.articles.splice(index, 1)
-    },
     close() {
-      this.articles = Object.freeze(this.item.produits)
+      // this.articles = Object.freeze(this.item.produits)
       this.dialog = false
     },
   },

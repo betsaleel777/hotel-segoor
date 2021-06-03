@@ -69,8 +69,13 @@ export const state = () => ({
         },
         {
           icon: 'mdi-message-arrow-right',
-          text: 'Demandes',
+          text: 'Gestion des Demandes',
           to: '/stock/demande',
+        },
+        {
+          icon: 'mdi-package-variant',
+          text: 'Gestion des sorties',
+          to: '/stock/sortie',
         },
         {
           icon: 'mdi-basket-plus',
@@ -94,11 +99,11 @@ export const state = () => ({
         },
         {
           icon: 'mdi-message-arrow-right',
-          text: 'Demandes',
+          text: 'Gestion des Demandes',
           to: '/restaurant/demande',
         },
         {
-          icon: 'mdi-message-arrow-right',
+          icon: 'mdi-warehouse',
           text: 'Inventaire',
           to: '/restaurant/inventaire',
         },

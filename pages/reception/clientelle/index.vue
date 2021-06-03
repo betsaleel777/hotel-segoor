@@ -12,13 +12,6 @@
               <side-reception />
             </v-col>
             <v-col cols="12" sm="6" md="9">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="recherche ..."
-                single-line
-                hide-details
-              ></v-text-field>
               <v-data-table
                 no-data-text="Aucun client"
                 :loading="$fetchState.pending"
@@ -28,6 +21,25 @@
                 :search="search"
                 :items-per-page="10"
               >
+                <template #[`top`]>
+                  <v-toolbar flat>
+                    <create-client
+                      :clients="clients"
+                      :chambres="chambres"
+                      :reservations="reservations"
+                      :raise="true"
+                      @new-attribution="pushAttribution"
+                    />
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="recherche ..."
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </v-toolbar>
+                </template>
                 <!-- <template #[`item.status`]="{ item }">
                   <v-chip small outlined :color="getColor(item.status)" dark>
                     {{ item.status }}

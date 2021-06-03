@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline"
-        ><div>Demande {{ item.code }} du {{ item.created_at }}</div>
+        ><div>Sortie {{ item.code }} du {{ item.created_at }}</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
         <div class="text-center"><h4>Liste des Articles</h4></div>
@@ -18,6 +18,7 @@
                 <th class="text-left">Réference</th>
                 <th class="text-left">Description</th>
                 <th class="text-left">Quantité demandées</th>
+                <th class="text-left">Quantité livrées</th>
               </tr>
             </thead>
             <tbody>
@@ -28,6 +29,7 @@
                     article.nom.charAt(0).toUpperCase() + article.nom.slice(1)
                   }}
                 </td>
+                <td>{{ article.pivot.demandees + article.mesure }}</td>
                 <td>{{ article.pivot.quantite + article.mesure }}</td>
               </tr>
             </tbody>
