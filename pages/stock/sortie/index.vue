@@ -30,6 +30,9 @@
                     hide-details
                   ></v-text-field>
                 </template>
+                <template #[`item.departement`]="{ item }">
+                  <b>{{ item.departement }}</b>
+                </template>
                 <template #[`item.actions`]="{ item }">
                   <show-sortie :item="item" />
                 </template>
@@ -60,6 +63,7 @@ export default {
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Titre', value: 'titre', sortable: false },
+        { text: 'Département', value: 'departement', sortable: false },
         { text: 'Demandé le', value: 'demande_le' },
         { text: 'livré le', value: 'created_at' },
         { text: 'Actions', value: 'actions', sortable: false },
@@ -75,6 +79,7 @@ export default {
         titre,
         code,
         status,
+        departement: demande_linked.departement_linked.nom,
         created_at: this.$moment(created_at).format('ll'),
         demande_le: this.$moment(demande_linked.created_at).format('ll'),
         produits,

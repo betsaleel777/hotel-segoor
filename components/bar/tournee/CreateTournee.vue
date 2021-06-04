@@ -21,7 +21,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="headline primary--text">créer une chambre</span>
+        <span class="headline primary--text">créer une tournée</span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -29,42 +29,59 @@
             <v-row>
               <v-col cols="8">
                 <v-text-field
-                  v-model="chambre.nom"
-                  :errors="errors.nom.exist"
-                  :error-messages="errors.nom.message"
+                  v-model="tournee.titre"
+                  :errors="errors.titre.exist"
+                  :error-messages="errors.titre.message"
                   dense
                   outlined
-                  label="libelle"
+                  label="Titre"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="4">
                 <v-text-field
-                  v-model="chambre.montant"
+                  v-model="tournee.montant"
                   :errors="errors.montant.exist"
                   :error-messages="errors.montant.message"
                   dense
                   outlined
-                  label="Prix"
+                  label="Le prix de la tournée"
+                  type="number"
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="9" md="10">
+              <v-col cols="4">
+                <v-text-field
+                  v-model="tournee.nombre"
+                  :errors="errors.nombre.exist"
+                  :error-messages="errors.nombre.message"
+                  dense
+                  outlined
+                  label="Nombre de tournée"
+                  type="number"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="9" md="5">
                 <v-autocomplete
-                  v-model="chambre.categorie"
-                  :errors="errors.categorie.exist"
-                  :error-messages="errors.categorie.message"
-                  :items="categoriesLocales"
+                  v-model="tournee.produit"
+                  :errors="errors.produit.exist"
+                  :error-messages="errors.produit.message"
+                  :items="produitsLocales"
                   item-value="id"
                   item-text="nom"
                   dense
                   outlined
-                  label="Categorie"
+                  label="Produit"
                   required
                 ></v-autocomplete>
               </v-col>
-              <v-col cols="12" sm="3" md="2">
-                <create-categorie-form @new-categorie="pushCategorie" />
+              <v-col cols="12" sm="3" md="3">
+                <create-produit
+                  :floating="false"
+                  :categories="categories"
+                  @new-produit="pushProduit"
+                />
               </v-col>
             </v-row>
           </v-container>
@@ -80,15 +97,19 @@
 </template>
 
 <script>
-import CreateCategorieForm from './CreateCategorieForm.vue'
 import {
   errorsInitialise,
   errorsWriting,
 } from '~/components/helper/errorsHandle'
+import CreateProduit from '~/components/stock/produit/CreateProduit.vue'
 
 export default {
-  components: { CreateCategorieForm },
+  components: { CreateProduit },
   props: {
+    produits: {
+      type: Array,
+      required: true,
+    },
     categories: {
       type: Array,
       required: true,
@@ -100,23 +121,25 @@ export default {
   },
   data: () => {
     const defaultForm = Object.freeze({
-      categorie: null,
+      produit: null,
       montant: null,
-      nom: null,
+      titre: null,
+      nombre: null,
     })
     return {
       dialog: false,
-      chambre: Object.assign({}, defaultForm),
+      tournee: Object.assign({}, defaultForm),
       errors: {
-        categorie: { exist: false, message: null },
+        produit: { exist: false, message: null },
         montant: { exist: false, message: null },
-        nom: { exist: false, message: null },
+        titre: { exist: false, message: null },
+        nombre: { exist: false, message: null },
       },
-      categoriesLocales: [],
+      produitsLocales: [],
     }
   },
   beforeUpdate() {
-    this.categoriesLocales = this.categories
+    this.produitsLocales = this.produits
   },
   methods: {
     reinitialise() {
@@ -124,17 +147,17 @@ export default {
       errorsInitialise(this.errors)
       this.dialog = false
     },
-    pushCategorie(categorie) {
-      this.categoriesLocales.push(categorie)
+    pushProduit(produit) {
+      this.produitsLocales.push(produit)
     },
     save() {
       this.$axios
-        .post('gestion-chambre/chambres/new', { ...this.chambre })
+        .post('bar/tournees/new', { ...this.tournee })
         .then((result) => {
-          const { message, chambre } = result.data
+          const { message, tournee } = result.data
           this.$notifier.show({ text: message, variant: 'success' })
           this.reinitialise()
-          this.$emit('new-chambre', chambre)
+          this.$emit('new-tournee', tournee)
         })
         .catch((err) => {
           const { data } = err.response

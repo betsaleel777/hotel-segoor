@@ -12,13 +12,6 @@
               <side-stock />
             </v-col>
             <v-col cols="9">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="recherche ..."
-                single-line
-                hide-details
-              ></v-text-field>
               <v-data-table
                 no-data-text="Aucun achat éffectué"
                 :loading="$fetchState.pending"
@@ -28,6 +21,23 @@
                 :search="search"
                 :items-per-page="10"
               >
+                <template #[`top`]>
+                  <v-toolbar flat>
+                    <create-achat
+                      :floating="false"
+                      :produits="produits"
+                      @new-achat="pushAchat"
+                    />
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="recherche ..."
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </v-toolbar>
+                </template>
                 <template #[`item.quantite`]="{ item }">
                   {{ item.quantite + ' ' }}{{ item.mesure }}
                 </template>
@@ -72,7 +82,7 @@ export default {
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Description', value: 'nom' },
-        { text: 'Quantité', value: 'quantite' },
+        { text: 'Disponible', value: 'quantite' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
@@ -102,7 +112,10 @@ export default {
   },
   methods: {
     pushAchat(achat) {
-      this.achats.push(achat)
+      const index = this.achats.findIndex(
+        (element) => element.id === achat.ingredient
+      )
+      this.achats.splice(index, 1, achat)
     },
   },
 }

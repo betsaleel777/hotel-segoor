@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-stock />
+              <side-gestion-bar />
             </v-col>
             <v-col cols="9">
               <v-data-table
@@ -23,7 +23,7 @@
               >
                 <template #[`top`]>
                   <v-toolbar flat>
-                    <v-btn to="/stock/achat" dark color="primary" nuxt>
+                    <v-btn to="/bar/inventaire" dark color="primary" nuxt>
                       <v-icon left>mdi-arrow-left-thick</v-icon>
                       RETOUR
                     </v-btn>
@@ -54,10 +54,10 @@
 </template>
 
 <script>
-import SideStock from '~/components/stock/SideStock'
+import SideGestionBar from '~/components/bar/SideGestionBar.vue'
 export default {
   components: {
-    SideStock,
+    SideGestionBar,
   },
   data() {
     return {

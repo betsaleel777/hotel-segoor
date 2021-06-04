@@ -30,6 +30,9 @@
                     hide-details
                   ></v-text-field>
                 </template>
+                <template #[`item.departement.nom`]="{ item }">
+                  <b>{{ item.departement.nom }}</b>
+                </template>
                 <template #[`item.status`]="{ item }">
                   <v-chip small outlined :color="getColor(item.status)" dark>
                     {{ item.status }}
@@ -37,11 +40,6 @@
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <show-demande :item="item" />
-                  <deliver-demande
-                    v-if="item.status === 'acceptée'"
-                    :item="item"
-                    @delivered-demande="demandeChanged"
-                  />
                   <process-demande
                     v-if="item.status === 'en cours'"
                     :item="item"
@@ -63,14 +61,12 @@
 /* eslint-disable camelcase */
 import SideStock from '~/components/stock/SideStock.vue'
 import ProcessDemande from '~/components/stock/demande/ProcessDemande'
-import DeliverDemande from '~/components/stock/demande/DeliverDemande'
 import ShowDemande from '~/components/restaurant/demande/ShowDemande.vue'
 
 export default {
   components: {
     SideStock,
     ProcessDemande,
-    DeliverDemande,
     ShowDemande,
   },
   data() {
@@ -80,6 +76,7 @@ export default {
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Titre', value: 'titre', sortable: false },
+        { text: 'Département', value: 'departement.nom', sortable: false },
         { text: 'Statut', value: 'status', sortable: false },
         { text: 'Date', value: 'created_at' },
         { text: 'Actions', value: 'actions', sortable: false },
@@ -105,7 +102,7 @@ export default {
         status,
         created_at: this.$moment(created_at).format('ll'),
         produits,
-        departement: departement_linked.id,
+        departement: { id: departement_linked.id, nom: departement_linked.nom },
       }
     })
     this.demandes = demandes

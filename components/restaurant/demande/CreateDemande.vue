@@ -2,6 +2,7 @@
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template #activator="{ on, attrs }">
       <v-btn
+        v-if="floating"
         v-bind="attrs"
         color="primary"
         dark
@@ -12,6 +13,10 @@
         v-on="on"
       >
         <v-icon>mdi-plus</v-icon>
+      </v-btn>
+      <v-btn v-else v-bind="attrs" dark color="primary" v-on="on">
+        <v-icon left>mdi-plus-thick</v-icon>
+        AJOUTER
       </v-btn>
     </template>
     <v-card>
@@ -58,6 +63,16 @@ import {
 
 export default {
   components: { ArticleList },
+  props: {
+    floating: {
+      type: Boolean,
+      default: true,
+    },
+    from: {
+      type: String,
+      required: true,
+    },
+  },
   data: () => {
     return {
       dialog: false,
@@ -71,7 +86,7 @@ export default {
   },
   mounted() {
     // doit recuperer le departement de l'utilisateur
-    this.$axios.get('parametre/departements/' + 'restaurant').then((result) => {
+    this.$axios.get('parametre/departements/' + this.from).then((result) => {
       this.departement = result.data.departement.id
     })
   },

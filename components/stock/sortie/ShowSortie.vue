@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500px">
+  <v-dialog v-model="dialog" max-width="600px">
     <template #activator="{ on }">
       <v-btn elevation="1" icon fab dark x-small color="pink" v-on="on">
         <v-icon small> mdi-eye </v-icon>

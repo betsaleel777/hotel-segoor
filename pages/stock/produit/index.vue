@@ -12,13 +12,6 @@
               <side-stock />
             </v-col>
             <v-col cols="12" sm="6" md="9">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="recherche ..."
-                single-line
-                hide-details
-              ></v-text-field>
               <v-data-table
                 no-data-text="Aucun produit"
                 :loading="$fetchState.pending"
@@ -27,7 +20,23 @@
                 :items="produits"
                 :search="search"
                 :items-per-page="10"
-              >
+                ><template #[`top`]>
+                  <v-toolbar flat>
+                    <create-produit
+                      :floating="false"
+                      :categories="categories"
+                      @new-produit="pushProduit"
+                    />
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="recherche ..."
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </v-toolbar>
+                </template>
                 <template #[`item.seuil`]="{ item }">
                   {{ item.seuil + ' ' }}{{ item.mesure }}
                 </template>

@@ -15,7 +15,7 @@
         <v-icon>mdi-plus</v-icon>
       </v-btn>
       <v-btn v-else v-bind="attrs" dark color="primary" v-on="on">
-        <v-icon small>mdi-plus</v-icon>
+        <v-icon left>mdi-plus-thick</v-icon>
         AJOUTER
       </v-btn>
     </template>

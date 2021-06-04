@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-restaurant />
+              <side-gestion-bar />
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
@@ -24,7 +24,7 @@
                 <template #[`top`]>
                   <v-toolbar flat>
                     <create-demande
-                      :from="'restaurant'"
+                      :from="'bar'"
                       :floating="false"
                       @new-demande="pushDemande"
                     />
@@ -51,7 +51,7 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-demande :from="'restaurant'" @new-demande="pushDemande" />
+          <create-demande :from="'bar'" @new-demande="pushDemande" />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -59,16 +59,16 @@
 </template>
 
 <script>
+import SideGestionBar from '~/components/bar/SideGestionBar.vue'
 /* eslint-disable camelcase */
 import CreateDemande from '~/components/restaurant/demande/CreateDemande.vue'
-import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
 import ShowDemande from '~/components/restaurant/demande/ShowDemande.vue'
 
 export default {
   components: {
-    SideRestaurant,
     CreateDemande,
     ShowDemande,
+    SideGestionBar,
   },
   data() {
     return {
@@ -84,11 +84,9 @@ export default {
     }
   },
   async fetch() {
-    // récuperer uniquement les demandes du département en question en utilisant le departement de l'utilisateur connecté
+    // récuperer uniquement les demandes du département en question
     let departement = null
-    let calebasse = await this.$axios.get(
-      'parametre/departements/' + 'restaurant'
-    )
+    let calebasse = await this.$axios.get('parametre/departements/' + 'bar')
     departement = calebasse.data.departement.id
     calebasse = await this.$axios.get('stock/demandes/' + departement)
     const demandes = calebasse.data.demandes.map((demande) => {

@@ -16,7 +16,7 @@
           exact
         >
           <v-list-item-action>
-            <v-icon>{{ module.icon }}</v-icon>
+            <v-icon color="blue darken-4">{{ module.icon }}</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title v-text="module.title" />
@@ -32,14 +32,14 @@
       <v-btn icon @click.stop="clipped = !clipped">
         <v-icon>mdi-application</v-icon>
       </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
+      <!-- <v-btn icon @click.stop="fixed = !fixed">
         <v-icon>mdi-minus</v-icon>
-      </v-btn>
+      </v-btn> -->
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
+      <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>mdi-menu</v-icon>
-      </v-btn>
+      </v-btn> -->
     </v-app-bar>
     <v-main>
       <v-container>
@@ -60,7 +60,7 @@
     </v-navigation-drawer>
     <v-footer :absolute="!fixed" app>
       <span>
-        lovely powered by
+        lovely designed by
         <a
           href="http://www.segoor.com"
           target="_blank"

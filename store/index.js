@@ -3,7 +3,7 @@ export const state = () => ({
     {
       name: 'Dashboard',
       link: {
-        icon: 'mdi-apps',
+        icon: 'mdi-gauge',
         title: 'Dashboard',
         to: '/',
       },
@@ -109,6 +109,36 @@ export const state = () => ({
         },
       ],
     },
+    {
+      name: 'bar',
+      link: {
+        icon: 'mdi-glass-mug',
+        title: 'Gestion Du Bar',
+        to: '/bar',
+      },
+      sousModules: [
+        {
+          icon: 'mdi-glass-cocktail',
+          text: 'Cocktails',
+          to: '/bar/cocktail',
+        },
+        {
+          icon: 'mdi-glass-mug-variant',
+          text: 'Tournées',
+          to: '/bar/tournee',
+        },
+        {
+          icon: 'mdi-message-arrow-right',
+          text: 'Gestion des Demandes',
+          to: '/bar/demande',
+        },
+        {
+          icon: 'mdi-warehouse',
+          text: 'Inventaire',
+          to: '/bar/inventaire',
+        },
+      ],
+    },
   ],
 })
 
@@ -129,6 +159,9 @@ export const getters = {
   },
   sousModulesRestaurant: (state) => {
     return state.modules[4].sousModules
+  },
+  sousModulesBar: (state) => {
+    return state.modules[5].sousModules
   },
 }
 

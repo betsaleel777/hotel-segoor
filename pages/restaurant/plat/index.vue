@@ -12,13 +12,6 @@
               <side-restaurant />
             </v-col>
             <v-col cols="12" sm="6" md="9">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="recherche ..."
-                single-line
-                hide-details
-              ></v-text-field>
               <v-data-table
                 no-data-text="Aucun plat"
                 loading-text="En chargement ..."
@@ -27,7 +20,23 @@
                 :items="plats"
                 :search="search"
                 :items-per-page="10"
-              >
+                ><template #[`top`]>
+                  <v-toolbar flat>
+                    <create-plat
+                      :floating="false"
+                      :categories="categories"
+                      @new-plat="pushPlat"
+                    />
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="recherche ..."
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </v-toolbar>
+                </template>
                 <template #[`item.achat`]="{ item }">
                   {{ item.achat + ' FCFA' }}
                 </template>

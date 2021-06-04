@@ -3,13 +3,13 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Inventaire du Restaurant
+          Inventaire du Bar
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-restaurant />
+              <side-gestion-bar />
             </v-col>
             <v-col cols="9">
               <v-text-field
@@ -33,7 +33,7 @@
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <v-btn
-                    :to="'/restaurant/inventaire/' + item.id"
+                    :to="'/bar/inventaire/' + item.id"
                     color="pink"
                     elevation="1"
                     icon
@@ -54,17 +54,15 @@
 </template>
 
 <script>
-// import moment from 'moment'
-import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
+import SideGestionBar from '~/components/bar/SideGestionBar.vue'
 export default {
   components: {
-    SideRestaurant,
+    SideGestionBar,
   },
   data() {
     return {
       search: '',
       demandes: [],
-      departement: null,
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Description', value: 'nom' },
@@ -75,12 +73,11 @@ export default {
   },
   async fetch() {
     // doit recuperer le departement de l'utilisateur
-    let calebasse = await this.$axios.get(
-      'parametre/departements/' + 'restaurant'
-    )
-    this.departement = calebasse.data.departement
+    let departement = null
+    let calebasse = await this.$axios.get('parametre/departements/' + 'bar')
+    departement = calebasse.data.departement
     calebasse = await this.$axios.get(
-      'stock/demandes/inventaire/' + this.departement.id
+      'stock/demandes/inventaire/' + departement.id
     )
     const demandes = calebasse.data.inventaire.map((ligne) => {
       return {
