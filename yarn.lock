@@ -908,12 +908,19 @@
   dependencies:
     tslib "^2.0.3"
 
-"@fullcalendar/core@~5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-5.6.0.tgz#c0ea59235047828c9d0409432966bebc71df0bec"
-  integrity sha512-RK7WM2oWAd4GJ3Ib6a3ftTmz2UxUD4N2JmH8ml+E3bprS9/wjnfvZppikx30UxKUBCAzQcBGOKV8GXh0Wk7FvA==
+"@fullcalendar/common@~5.7.2":
+  version "5.7.2"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/common/-/common-5.7.2.tgz#a9fae0159a26dd83b0b85df04df3fd66133fa433"
+  integrity sha512-0EDKmZBvTUFLvnJ7n6Vo6xMaPVm0jpYq739aSjwFPPXKgbjKFTPbWvLkaDpjJf7YhVebVSOLHbUC1Ky5wXsKvQ==
   dependencies:
-    "@fullcalendar/common" "~5.6.0"
+    tslib "^2.0.3"
+
+"@fullcalendar/core@~5.7.2":
+  version "5.7.2"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-5.7.2.tgz#77bc6e0e8044e2e9350d5d6647128e24a0da9894"
+  integrity sha512-4yKLUnAEDDIePw9WJuT2sSvLWGrDGBhp20cjBmyxnJ/6eNN1RCex/OjSu7qDNHvzey+ncjlVWsY41bvZwhpfvg==
+  dependencies:
+    "@fullcalendar/common" "~5.7.2"
     preact "^10.0.5"
     tslib "^2.0.3"
 
@@ -981,12 +988,12 @@
     "@fullcalendar/scrollgrid" "~5.6.0"
     tslib "^2.0.3"
 
-"@fullcalendar/vue@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/vue/-/vue-5.6.0.tgz#a1cff802d18c5175254393ac07547441fe4a5ba5"
-  integrity sha512-GTbWqRE2GTC747CH0fbZzvYhkc6bGYoxUxWR3Pz9HEdQLTPmNu2JWZCNC9z4SpppIQHgbvvz4EAeJxXBg7ruUA==
+"@fullcalendar/vue@^5.7.2":
+  version "5.7.2"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/vue/-/vue-5.7.2.tgz#cc470e7e12d933afc623e57bc202c1f582d0bd31"
+  integrity sha512-Nq4kpngsDczHYCYwswZymQNWYjNrkqHeYuKgwC4F6yDioqwXX1LaRAGiUZVncdgqobBuiSmxhBe8rwkHjRreIQ==
   dependencies:
-    "@fullcalendar/core" "~5.6.0"
+    "@fullcalendar/core" "~5.7.2"
     tslib "^2.0.3"
 
 "@nodelib/fs.scandir@2.1.4":
