@@ -159,7 +159,7 @@
                   </v-date-picker>
                 </v-menu>
               </v-col>
-              <v-col cols="12">
+              <v-col cols="6">
                 <v-autocomplete
                   v-model="attribution.chambre"
                   :error="errors.chambre.exist"
@@ -172,6 +172,19 @@
                   label="Chambre"
                   required
                 ></v-autocomplete>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="attribution.remise"
+                  type="number"
+                  min="0"
+                  max="100"
+                  suffix="%"
+                  dense
+                  outlined
+                  label="Remise"
+                >
+                </v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -220,6 +233,7 @@ export default {
       sortie: '',
       status: null,
       accompagnants: null,
+      remise: 0,
       client: null,
       chambre: null,
     })
@@ -235,6 +249,7 @@ export default {
         status: bodyError,
         client: bodyError,
         chambre: bodyError,
+        remise: bodyError,
       },
       clientsLocales: [],
     }

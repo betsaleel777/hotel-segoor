@@ -44,7 +44,7 @@
                   @change="onFileChange"
                 ></v-file-input>
               </v-col>
-              <v-col cols="12">
+              <v-col cols="9">
                 <v-text-field
                   v-model="produit.nom"
                   :errors="errors.nom.exist"
@@ -54,6 +54,14 @@
                   label="Description"
                   required
                 ></v-text-field>
+              </v-col>
+              <v-col cols="3">
+                <v-checkbox
+                  v-model="produit.pour_plat"
+                  dense
+                  label="Pour plat"
+                  @change="priceDisabled = !priceDisabled"
+                ></v-checkbox>
               </v-col>
               <v-col cols="5">
                 <v-radio-group
@@ -132,6 +140,19 @@
               <v-col cols="1">
                 <create-categorie @new-categorie="pushCategorie" />
               </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="produit.montant"
+                  :errors="errors.montant.exist"
+                  :error-messages="errors.montant.message"
+                  :disabled="produit.type === 'assaisonement' || priceDisabled"
+                  suffix="FCFA"
+                  dense
+                  label="Prix de vente"
+                  required
+                >
+                </v-text-field>
+              </v-col>
               <v-col>
                 <v-textarea
                   v-model="produit.description"
@@ -183,6 +204,8 @@ export default {
       image: [],
       nom: '',
       mesure: '',
+      montant: 0,
+      pour_plat: false,
       description: '',
       etagere: '',
       categorie: {},
@@ -191,11 +214,13 @@ export default {
       dialog: false,
       mesurable: false,
       produit: defaultForm,
+      priceDisabled: false,
       errors: {
         mode: { exist: false, message: null },
         type: { exist: false, message: null },
         image: { exist: false, message: null },
         nom: { exist: false, message: null },
+        montant: { exist: false, message: null },
         mesure: { exist: false, message: null },
         categorie: { exist: false, message: null },
       },

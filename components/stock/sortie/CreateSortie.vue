@@ -64,7 +64,7 @@ import {
   // eslint-disable-next-line no-unused-vars
   errorsWriting,
 } from '~/components/helper/errorsHandle'
-import ArticleList from '~/components/restaurant/demande/ArticleList.vue'
+import ArticleList from '~/components/stock/sortie/ArticleList.vue'
 
 export default {
   components: { ArticleList },
@@ -97,15 +97,15 @@ export default {
       const articles = this.articles
       if (articles.length > 0) {
         this.$axios
-          .post('stock/demandes/sortie', {
+          .post('stock/sorties/new', {
             articles,
             departement: this.departement,
             titre: this.titre,
           })
           .then((result) => {
-            const { message, demande } = result.data
+            const { message, sortie } = result.data
             this.$notifier.show({ text: message, variant: 'success' })
-            this.$emit('new-demande', demande)
+            this.$emit('new-sortie', sortie)
             this.reinitialise()
           })
           .catch((err) => {
@@ -114,13 +114,16 @@ export default {
               errorsInitialise(this.errors)
               errorsWriting(data, this.errors)
             } else {
-              this.$toast.error(err.data.message)
+              this.$notifier.show({
+                text: err.data.message,
+                variant: 'error',
+              })
             }
           })
       } else {
-        this.$toast.show(
+        const message =
           'Cette sortie de stock, doit contenir au moins un article'
-        )
+        this.$notifier.show({ text: message, variant: 'warning' })
       }
     },
     listeUpdate(articles) {

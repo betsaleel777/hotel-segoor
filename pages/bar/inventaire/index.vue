@@ -24,24 +24,12 @@
                 :loading="$fetchState.pending"
                 loading-text="En chargement ..."
                 :headers="headers"
-                :items="demandes"
+                :items="lignes"
                 :search="search"
                 :items-per-page="10"
               >
-                <template #[`item.quantite`]="{ item }">
-                  {{ item.quantite + ' ' }}{{ item.mesure }}
-                </template>
-                <template #[`item.actions`]="{ item }">
-                  <v-btn
-                    :to="'/bar/inventaire/' + item.id"
-                    color="pink"
-                    elevation="1"
-                    icon
-                    fab
-                    dark
-                    x-small
-                    ><v-icon small> mdi-eye</v-icon></v-btn
-                  >
+                <template #[`item.disponible`]="{ item }">
+                  {{ item.disponible + ' ' }}{{ item.mesure }}
                 </template>
               </v-data-table>
             </v-col>
@@ -62,33 +50,32 @@ export default {
   data() {
     return {
       search: '',
-      demandes: [],
+      lignes: [],
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Description', value: 'nom' },
-        { text: 'Disponible', value: 'quantite' },
-        { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'Disponible', value: 'disponible' },
       ],
     }
   },
   async fetch() {
     // doit recuperer le departement de l'utilisateur
     let departement = null
-    let calebasse = await this.$axios.get('parametre/departements/' + 'bar')
-    departement = calebasse.data.departement
-    calebasse = await this.$axios.get(
+    let requete = await this.$axios.get('parametre/departements/' + 'bar')
+    departement = requete.data.departement
+    requete = await this.$axios.get(
       'stock/demandes/inventaire/' + departement.id
     )
-    const demandes = calebasse.data.inventaire.map((ligne) => {
+    const lignes = requete.data.inventaire.map((ligne) => {
       return {
         id: ligne.id,
         nom: ligne.nom,
         code: ligne.code,
-        quantite: ligne.quantite,
+        disponible: ligne.disponible,
         mesure: ligne.mesure,
       }
     })
-    this.demandes = demandes
+    this.lignes = lignes
   },
 }
 </script>

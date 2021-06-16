@@ -24,12 +24,33 @@
                   dense
                   label="Article"
                   required
+                  @change="disponibilite"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="quantite"
+                  v-model="disponible"
                   :rules="[rules.required]"
+                  :suffix="suffixQuantite"
+                  dense
+                  readonly
+                  type="number"
+                  label="Quantité réelle disponible en stock"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="virtuel"
+                  :suffix="suffixQuantite"
+                  dense
+                  readonly
+                  type="number"
+                  label="Quantité virtuelle disoponible en stock"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="quantite"
                   :suffix="suffixQuantite"
                   dense
                   type="number"
@@ -62,8 +83,10 @@ export default {
   data: () => {
     return {
       dialog: false,
-      quantite: null,
+      quantite: 0,
       article: null,
+      disponible: 0,
+      virtuel: 0,
       rules: {
         required: (value) => !!value || 'Required.',
       },
@@ -72,7 +95,7 @@ export default {
   computed: {
     ...mapGetters('produit', ['produits']),
     activeConfirm() {
-      return this.quantite && this.article
+      return this.quantite && this.article && this.disponible >= this.quantite
     },
     suffixQuantite() {
       let mesure = ''
@@ -83,26 +106,26 @@ export default {
     },
   },
   mounted() {
-    this.getAllProducts()
+    this.getInventory()
   },
   methods: {
-    ...mapActions('produit', ['getAllProducts']),
+    ...mapActions('produit', ['getInventory', 'modifier']),
     addItem() {
-      let mesure = ''
-      if (this.article.mesure) mesure = this.article.mesure
-      const payload = {
-        id: this.article.id,
-        article: this.article.nom,
-        quantite: this.quantite,
-        mesure,
-      }
-      this.$emit('new-list', payload)
+      const payload = { ...this.article }
+      payload.virtuel -= Number(this.quantite)
+      this.modifier(payload)
+      this.article.quantite = this.quantite
+      this.$emit('new-list', this.article)
       this.$refs.form.reset()
       this.dialog = false
     },
     close() {
       this.dialog = false
       this.$refs.form.reset()
+    },
+    disponibilite() {
+      this.disponible = this.article.disponible
+      this.virtuel = this.article.virtuel
     },
   },
 }

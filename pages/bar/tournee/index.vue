@@ -45,6 +45,7 @@
                 <template #[`item.actions`]="{ item }">
                   <edit-tournee
                     :produits="produits"
+                    :categories="categories"
                     :item="item"
                     @edited-tournee="tourneeEdited"
                   />

@@ -52,6 +52,11 @@ export const state = () => ({
           text: 'Clientelle',
           to: '/reception/clientelle',
         },
+        {
+          icon: 'mdi-cash',
+          text: 'Caisse',
+          to: '/reception/caisse',
+        },
       ],
     },
     {
@@ -78,6 +83,11 @@ export const state = () => ({
           to: '/stock/sortie',
         },
         {
+          icon: 'mdi-warehouse',
+          text: 'Inventaire',
+          to: '/stock/inventaire',
+        },
+        {
           icon: 'mdi-basket-plus',
           text: 'Approvisionements',
           to: '/stock/achat',
@@ -87,7 +97,7 @@ export const state = () => ({
     {
       name: 'restaurant',
       link: {
-        icon: 'mdi-silverware-clean',
+        icon: 'mdi-silverware-fork-knife',
         title: 'Gestion Du Restaurant',
         to: '/restaurant',
       },
@@ -106,6 +116,11 @@ export const state = () => ({
           icon: 'mdi-warehouse',
           text: 'Inventaire',
           to: '/restaurant/inventaire',
+        },
+        {
+          icon: 'mdi-cash',
+          text: 'Caisse',
+          to: '/restaurant/caisse',
         },
       ],
     },
@@ -137,8 +152,28 @@ export const state = () => ({
           text: 'Inventaire',
           to: '/bar/inventaire',
         },
+        {
+          icon: 'mdi-cash',
+          text: 'Caisse',
+          to: '/bar/caisse',
+        },
       ],
     },
+    // {
+    //   name: 'parametre',
+    //   link: {
+    //     icon: 'mdi-cogs',
+    //     title: 'Parametres',
+    //     to: '/parametre',
+    //   },
+    //   sousModules: [
+    //     {
+    //       icon: 'mdi-currency-usd',
+    //       text: 'Prix des Articles',
+    //       to: '/parametre/cocktail',
+    //     },
+    //   ],
+    // },
   ],
 })
 
@@ -163,6 +198,9 @@ export const getters = {
   sousModulesBar: (state) => {
     return state.modules[5].sousModules
   },
+  // sousModulesParametre: (state) => {
+  //   return state.modules[6].sousModules
+  // },
 }
 
 export const mutations = {}

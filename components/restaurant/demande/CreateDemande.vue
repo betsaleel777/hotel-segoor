@@ -120,7 +120,8 @@ export default {
             }
           })
       } else {
-        this.$toast.show('la demande doit contenir au moins un article')
+        const message = 'la demande doit contenir au moins un article'
+        this.$notifier.show({ text: message, variant: 'warning' })
       }
     },
     listeUpdate(articles) {

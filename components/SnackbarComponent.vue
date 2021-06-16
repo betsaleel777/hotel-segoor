@@ -5,13 +5,21 @@
       :color="variantUse"
       :timeout="timeout"
       text
-      absolute
-      bottom
+      right
+      top
       elevation="24"
     >
       {{ text }}
       <template #action="{ attrs }">
-        <v-btn dark text v-bind="attrs" @click="show = false"> Close </v-btn>
+        <v-btn
+          color="blue darken-4"
+          dark
+          text
+          v-bind="attrs"
+          @click="show = false"
+        >
+          Fermer
+        </v-btn>
       </template>
     </v-snackbar>
   </div>
@@ -29,7 +37,7 @@ export default {
   },
   computed: {
     variantUse() {
-      return this.variant + ' darken-3'
+      return this.variant + ' darken-4'
     },
   },
   created() {

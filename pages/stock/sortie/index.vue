@@ -40,13 +40,16 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions> </v-card-actions>
+        <v-card-actions>
+          <create-sortie @new-sortie="pushSortie" />
+        </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
 </template>
 
 <script>
+import CreateSortie from '~/components/stock/sortie/CreateSortie.vue'
 /* eslint-disable camelcase */
 import SideStock from '~/components/stock/SideStock.vue'
 import ShowSortie from '~/components/stock/sortie/ShowSortie.vue'
@@ -55,6 +58,7 @@ export default {
   components: {
     SideStock,
     ShowSortie,
+    CreateSortie,
   },
   data() {
     return {
@@ -71,21 +75,39 @@ export default {
     }
   },
   async fetch() {
-    const calebasse = await this.$axios.get('stock/sorties')
-    const sorties = calebasse.data.sorties.map((sortie) => {
-      const { id, code, titre, created_at, produits, demande_linked } = sortie
+    const requete = await this.$axios.get('stock/sorties')
+    const sorties = requete.data.sorties.map((sortie) => {
+      const {
+        id,
+        code,
+        titre,
+        created_at,
+        produits,
+        demande_linked,
+        departement_linked,
+      } = sortie
       return {
         id,
         titre,
         code,
         status,
-        departement: demande_linked.departement_linked.nom,
+        departement: departement_linked.nom,
         created_at: this.$moment(created_at).format('ll'),
-        demande_le: this.$moment(demande_linked.created_at).format('ll'),
+        demande_le: demande_linked
+          ? this.$moment(demande_linked.created_at).format('ll')
+          : this.$moment(created_at).format('ll'),
         produits,
       }
     })
     this.sorties = sorties
+  },
+  methods: {
+    pushSortie(sortie) {
+      const laDate = this.$moment(sortie.created_at).format('ll')
+      sortie.created_at = laDate
+      sortie.demande_le = laDate
+      this.sorties.push(sortie)
+    },
   },
 }
 </script>

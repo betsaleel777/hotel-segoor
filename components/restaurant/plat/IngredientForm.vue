@@ -81,7 +81,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('plat', ['produits']),
+    ...mapGetters('produit', ['produits']),
     activeConfirm() {
       return this.quantite && this.ingredient
     },
@@ -97,7 +97,7 @@ export default {
     this.getProducts()
   },
   methods: {
-    ...mapActions('plat', ['getProducts']),
+    ...mapActions('produit', ['getProducts']),
     addItem() {
       let mesure = ''
       if (this.ingredient.mesure) mesure = this.ingredient.mesure
@@ -119,42 +119,6 @@ export default {
       this.dialog = false
       this.$refs.form.reset()
     },
-    // getQuantiteStock() {
-    //   if (this.quantiteStock === 0) {
-    //     if (!isNaN(this.quantite) && this.ingredient) {
-    //       this.$axios
-    //         .get('restaurant/achats/en-stock/' + this.ingredient.id)
-    //         .then((result) => {
-    //           this.quantiteStock = result.data.quantite
-    //         })
-    //     }
-    //   }
-    // },
-    // checkStock() {
-    //   const ingredients = this.listes()
-    //   let quantiteDemandee = 0
-    //   const index = ingredients.findIndex(
-    //     (element) => element.id === this.ingredient.id
-    //   )
-    //   if (index !== -1) {
-    //     quantiteDemandee =
-    //       parseFloat(ingredients[index].quantite) + parseFloat(this.quantite)
-    //   } else {
-    //     quantiteDemandee = parseFloat(this.quantite)
-    //   }
-    //   if (quantiteDemandee < parseFloat(this.quantiteStock)) {
-    //     this.error = false
-    //     this.success = true
-    //     this.message.error = ''
-    //     this.message.success = 'Stock suffisant pour cette quantité demandée.'
-    //   } else {
-    //     this.success = false
-    //     this.error = true
-    //     this.message.success = ''
-    //     this.message.error =
-    //       'Le stock est insuffisant pour cette quantité demandée'
-    //   }
-    // },
   },
 }
 </script>

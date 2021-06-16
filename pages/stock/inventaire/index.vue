@@ -3,13 +3,13 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Inventaire du Restaurant
+          Inventaire stock général
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-restaurant />
+              <side-stock />
             </v-col>
             <v-col cols="9">
               <v-text-field
@@ -42,11 +42,10 @@
 </template>
 
 <script>
-// import moment from 'moment'
-import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
+import SideStock from '~/components/stock/SideStock.vue'
 export default {
   components: {
-    SideRestaurant,
+    SideStock,
   },
   data() {
     return {
@@ -60,15 +59,7 @@ export default {
     }
   },
   async fetch() {
-    // doit recuperer le departement de l'utilisateur
-    let departement = null
-    let requete = await this.$axios.get(
-      'parametre/departements/' + 'restaurant'
-    )
-    departement = requete.data.departement
-    requete = await this.$axios.get(
-      'stock/demandes/inventaire/' + departement.id
-    )
+    const requete = await this.$axios.get('stock/produits/inventaire')
     const lignes = requete.data.inventaire.map((ligne) => {
       return {
         id: ligne.id,
