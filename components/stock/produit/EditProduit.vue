@@ -40,7 +40,7 @@
                   @change="onFileChange"
                 ></v-file-input>
               </v-col>
-              <v-col cols="9">
+              <v-col cols="12">
                 <v-text-field
                   v-model="produit.nom"
                   :errors="errors.nom.exist"
@@ -51,12 +51,19 @@
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="3">
+              <v-col cols="6">
                 <v-checkbox
                   v-model="produit.pour_plat"
                   dense
-                  label="Pour plat"
+                  label="Pour préparer plat"
                   @change="priceDisabled = !priceDisabled"
+                ></v-checkbox>
+              </v-col>
+              <v-col cols="6">
+                <v-checkbox
+                  v-model="produit.pour_tournee"
+                  dense
+                  label="Utilisé pour tournée"
                 ></v-checkbox>
               </v-col>
               <v-col cols="5">
@@ -205,6 +212,7 @@ export default {
       mesure: '',
       montant: 0,
       pour_plat: false,
+      pour_tournee: false,
       description: '',
       etagere: '',
       categorie: null,

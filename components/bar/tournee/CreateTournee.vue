@@ -50,19 +50,33 @@
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="6">
                 <v-text-field
                   v-model="tournee.nombre"
                   :errors="errors.nombre.exist"
                   :error-messages="errors.nombre.message"
                   dense
                   outlined
-                  label="Nombre de tournée"
+                  label="Nombre de ballons"
                   type="number"
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="9" md="5">
+              <v-col cols="6">
+                <v-text-field
+                  v-model="tournee.contenance"
+                  :errors="errors.contenance.exist"
+                  :error-messages="errors.contenance.message"
+                  dense
+                  outlined
+                  label="Contenance de la bouteille"
+                  placeholder="contenance en cl"
+                  type="number"
+                  suffix="cl"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="9">
                 <v-autocomplete
                   v-model="tournee.produit"
                   :errors="errors.produit.exist"
@@ -76,7 +90,7 @@
                   required
                 ></v-autocomplete>
               </v-col>
-              <v-col cols="12" sm="3" md="3">
+              <v-col cols="3">
                 <create-produit
                   :floating="false"
                   :categories="categories"
@@ -125,6 +139,7 @@ export default {
       montant: null,
       titre: null,
       nombre: null,
+      contenance: null,
     })
     return {
       dialog: false,
@@ -134,6 +149,7 @@ export default {
         montant: { exist: false, message: null },
         titre: { exist: false, message: null },
         nombre: { exist: false, message: null },
+        contenance: { exist: false, message: null },
       },
       produitsLocales: [],
     }

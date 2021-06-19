@@ -37,9 +37,6 @@
                     ></v-text-field>
                   </v-toolbar>
                 </template>
-                <template #[`item.seuil`]="{ item }">
-                  {{ item.seuil + ' ' }}{{ item.mesure }}
-                </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-produit
                     :categories="categories"
@@ -101,6 +98,7 @@ export default {
         image: imageData,
         montant: produit.prix_vente,
         pour_plat: produit.pour_plat,
+        pour_tournee: produit.pour_tournee,
         mode: produit.mode,
         type: produit.type,
         etagere: produit.etagere ? produit.etagere : '',

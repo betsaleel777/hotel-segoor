@@ -46,6 +46,12 @@
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <show-encaissement :item="item" />
+                  <completer-encaissement
+                    v-if="item.status === 'impayé'"
+                    :item="item"
+                    :produits="produits"
+                    @completed-encaissement="encaissementCompleted"
+                  />
                   <v-btn
                     :to="'/restaurant/caisse/' + item.id"
                     elevation="1"
@@ -78,12 +84,14 @@
 import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
 import CreateEncaissement from '~/components/restaurant/caisse/CreateEncaissement.vue'
 import ShowEncaissement from '~/components/restaurant/caisse/ShowEncaissement.vue'
+import CompleterEncaissement from '~/components/restaurant/caisse/CompleterEncaissement.vue'
 
 export default {
   components: {
     SideRestaurant,
     CreateEncaissement,
     ShowEncaissement,
+    CompleterEncaissement,
   },
   data() {
     return {
@@ -158,8 +166,6 @@ export default {
     getColor(status) {
       if (status === 'soldée') {
         return 'green'
-      } else if (status === 'en cours') {
-        return 'blue'
       } else {
         return 'red'
       }
@@ -169,6 +175,15 @@ export default {
         'll'
       )
       this.encaissements.push(encaissement)
+    },
+    encaissementCompleted(encaissement) {
+      encaissement.created_at = this.$moment(encaissement.created_at).format(
+        'll'
+      )
+      const index = this.encaissements.findIndex(
+        (element) => element.id === encaissement.id
+      )
+      this.encaissements.splice(index, 1, encaissement)
     },
   },
 }

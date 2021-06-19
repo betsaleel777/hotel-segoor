@@ -39,6 +39,12 @@
                     ></v-text-field>
                   </v-toolbar>
                 </template>
+                <template #[`item.nombre`]="{ item }">
+                  {{ item.nombre + ' ballons' }}
+                </template>
+                <template #[`item.contenance`]="{ item }">
+                  {{ item.contenance + ' cl' }}
+                </template>
                 <template #[`item.montant`]="{ item }">
                   {{ item.montant + ' FCFA' }}
                 </template>
@@ -95,27 +101,37 @@ export default {
         { text: 'Titre', value: 'titre', sortable: false },
         { text: 'Prix de vente', value: 'montant' },
         { text: 'Quantité', value: 'nombre' },
+        { text: 'Contenance', value: 'contenance' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
   },
   async fetch() {
-    let calebasse = await this.$axios.get('bar/tournees')
-    this.tournees = calebasse.data.tournees.map((tournee) => {
-      const { prix_list, produit_linked, id, titre, code, nombre } = tournee
+    let requete = await this.$axios.get('bar/tournees')
+    this.tournees = requete.data.tournees.map((tournee) => {
+      const {
+        prix_list,
+        produit_linked,
+        id,
+        titre,
+        code,
+        nombre,
+        contenance,
+      } = tournee
       return {
         id,
         code,
         titre,
         nombre,
+        contenance,
         produit: produit_linked.id,
         montant: prix_list[0].montant,
       }
     })
-    calebasse = await this.$axios.get('stock/produits')
-    this.produits = calebasse.data.produits
-    calebasse = await this.$axios.get('stock/categories')
-    const categories = calebasse.data.categories.map((categorie) => {
+    requete = await this.$axios.get('stock/produits/tournees')
+    this.produits = requete.data.produits
+    requete = await this.$axios.get('stock/categories')
+    const categories = requete.data.categories.map((categorie) => {
       return { id: categorie.id, nom: categorie.nom }
     })
     this.categories = categories

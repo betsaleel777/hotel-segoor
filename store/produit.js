@@ -17,6 +17,18 @@ export const actions = {
     const requete = await this.$axios.get('stock/produits')
     commit('SET_PRODUCTS', requete.data.produits)
   },
+  async getBoissons({ commit }) {
+    const requete = await this.$axios.get('stock/produits/boissons')
+    commit('SET_PRODUCTS', requete.data.produits)
+  },
+  async getPlatsProducts({ commit }) {
+    const requete = await this.$axios.get('stock/produits/plats')
+    commit('SET_PRODUCTS', requete.data.produits)
+  },
+  async getTourneesProducts({ commit }) {
+    const requete = await this.$axios.get('stock/produits/tournees')
+    commit('SET_PRODUCTS', requete.data.produits)
+  },
   async getInventory({ commit }) {
     const requete = await this.$axios.get('stock/produits/inventaire/sortie')
     const inventaire = requete.data.inventaire.map((produit) => {

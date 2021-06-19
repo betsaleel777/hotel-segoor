@@ -1,0 +1,97 @@
+<template>
+  <v-row justify="center" align="center">
+    <v-col cols="12" sm="12" md="12">
+      <v-card elevation="2" shaped tile>
+        <v-card-title class="headline grey lighten-1 primary--text">
+          Cocktails
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" sm="6" md="3">
+              <side-gestion-bar />
+            </v-col>
+            <v-col cols="12" sm="6" md="9">
+              <v-data-table
+                no-data-text="Aucun Cocktail"
+                :loading="$fetchState.pending"
+                loading-text="En chargement ..."
+                :headers="headers"
+                :items="cocktails"
+                :search="search"
+                :items-per-page="10"
+              >
+                <template #[`top`]>
+                  <v-toolbar flat>
+                    <create-cocktail
+                      :floating="false"
+                      @new-cocktail="ajouter"
+                    />
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="recherche ..."
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </v-toolbar>
+                </template>
+                <template #[`item.montant`]="{ item }">
+                  {{ item.montant + ' FCFA' }}
+                </template>
+                <template #[`item.actions`]="{ item }">
+                  <edit-cocktail :item="item" @edited-cocktail="modifier" />
+                  <delete-cocktail :item="item" />
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <create-cocktail @new-cocktail="ajouter" />
+        </v-card-actions>
+      </v-card>
+    </v-col>
+  </v-row>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex'
+import CreateCocktail from '~/components/bar/cocktail/CreateCocktail.vue'
+import DeleteCocktail from '~/components/bar/cocktail/DeleteCocktail.vue'
+import EditCocktail from '~/components/bar/cocktail/EditCocktail.vue'
+/* eslint-disable camelcase */
+import SideGestionBar from '~/components/bar/SideGestionBar.vue'
+
+export default {
+  components: {
+    SideGestionBar,
+    CreateCocktail,
+    DeleteCocktail,
+    EditCocktail,
+  },
+  data() {
+    return {
+      search: '',
+      headers: [
+        { text: 'Code', value: 'code', sortable: false },
+        { text: 'Designation', value: 'nom', sortable: false },
+        { text: 'Prix de vente', value: 'montant' },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+    }
+  },
+  fetch() {
+    this.getAll()
+  },
+  computed: {
+    ...mapGetters('cocktail', ['cocktails']),
+  },
+  methods: {
+    ...mapActions('cocktail', ['getAll', 'modifier', 'ajouter']),
+  },
+}
+</script>
+
+<style></style>
