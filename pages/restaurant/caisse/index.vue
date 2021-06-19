@@ -148,7 +148,9 @@ export default {
       }
     })
     // récuperation de la liste des enregistrements au niveau de la caisse
-    requete = await this.$axios.get('caisses/encaissements')
+    requete = await this.$axios.get(
+      'caisses/encaissements/departement/' + departement
+    )
     this.encaissements = requete.data.encaissements.map((encaissement) => {
       const { attribution_linked: attribution, produits, plats } = encaissement
       return {

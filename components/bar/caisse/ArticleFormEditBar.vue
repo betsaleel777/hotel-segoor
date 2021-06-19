@@ -1,0 +1,158 @@
+<template>
+  <v-row>
+    <v-col cols="5">
+      <v-autocomplete
+        v-model="article"
+        :items="produits"
+        item-value="id"
+        item-text="nom"
+        return-object
+        dense
+        outlined
+        label="Articles"
+        required
+        @change="articleSelected"
+      ></v-autocomplete>
+    </v-col>
+    <v-col cols="3">
+      <v-text-field
+        v-model="vente"
+        dense
+        outlined
+        :suffix="suffixQuantite"
+        label="Prix de vente"
+        readonly
+      ></v-text-field>
+    </v-col>
+    <v-col cols="3">
+      <v-text-field
+        v-model="valeur"
+        dense
+        outlined
+        type="number"
+        min="0"
+        :suffix="suffixQuantite"
+        label="Quantité"
+      ></v-text-field>
+    </v-col>
+    <v-col cols="1">
+      <v-btn dark color="primary" elevation="4" fab small @click="addArticle"
+        ><v-icon dark>mdi-plus</v-icon></v-btn
+      >
+    </v-col>
+    <article-list-bar
+      :key="cle"
+      :reponses="reponses"
+      @reponse-update="removeArticle"
+    />
+  </v-row>
+</template>
+
+<script>
+import ArticleListBar from './ArticleListBar.vue'
+export default {
+  components: { ArticleListBar },
+  props: {
+    produits: {
+      type: Array,
+      required: true,
+    },
+    produitsSelected: {
+      type: Array,
+      required: true,
+    },
+  },
+  data: () => ({
+    article: {},
+    valeur: 0,
+    vente: 0,
+    cle: false,
+    reponses: [],
+  }),
+  computed: {
+    suffixQuantite() {
+      return this.article ? this.article.mesure : ''
+    },
+  },
+  mounted() {
+    const reponses = this.produitsSelected.map((produit) => {
+      let genre = null
+      if (produit.prix) {
+        genre = 'plats'
+      } else if (produit.contenance) {
+        genre = 'tournees'
+      } else if (produit.mode) {
+        genre = 'boissons'
+      } else {
+        genre = 'cocktails'
+      }
+      return {
+        id: produit.id,
+        code: produit.code,
+        nom: produit.nom,
+        genre,
+        valeur: produit.pivot.quantite,
+        prix_vente: produit.pivot.prix_vente,
+        nouveau: false,
+      }
+    })
+    this.reponses = reponses
+  },
+  methods: {
+    reinitialise() {
+      this.article = {}
+      this.valeur = 0
+      this.vente = 0
+    },
+    articleSelected() {
+      this.vente = this.article.prix_vente
+    },
+    addArticle() {
+      if (this.valeur === 0 || Object.keys(this.article).length === 0) {
+        const message = 'Veuillez remplir correctement les champs'
+        this.$notifier.show({ text: message, variant: 'error' })
+      } else if (this.checkQuantite()) {
+        const dejaSelectione = this.reponses.find(
+          (reponse) => reponse.id === this.article.id
+        )
+        this.article.valeur =
+          Number(dejaSelectione.valeur) + Number(this.valeur)
+        this.article.nouveau = true
+        const index = this.reponses.findIndex(
+          (element) => element.id === this.article.id
+        )
+        index === -1
+          ? this.reponses.push(this.article)
+          : this.reponses.splice(index, 1, this.article)
+        this.cle = !this.cle
+        this.reinitialise()
+        this.$emit('liste-update', this.reponses)
+      }
+    },
+    checkQuantite() {
+      if (this.article) {
+        if (this.valeur > parseInt(this.article.quantite)) {
+          const message =
+            'Stock insuffisant pour cette valeur du produit ' + this.article.nom
+          this.$notifier.show({ text: message, variant: 'warning' })
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return true
+      }
+    },
+    removeArticle(reponse) {
+      const index = this.reponses.findIndex(
+        (element) => element.id === reponse.id
+      )
+      this.reponses.splice(index, 1)
+      this.cle = !this.cle
+      this.$emit('liste-update', this.reponses)
+    },
+  },
+}
+</script>
+
+<style></style>
