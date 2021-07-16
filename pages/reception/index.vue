@@ -1,4 +1,3 @@
-/* eslint-disable object-shorthand */
 <template>
   <v-row justify="center" align="center">
     <v-col cols="12" sm="12" md="12">
@@ -17,21 +16,16 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions> </v-card-actions>
+        <v-card-actions></v-card-actions>
       </v-card>
     </v-col>
     <v-dialog v-model="dialog" max-width="300">
-      <template #activator="{ on, attrs }">
-        <v-btn v-show="dialog" color="primary" dark v-bind="attrs" v-on="on">
-          Open Dialog
-        </v-btn>
-      </template>
       <v-card>
         <v-card-title class="headline">
           <h6>Choix du mode d'enregistrement</h6>
         </v-card-title>
         <v-card-text
-          >Voulez enregistrer une reservation ou attribuer une chambre à un
+          >Voulez-vous enregistrer une reservation ou attribuer une chambre à un
           client</v-card-text
         >
         <v-card-actions>
@@ -41,17 +35,28 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <details-reception
+      v-if="Object.keys(details)"
+      v-model="dialog1"
+      :details="details"
+    />
+    <details-reservation
+      v-if="Object.keys(details)"
+      v-model="dialog2"
+      :details="details"
+    />
   </v-row>
 </template>
 
 <script>
-/* eslint-disable camelcase */
 import moment from 'moment'
 import FullCalendar from '@fullcalendar/vue'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import interactionPlugin from '@fullcalendar/interaction'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import frLocale from '@fullcalendar/core/locales/fr'
+import DetailsReception from './DetailsReception.vue'
+import DetailsReservation from './DetailsReservation.vue'
 import CreateReservation from '~/components/reception/dashboard/CreateReservation'
 import CreateReception from '~/components/reception/dashboard/CreateReception'
 import SideReception from '~/components/reception/SideReception.vue'
@@ -62,6 +67,8 @@ export default {
     FullCalendar,
     CreateReservation,
     CreateReception,
+    DetailsReservation,
+    DetailsReception,
   },
   data({ $axios }) {
     return {
@@ -69,6 +76,10 @@ export default {
       clients: [],
       events: [],
       infos: {},
+      details: {},
+      consommations: [],
+      dialog1: false,
+      dialog2: false,
       update: false,
       calendarOptions: {
         schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
@@ -82,12 +93,14 @@ export default {
         },
         editable: true,
         selectable: true,
+        selectOverlap: false,
+        nowIndicator: true,
         selectMirror: true,
         dayMaxEvents: true,
         weekends: true,
         select: this.handleSelect,
         eventClick: this.handleEventClick,
-        // eventsSet: this.handleEvents
+        eventResize: this.handleResize,
         resources(fetchInfo, successCallback, failureCallback) {
           $axios.get('gestion-chambre/chambres').then((result) => {
             const chambres = result.data.chambres.map((chambre) => {
@@ -106,7 +119,6 @@ export default {
                 title: `${event.code} ${event.client_linked.nom}-${event.client_linked.contact}`,
                 start: moment(event.entree).format('YYYY-MM-DD').toString(),
                 end: moment(event.sortie).format('YYYY-MM-DD').toString(),
-                // eventColor: event.reservation ? '#2962ff' : '#d32f2f',
                 backgroundColor:
                   event.reservation === null || event.attribution !== null
                     ? 'red'
@@ -117,6 +129,9 @@ export default {
             })
             successCallback(events)
           })
+        },
+        eventOverlap(stillEvent, movingEvent) {
+          this.overlapDetect(stillEvent, movingEvent)
         },
       },
     }
@@ -136,7 +151,6 @@ export default {
         reservation: event.reservation,
       }
     })
-    // console.log(events)
     this.events = events
     this.clients = clients
   },
@@ -153,15 +167,48 @@ export default {
           this.dialog = true
         } else {
           this.$toast.info(
-            "coincidence de dates détecté avec l'entrée: " + code + '.'
+            "coincidence de dates détectée avec l'hébergement: " + code + '.'
           )
         }
       }
     },
+    handleResize(info) {
+      console.log(info)
+    },
     handleEventClick(info) {
-      this.$toast.show("détail de l'element")
+      if (info.event.backgroundColor === 'red') {
+        this.$axios
+          .get('reception/attributions/' + info.event.id)
+          .then((result) => {
+            this.details = result.data.attribution
+            this.dialog1 = true
+          })
+      } else if (info.event.backgroundColor === 'green') {
+        this.$axios
+          .get('reception/attributions/' + info.event.id)
+          .then((result) => {
+            this.details = result.data.attribution
+            this.dialog1 = true
+          })
+        // desactiver le bouton faire payer
+      } else {
+        this.$axios
+          .get('reception/reservations/' + info.event.id)
+          .then((result) => {
+            this.details = result.data.reservation
+            this.dialog2 = true
+          })
+      }
+    },
+    overlapDetect(old, current) {
+      console.log(old, current)
     },
     coincide({ endStr, startStr, resource }) {
+      endStr = moment(endStr)
+        .subtract(1, 'days')
+        .format('YYYY-MM-DD')
+        .toString()
+      startStr = moment(endStr).add(1, 'days').format('YYYY-MM-DD').toString()
       const events = this.events.filter(
         (event) => event.resourceId === parseInt(resource.id)
       )

@@ -24,11 +24,8 @@
                 <template #[`top`]>
                   <v-toolbar flat>
                     <create-client
-                      :clients="clients"
-                      :chambres="chambres"
-                      :reservations="reservations"
-                      :raise="true"
-                      @new-attribution="pushAttribution"
+                      :floating-button="false"
+                      @new-client="pushClient"
                     />
                     <v-spacer></v-spacer>
                     <v-text-field

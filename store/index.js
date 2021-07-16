@@ -37,26 +37,26 @@ export const state = () => ({
         to: '/reception',
       },
       sousModules: [
-        {
-          icon: 'mdi-home',
-          text: 'Hall  de Réception',
-          to: '/reception/hall',
-        },
-        {
-          icon: 'mdi-shield-home',
-          text: 'Réservation',
-          to: '/reception/reservation',
-        },
+        // {
+        //   icon: 'mdi-home',
+        //   text: 'Hall  de Réception',
+        //   to: '/reception/hall',
+        // },
+        // {
+        //   icon: 'mdi-shield-home',
+        //   text: 'Réservation',
+        //   to: '/reception/reservation',
+        // },
         {
           icon: 'mdi-account-group',
-          text: 'Clientelle',
+          text: 'Gestion Clientelle',
           to: '/reception/clientelle',
         },
-        {
-          icon: 'mdi-cash',
-          text: 'Caisse',
-          to: '/reception/caisse',
-        },
+        // {
+        //   icon: 'mdi-cash',
+        //   text: 'Caisse',
+        //   to: '/reception/caisse',
+        // },
       ],
     },
     {
@@ -122,6 +122,11 @@ export const state = () => ({
           text: 'Caisse',
           to: '/restaurant/caisse',
         },
+        {
+          icon: 'mdi-bank',
+          text: 'Finance',
+          to: '/restaurant/finance',
+        },
       ],
     },
     {
@@ -156,6 +161,11 @@ export const state = () => ({
           icon: 'mdi-cash',
           text: 'Caisse',
           to: '/bar/caisse',
+        },
+        {
+          icon: 'mdi-bank',
+          text: 'Finance',
+          to: '/bar/finance',
         },
       ],
     },

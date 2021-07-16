@@ -133,8 +133,8 @@ export default {
         .then((result) => {
           const { message, chambre } = result.data
           this.$notifier.show({ text: message, variant: 'success' })
-          this.reinitialise()
           this.$emit('new-chambre', chambre)
+          this.reinitialise()
         })
         .catch((err) => {
           const { data } = err.response

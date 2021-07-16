@@ -51,7 +51,7 @@
                     :item="item"
                     @edited-attribution="attributionEdited"
                   />
-                  <delete-attribution-form
+                  <!-- <delete-attribution-form
                     :item="item"
                     @deleted-attribution="attributionDeleted"
                   />
@@ -59,7 +59,7 @@
                     v-if="item.status !== 'libérée'"
                     :item="item"
                     @free-attribution="attributionFree"
-                  />
+                  /> -->
                 </template>
               </v-data-table>
             </v-col>
@@ -79,7 +79,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import FreeAttribution from '~/components/reception/hall/FreeReception'
 import CreateReception from '~/components/reception/hall/CreateReception.vue'
 import SideReception from '~/components/reception/SideReception.vue'
@@ -90,8 +89,10 @@ export default {
   components: {
     SideReception,
     CreateReception,
+    // eslint-disable-next-line vue/no-unused-components
     DeleteAttributionForm,
     EditAttributionForm,
+    // eslint-disable-next-line vue/no-unused-components
     FreeAttribution,
   },
   data() {
@@ -108,12 +109,11 @@ export default {
         { text: 'Debut', value: 'entreeDisplay' },
         { text: 'Fin', value: 'sortieDisplay' },
         { text: 'status', value: 'status' },
-        { text: 'Actions', value: 'actions', sortable: false },
+        // { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
   },
   async fetch() {
-    moment.locale('fr')
     let calebasse = await this.$axios.get('reception/clients')
     const clients = calebasse.data.clients
     calebasse = await this.$axios.get('reception/attributions')
@@ -127,8 +127,8 @@ export default {
         status,
         chambre: { id: chambre_linked.id, nom: chambre_linked.nom },
         client: { id: client_linked.id, nom: client_linked.nom },
-        entreeDisplay: moment(entree).format('ll'),
-        sortieDisplay: moment(sortie).format('ll'),
+        entreeDisplay: this.$moment(entree).format('ll'),
+        sortieDisplay: this.$moment(sortie).format('ll'),
         entree,
         sortie,
       }
@@ -155,15 +155,13 @@ export default {
       }
     },
     pushAttribution(attribution) {
-      moment().locale('fr')
-      attribution.entreeDisplay = moment(attribution.entree).format('ll')
-      attribution.sortieDisplay = moment(attribution.sortie).format('ll')
+      attribution.entreeDisplay = this.$moment(attribution.entree).format('ll')
+      attribution.sortieDisplay = this.$moment(attribution.sortie).format('ll')
       this.attributions.push(attribution)
     },
     attributionEdited(attribution) {
-      moment().locale('fr')
-      attribution.entreeDisplay = moment(attribution.entree).format('ll')
-      attribution.sortieDisplay = moment(attribution.sortie).format('ll')
+      attribution.entreeDisplay = this.$moment(attribution.entree).format('ll')
+      attribution.sortieDisplay = this.$moment(attribution.sortie).format('ll')
       const index = this.attributions.findIndex(
         (element) => element.id === attribution.id
       )

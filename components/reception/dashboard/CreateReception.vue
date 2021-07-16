@@ -134,6 +134,19 @@
                   </v-date-picker>
                 </v-menu>
               </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="attribution.remise"
+                  type="number"
+                  min="0"
+                  max="100"
+                  suffix="%"
+                  dense
+                  outlined
+                  label="Remise"
+                >
+                </v-text-field>
+              </v-col>
             </v-row>
           </v-container>
         </v-form>
@@ -157,7 +170,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import CreateClient from '../client/CreateClient.vue'
 import {
   errorsInitialise,
@@ -185,6 +197,7 @@ export default {
       accompagnants: null,
       client: null,
       chambre: null,
+      remise: 0,
     })
     return {
       dialog: false,
@@ -242,8 +255,8 @@ export default {
     checkDate() {
       let message = ''
       let possible = true
-      const now = moment().format('DD-MM-YYYY').toString()
-      const start = moment(this.attribution.entree)
+      const now = this.$moment().format('DD-MM-YYYY').toString()
+      const start = this.$moment(this.attribution.entree)
         .format('DD-MM-YYYY')
         .toString()
       if (now !== start) {

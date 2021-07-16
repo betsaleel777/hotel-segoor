@@ -3,7 +3,7 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Caisse
+          Caisse du bar
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -53,7 +53,7 @@
                     @completed-encaissement="encaissementCompleted"
                   />
                   <v-btn
-                    :to="'/restaurant/caisse/' + item.id"
+                    :to="'/bar/caisse/' + item.id"
                     elevation="1"
                     icon
                     fab
@@ -120,10 +120,10 @@ export default {
     // recupération des plats,cocktails,tournees et boissons standards crées
     requete = await this.$axios.get('restaurant/plats')
     this.produits.push(...requete.data.plats)
-    requete = await this.$axios.get('bar/cocktails')
-    this.produits.push(...requete.data.cocktails)
     requete = await this.$axios.get('bar/tournees')
     this.produits.push(...requete.data.tournees)
+    requete = await this.$axios.get('bar/cocktails')
+    this.produits.push(...requete.data.cocktails)
     this.produits = this.produits.map((produit) => {
       if (produit.prix) {
         return {
@@ -192,7 +192,7 @@ export default {
   },
   methods: {
     getColor(status) {
-      if (status === 'soldée') {
+      if (status === 'payé') {
         return 'green'
       } else {
         return 'red'

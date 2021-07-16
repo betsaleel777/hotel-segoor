@@ -31,6 +31,9 @@
                 <template #[`item.disponible`]="{ item }">
                   {{ item.disponible + ' ' }}{{ item.mesure }}
                 </template>
+                <template #[`item.reste`]="{ item }">
+                  {{ item.reste + ' %' }}
+                </template>
               </v-data-table>
             </v-col>
           </v-row>
@@ -55,6 +58,7 @@ export default {
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Description', value: 'nom' },
         { text: 'Disponible', value: 'disponible' },
+        { text: 'En cours', value: 'reste' },
       ],
     }
   },
@@ -72,6 +76,7 @@ export default {
         nom: ligne.nom,
         code: ligne.code,
         disponible: ligne.disponible,
+        reste: ligne.reste ?? 0,
         mesure: ligne.mesure,
       }
     })

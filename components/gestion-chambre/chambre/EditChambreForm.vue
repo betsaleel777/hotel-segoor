@@ -78,6 +78,10 @@
 
 <script>
 import CreateCategorieForm from './CreateCategorieForm.vue'
+import {
+  errorsInitialise,
+  errorsWriting,
+} from '~/components/helper/errorsHandle'
 export default {
   components: { CreateCategorieForm },
   props: {
@@ -135,32 +139,17 @@ export default {
         .then((result) => {
           const { message, chambre } = result.data
           this.dialog = false
-          if (Object.keys(chambre).length > 0) {
-            this.$notifer.show({ text: message, variant: 'success' })
-            this.$emit('edited-chambre', chambre)
-          }
+          this.$notifier.show({ text: message, variant: 'success' })
+          this.$emit('edited-chambre', chambre)
+          this.reinitialise()
         })
         .catch((err) => {
           const { data } = err.response
           if (data) {
-            this.chambre = Object.assign({}, this.defaultForm)
-            this.errorsWriting(data)
+            errorsInitialise(this.errors)
+            errorsWriting(data, this.errors)
           }
         })
-    },
-    errorsWriting(errors) {
-      if (errors.nom) {
-        this.errors.nom.exist = true
-        this.errors.nom.message = errors.nom[0]
-      }
-      if (errors.categorie) {
-        this.errors.categorie.exist = true
-        this.errors.categorie.message = errors.categorie[0]
-      }
-      if (errors.montant) {
-        this.errors.montant.exist = true
-        this.errors.montant.message = errors.montant[0]
-      }
     },
   },
 }

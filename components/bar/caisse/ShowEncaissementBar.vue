@@ -62,30 +62,8 @@
                 </td>
               </tr>
               <tr
-                v-for="(tournee, index) in tournees"
-                :key="index + decalages[1]"
-                dense
-              >
-                <td>{{ tournee.code }}</td>
-                <td style="width: 40%">
-                  {{
-                    tournee.nom.charAt(0).toUpperCase() + tournee.nom.slice(1)
-                  }}
-                </td>
-                <td>{{ tournee.pivot.quantite }}</td>
-                <td>{{ tournee.pivot.prix_vente + ' FCFA' }}</td>
-                <td class="text-right">
-                  {{
-                    String(
-                      Number(tournee.pivot.quantite) *
-                        Number(tournee.pivot.prix_vente)
-                    ) + ' FCFA'
-                  }}
-                </td>
-              </tr>
-              <tr
                 v-for="(cocktail, index) in cocktails"
-                :key="index + decalages[2]"
+                :key="index + decalages[1]"
                 dense
               >
                 <td>{{ cocktail.code }}</td>
@@ -101,6 +79,29 @@
                     String(
                       Number(cocktail.pivot.quantite) *
                         Number(cocktail.pivot.prix_vente)
+                    ) + ' FCFA'
+                  }}
+                </td>
+              </tr>
+              <tr
+                v-for="(tournee, index) in tournees"
+                :key="index + decalages[2]"
+                dense
+              >
+                <td>{{ tournee.code }}</td>
+                <td style="width: 40%">
+                  {{
+                    tournee.titre.charAt(0).toUpperCase() +
+                    tournee.titre.slice(1)
+                  }}
+                </td>
+                <td>{{ tournee.pivot.quantite }}</td>
+                <td>{{ tournee.pivot.prix_vente + ' FCFA' }}</td>
+                <td class="text-right">
+                  {{
+                    String(
+                      Number(tournee.pivot.quantite) *
+                        Number(tournee.pivot.prix_vente)
                     ) + ' FCFA'
                   }}
                 </td>
@@ -151,6 +152,14 @@ export default {
       })
       this.plats.forEach((plat) => {
         total += Number(plat.pivot.quantite) * Number(plat.pivot.prix_vente)
+      })
+      this.cocktails.forEach((cocktail) => {
+        total +=
+          Number(cocktail.pivot.quantite) * Number(cocktail.pivot.prix_vente)
+      })
+      this.tournees.forEach((tournee) => {
+        total +=
+          Number(tournee.pivot.quantite) * Number(tournee.pivot.prix_vente)
       })
       return total + ' FCFA'
     },

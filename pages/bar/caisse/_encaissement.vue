@@ -12,12 +12,6 @@
               <side-gestion-bar />
             </v-col>
             <v-col cols="12" sm="6" md="9">
-              <v-col cols="12">
-                <v-btn to="/bar/caisse" dark color="primary" nuxt>
-                  <v-icon left>mdi-arrow-left-thick</v-icon>
-                  RETOUR
-                </v-btn>
-              </v-col>
               <v-container id="toprint">
                 <v-row>
                   <!-- entetete -->

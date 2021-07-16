@@ -102,11 +102,14 @@ export default {
     },
   },
   mounted() {
+    const tournees = this.item.tournees.map((tournee) => {
+      return { ...tournee, nom: tournee.titre }
+    })
     this.produitsSelected = [
       ...this.item.produits,
       ...this.item.plats,
       ...this.item.cocktails,
-      ...this.item.tournees,
+      ...tournees,
     ]
   },
   methods: {

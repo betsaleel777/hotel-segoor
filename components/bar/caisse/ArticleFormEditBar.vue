@@ -97,6 +97,7 @@ export default {
       }
     })
     this.reponses = reponses
+    console.log(this.produits)
   },
   methods: {
     reinitialise() {
@@ -115,8 +116,10 @@ export default {
         const dejaSelectione = this.reponses.find(
           (reponse) => reponse.id === this.article.id
         )
-        this.article.valeur =
-          Number(dejaSelectione.valeur) + Number(this.valeur)
+        const valeurDeSelection = dejaSelectione
+          ? Number(dejaSelectione.valeur)
+          : 0
+        this.article.valeur = valeurDeSelection + Number(this.valeur)
         this.article.nouveau = true
         const index = this.reponses.findIndex(
           (element) => element.id === this.article.id

@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer permanent>
+  <v-navigation-drawer class="d-print-none" permanent>
     <v-list nav dense>
       <v-list-item-group color="primary">
         <v-list-item

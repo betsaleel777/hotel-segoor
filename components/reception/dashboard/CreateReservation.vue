@@ -245,9 +245,7 @@ export default {
       let possible = true
       const now = moment().format('DD-MM-YYYY').toString()
       const start = moment(this.reservation.entree)
-        .format('DD-MM-YYYY')
-        .toString()
-      if (now > start) {
+      if (moment().isAfter(start)) {
         message += `Aucune Réservation de chambre pour des dates antérieures à aujourd'hui: ${now} n'est possible.`
         possible = false
       }
