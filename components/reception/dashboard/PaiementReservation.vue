@@ -1,15 +1,17 @@
 <template>
   <v-dialog v-model="dialog" max-width="650px">
     <template #activator="{ on }">
-      <v-btn color="blue darken-4" text v-on="on"
-        >Enregistrer un versement
+      <v-btn :disabled="total >= montantApayer" color="primary" text v-on="on"
+        >Paiement
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="justify-center primary--text headline"
-        ><div>
-          Création de versement pour la réservation {{ reservation.code }}
-        </div>
+      <v-card-title class="justify-center primary--text headline grey lighten-2"
+        ><div>Paiement pour la réservation {{ reservation.code }}</div>
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="close">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text justify="center" align="center">
         <v-text-field
@@ -26,10 +28,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-4" text @click="close">Fermer</v-btn>
-        <v-btn color="blue darken-4" text @click="saveVersement"
-          >Enregistrer</v-btn
-        >
+        <v-btn color="error" text @click="close">Fermer</v-btn>
+        <v-btn color="success" text @click="createVersement">Enregistrer</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -40,6 +40,10 @@ export default {
   props: {
     reservation: {
       type: Object,
+      required: true,
+    },
+    total: {
+      type: Number,
       required: true,
     },
   },
@@ -55,8 +59,23 @@ export default {
       versements: [],
     }
   },
+  computed: {
+    montantApayer() {
+      if (this.reservation) {
+        return (
+          this.reservation.prix *
+          this.$moment(this.reservation.sortie).diff(
+            this.reservation.entree,
+            'days'
+          )
+        )
+      } else {
+        return null
+      }
+    },
+  },
   methods: {
-    saveVersement() {
+    createVersement() {
       if (Number(this.versement.montant) === 0) {
         this.$notifier.show({
           text: 'La valeur de montant est incorrecte',
@@ -68,12 +87,17 @@ export default {
             mode: 'reserve',
             montant: this.versement.montant,
             reservation: this.reservation.id,
+            dejaVerse: this.total,
+            montantApayer: this.montantApayer,
           })
           .then((result) => {
-            const { message, encaissement } = result.data
+            const { message, versement, status } = result.data
             this.$notifier.show({ text: message, variant: 'success' })
             this.close()
-            this.$emit('new-versement', encaissement)
+            this.versement.montant = null
+            status === 'soldée'
+              ? this.$emit('paid', versement)
+              : this.$emit('new-versement', versement)
           })
       }
     },

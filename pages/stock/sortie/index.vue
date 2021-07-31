@@ -22,13 +22,17 @@
                 :items-per-page="10"
               >
                 <template #[`top`]>
-                  <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="recherche ..."
-                    single-line
-                    hide-details
-                  ></v-text-field>
+                  <v-toolbar flat>
+                    <create-sortie :floating="false" @new-sortie="pushSortie" />
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="recherche ..."
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </v-toolbar>
                 </template>
                 <template #[`item.departement`]="{ item }">
                   <b>{{ item.departement }}</b>

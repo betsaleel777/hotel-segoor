@@ -49,7 +49,7 @@ export const state = () => ({
         // },
         {
           icon: 'mdi-account-group',
-          text: 'Gestion Clientelle',
+          text: 'Gestion de la Clientelle',
           to: '/reception/clientelle',
         },
         // {

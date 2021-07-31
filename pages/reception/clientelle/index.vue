@@ -11,7 +11,7 @@
             <v-col cols="12" sm="6" md="3">
               <side-reception />
             </v-col>
-            <v-col cols="12" sm="6" md="9">
+            <v-col cols="12" sm="6" md="12">
               <v-data-table
                 no-data-text="Aucun client"
                 :loading="$fetchState.pending"
@@ -110,13 +110,6 @@ export default {
     this.clients = clients
   },
   methods: {
-    // getColor(status) {
-    //   if (status === 'reservée') {
-    //     return 'blue'
-    //   } else {
-    //     return 'pink'
-    //   }
-    // },
     pushClient(client) {
       this.clients.push(client)
     },
@@ -129,13 +122,6 @@ export default {
     clientDeleted(client) {
       this.clients = this.clients.filter((element) => element.id !== client.id)
     },
-    // clientFree(client) {
-    //   this.clients.forEach((element) => {
-    //     if (element.id === client.id) {
-    //       element.status = 'annulée'
-    //     }
-    //   })
-    // },
   },
 }
 </script>

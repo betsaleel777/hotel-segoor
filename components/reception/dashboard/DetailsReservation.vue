@@ -1,17 +1,21 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="800">
     <v-card v-if="Object.keys(details).length > 0">
-      <v-card-title>
+      <v-card-title class="grey lighten-2">
         <div class="headline primary--text">
           Détails de l'hébergement {{ details.code }}
         </div>
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="dialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-container>
           <v-row>
             <v-col cols="6">
               <div class="text-left">
-                <h2 :class="getStatusColor">{{ details.status }}</h2>
+                <h2 :class="getStatusColor">{{ status }}</h2>
                 <span>
                   <h4>
                     {{
@@ -90,12 +94,17 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-4" text @click.stop="dialog = false"
-          >Fermer</v-btn
-        >
+        <v-btn color="error" text @click.stop="dialog = false">Fermer</v-btn>
+        <attribute-reservation
+          v-if="attribuable"
+          :item="details"
+          @reservation-converted="onConvert"
+        />
         <paiement-reservation
           :reservation="details"
+          :total="totalVerse"
           @new-versement="pushVersement"
+          @paid="onPaid"
         />
       </v-card-actions>
     </v-card>
@@ -103,10 +112,12 @@
 </template>
 
 <script>
+import AttributeReservation from './AttributeReservation.vue'
 import PaiementReservation from './PaiementReservation.vue'
 export default {
   components: {
     PaiementReservation,
+    AttributeReservation,
   },
   props: {
     details: {
@@ -119,17 +130,16 @@ export default {
   },
   data: () => ({
     versements: [],
+    attribuable: false,
   }),
   computed: {
     getStatusColor() {
-      if (this.details) {
-        if (this.details.status === 'occupée') {
-          return 'red--text'
-        } else {
-          return 'green--text'
-        }
+      if (this.status === 'impayée') {
+        return 'red--text'
+      } else if (this.status === 'en cours') {
+        return 'blue--text'
       } else {
-        return null
+        return 'green--text'
       }
     },
     montant() {
@@ -139,7 +149,7 @@ export default {
           this.$moment(this.details.sortie).diff(this.details.entree, 'days')
         )
       } else {
-        return null
+        return 0
       }
     },
     totalVerse() {
@@ -148,6 +158,13 @@ export default {
         total += versement.montant
       })
       return total
+    },
+    status() {
+      let result = 'impayée'
+      if (this.details.encaissement) {
+        result = this.details.encaissement.status
+      }
+      return result
     },
     dialog: {
       get() {
@@ -164,11 +181,20 @@ export default {
     } else {
       this.versements = []
     }
+    const now = this.$moment()
+    this.attribuable = this.$moment(this.details.entree).isSame(now, 'days')
+    // console.log(this.details)
   },
   methods: {
-    pushVersement(versements) {
-      // eslint-disable-next-line camelcase
-      this.versements = versements
+    pushVersement(versement) {
+      this.versements.push(versement)
+    },
+    onPaid(versement) {
+      this.versements.push(versement)
+      this.dialog = false
+    },
+    onConvert() {
+      this.$emit('refresh')
     },
   },
 }

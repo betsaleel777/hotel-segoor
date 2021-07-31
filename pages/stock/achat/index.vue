@@ -66,7 +66,6 @@
 </template>
 
 <script>
-// import moment from 'moment'
 import CreateAchat from '~/components/stock/achat/CreateAchat.vue'
 import SideStock from '~/components/stock/SideStock'
 export default {
@@ -115,7 +114,8 @@ export default {
       const index = this.achats.findIndex(
         (element) => element.id === achat.ingredient
       )
-      this.achats.splice(index, 1, achat)
+      this.achats[index].quantite =
+        Number(this.achats[index].quantite) + Number(achat.quantite)
     },
   },
 }

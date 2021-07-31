@@ -11,8 +11,17 @@
             <v-col cols="12" sm="6" md="3">
               <side-reception />
             </v-col>
-            <v-col justify="center" align="center" cols="12" sm="6" md="9">
-              <FullCalendar :options="calendarOptions" />
+            <v-col cols="12" sm="6" md="9">
+              <v-toolbar class="elevation-0">
+                <!-- <v-toolbar-title>Title</v-toolbar-title> -->
+                <v-spacer></v-spacer>
+                <v-btn color="indigo">
+                  <v-icon left>mdi-cash-multiple</v-icon>Paiements
+                </v-btn>
+              </v-toolbar>
+            </v-col>
+            <v-col justify="center" align="center" cols="12" sm="6" md="12">
+              <FullCalendar ref="calendrier" :options="calendarOptions" />
             </v-col>
           </v-row>
         </v-card-text>
@@ -30,8 +39,16 @@
         >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <create-reception :clients="clients" :infos="infos" />
-          <create-reservation :clients="clients" :infos="infos" />
+          <create-reception
+            :clients="clients"
+            :infos="infos"
+            @new-reception="refresh"
+          />
+          <create-reservation
+            :clients="clients"
+            :infos="infos"
+            @new-reservation="refresh"
+          />
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -44,7 +61,9 @@
       v-if="Object.keys(details)"
       v-model="dialog2"
       :details="details"
+      @refresh="refresh"
     />
+    <edit-event v-model="dialog3" :item="event" @edit-closed="refresh" />
   </v-row>
 </template>
 
@@ -53,13 +72,13 @@ import moment from 'moment'
 import FullCalendar from '@fullcalendar/vue'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import interactionPlugin from '@fullcalendar/interaction'
-import dayGridPlugin from '@fullcalendar/daygrid'
 import frLocale from '@fullcalendar/core/locales/fr'
-import DetailsReception from './DetailsReception.vue'
-import DetailsReservation from './DetailsReservation.vue'
+import DetailsReception from '~/components/reception/dashboard/DetailsReception.vue'
+import DetailsReservation from '~/components/reception/dashboard/DetailsReservation.vue'
 import CreateReservation from '~/components/reception/dashboard/CreateReservation'
 import CreateReception from '~/components/reception/dashboard/CreateReception'
 import SideReception from '~/components/reception/SideReception.vue'
+import EditEvent from '~/components/reception/dashboard/EditEvent.vue'
 
 export default {
   components: {
@@ -69,23 +88,26 @@ export default {
     CreateReception,
     DetailsReservation,
     DetailsReception,
+    EditEvent,
   },
   data({ $axios }) {
     return {
       dialog: false,
       clients: [],
       events: [],
+      event: {},
       infos: {},
       details: {},
       consommations: [],
       dialog1: false,
       dialog2: false,
-      update: false,
+      dialog3: false,
       calendarOptions: {
         schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
         locale: frLocale,
-        plugins: [interactionPlugin, resourceTimelinePlugin, dayGridPlugin],
+        plugins: [interactionPlugin, resourceTimelinePlugin],
         initialView: 'resourceTimelineMonth',
+        resourceAreaWidth: '20%',
         headerToolbar: {
           left: 'today prev,next',
           center: 'title',
@@ -96,6 +118,7 @@ export default {
         selectOverlap: false,
         nowIndicator: true,
         selectMirror: true,
+        eventResourceEditable: false,
         dayMaxEvents: true,
         weekends: true,
         select: this.handleSelect,
@@ -125,55 +148,46 @@ export default {
                     : 'blue',
                 // eventBorderColor:
                 // eventTextColor:
+                extendedProps: {
+                  attribution: event.attribution,
+                },
+                overlap: false,
               }
             })
             successCallback(events)
           })
         },
-        eventOverlap(stillEvent, movingEvent) {
-          this.overlapDetect(stillEvent, movingEvent)
-        },
       },
     }
   },
   async mounted() {
-    let calebasse = await this.$axios.get('reception/clients')
+    const calebasse = await this.$axios.get('reception/clients')
     const clients = calebasse.data.clients
-    calebasse = await this.$axios.get('reception/reservations/events')
-    const events = calebasse.data.events.map((event) => {
-      return {
-        id: event.id,
-        resourceId: event.chambre,
-        code: event.code,
-        title: `${event.code} ${event.client_linked.nom}-${event.client_linked.contact}`,
-        start: moment(event.entree).format('YYYY-MM-DD').toString(),
-        end: moment(event.sortie).format('YYYY-MM-DD').toString(),
-        reservation: event.reservation,
-      }
-    })
-    this.events = events
+    const calendar = this.$refs.calendrier.getApi()
+    this.events = calendar.getEvents()
     this.clients = clients
   },
   methods: {
     handleSelect(info) {
-      const { coincide, code } = this.coincide(info)
-      const end = moment(info.endStr).subtract(1, 'days')
-      const start = moment(info.startStr)
-      const endStr = end.format('YYYY-MM-DD').toString()
-      if (end.diff(start, 'days') !== 0) {
-        if (!coincide) {
-          const { id, title } = info.resource
-          this.infos = { id, title, sortie: endStr, entree: info.startStr }
-          this.dialog = true
-        } else {
-          this.$toast.info(
-            "coincidence de dates détectée avec l'hébergement: " + code + '.'
-          )
-        }
-      }
+      const { id, title } = info.resource
+      this.infos = { id, title, sortie: info.endStr, entree: info.startStr }
+      this.dialog = true
     },
     handleResize(info) {
-      console.log(info)
+      this.event = info.event
+      const now = moment()
+      const start = moment(info.event.start)
+      if (info.event.extendedProps.attribution) {
+        // console.log('attribution conditions de validation')
+      } else if (start.isSame(now) || start.isBefore(now)) {
+        this.$notifier.show({
+          text: 'Aucune reservation est permise pour cette date',
+          variant: 'warning',
+        })
+        this.refresh()
+      } else {
+        this.dialog3 = true
+      }
     },
     handleEventClick(info) {
       if (info.event.backgroundColor === 'red') {
@@ -200,34 +214,8 @@ export default {
           })
       }
     },
-    overlapDetect(old, current) {
-      console.log(old, current)
-    },
-    coincide({ endStr, startStr, resource }) {
-      endStr = moment(endStr)
-        .subtract(1, 'days')
-        .format('YYYY-MM-DD')
-        .toString()
-      startStr = moment(endStr).add(1, 'days').format('YYYY-MM-DD').toString()
-      const events = this.events.filter(
-        (event) => event.resourceId === parseInt(resource.id)
-      )
-      let coincide = false
-      let code = null
-      if (events.length > 0) {
-        for (const event of events) {
-          coincide =
-            (event.start <= startStr && startStr <= event.end) ||
-            (event.start <= endStr && endStr <= event.end)
-          if (coincide) {
-            code = event.code
-            break
-          }
-        }
-        return { coincide, code }
-      } else {
-        return { coincide, code }
-      }
+    refresh() {
+      this.$refs.calendrier.getApi().refetchEvents()
     },
   },
 }

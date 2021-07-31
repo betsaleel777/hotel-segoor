@@ -20,8 +20,12 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>
+      <v-card-title class="grey lighten-2">
         <span class="headline primary--text">créer une chambre</span>
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="reinitialise">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -49,7 +53,7 @@
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="9" md="10">
+              <v-col cols="12" sm="9" md="11">
                 <v-autocomplete
                   v-model="chambre.categorie"
                   :errors="errors.categorie.exist"
@@ -63,7 +67,7 @@
                   required
                 ></v-autocomplete>
               </v-col>
-              <v-col cols="12" sm="3" md="2">
+              <v-col cols="12" sm="3" md="1">
                 <create-categorie-form @new-categorie="pushCategorie" />
               </v-col>
             </v-row>
@@ -72,8 +76,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

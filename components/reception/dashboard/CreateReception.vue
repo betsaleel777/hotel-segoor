@@ -6,10 +6,14 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>
+      <v-card-title class="grey lighten-2">
         <span class="headline primary--text"
           >Attribuer la chambre {{ infos.title }}</span
         >
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="reinitialise">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-form v-if="possible" ref="form">
@@ -162,8 +166,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -242,7 +246,9 @@ export default {
       this.$axios
         .post('reception/attributions/new', { ...this.attribution })
         .then((result) => {
-          location.href = '/reception'
+          this.$notifier.show({ text: result.data.message, variant: 'success' })
+          this.dialog = false
+          this.$emit('new-reception')
         })
         .catch((err) => {
           const { data } = err.response

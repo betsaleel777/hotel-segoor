@@ -15,8 +15,12 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>
+      <v-card-title class="grey lighten-2">
         <span class="headline primary--text">modifier un plat</span>
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="reinitialise">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">

@@ -1,13 +1,12 @@
 <template>
   <div>
     <v-snackbar
-      :value="show"
+      v-model="show"
+      timeout="3500"
       :color="variantUse"
-      :timeout="timeout"
       text
       right
       top
-      elevation="24"
     >
       {{ text }}
       <template #action="{ attrs }">
@@ -32,7 +31,6 @@ export default {
       show: false,
       variant: '',
       text: '',
-      timeout: 3500,
     }
   },
   computed: {
@@ -45,7 +43,6 @@ export default {
       if (mutation.type === 'snackbar/SHOW_MESSAGE') {
         this.text = state.snackbar.text
         this.variant = state.snackbar.variant
-        this.timeout = state.snackbar.timeout
         this.show = true
       }
     })

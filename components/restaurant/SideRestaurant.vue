@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer permanent>
     <v-list nav dense>
-      <v-list-item-group color="primary">
+      <v-list-item-group color="blue darken-4">
         <v-list-item
           v-for="(module, i) in sousModulesRestaurant"
           :key="i"

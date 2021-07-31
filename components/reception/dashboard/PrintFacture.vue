@@ -1,15 +1,15 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="800px">
     <template #activator="{ on, attrs }">
-      <v-btn v-bind="attrs" color="green darken-1" text v-on="on"
-        >Facture</v-btn
-      >
+      <v-btn v-bind="attrs" color="primary" text v-on="on">Facture</v-btn>
     </template>
     <v-card>
-      <v-card-title>
-        <span class="headline primary--text"
-          >Facture {{ encaissement.code }}</span
-        >
+      <v-card-title class="grey lighten-2">
+        <span class="headline primary--text">Facture {{ item.code }}</span>
+        <v-spacer></v-spacer>
+        <v-btn color="error" fab x-small dark @click="dialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text id="printable">
         <!-- entête de facture -->
@@ -17,7 +17,7 @@
           <v-row>
             <v-col cols="12">
               <div class="text-center">
-                <h2 class="black--text">Facture {{ encaissement.code }}</h2>
+                <h2 class="black--text">Facture {{ item.code }}</h2>
               </div>
             </v-col>
             <v-col cols="6">
@@ -49,13 +49,13 @@
                 <h5 class="black--text">{{ fullName }}</h5>
                 <h5 class="black--text">{{ pieceInfos }}</h5>
                 <h5 class="black--text">
-                  {{ encaissement.client_linked.contact }}
+                  {{ item.client_linked.contact }}
                 </h5>
                 <h5 class="black--text">
-                  {{ encaissement.client_linked.email }}
+                  {{ item.client_linked.email }}
                 </h5>
                 <h5 class="black--text">
-                  {{ encaissement.client_linked.domicile }}
+                  {{ item.client_linked.domicile }}
                 </h5>
               </div>
             </v-col>
@@ -66,20 +66,20 @@
               </div> -->
               <div class="text-right">
                 <h5 class="black--text">
-                  Chambre {{ encaissement.chambre_linked.nom }}
+                  Chambre {{ item.chambre_linked.nom }}
                 </h5>
                 <h5 class="black--text">
-                  Montant Nuitée: {{ encaissement.chambre_linked.prix_vente }} F
+                  Montant Nuitée: {{ item.chambre_linked.prix_vente }} FCFA
                 </h5>
                 <h5 class="black--text">
-                  Du: {{ $moment(encaissement.entree).format('ll') }} au
-                  {{ $moment(encaissement.sortie).format('ll') }}
+                  Du: {{ $moment(item.entree).format('ll') }} au
+                  {{ $moment(item.sortie).format('ll') }}
                 </h5>
-                <h5 v-if="encaissement.remise.length > 0" class="black--text">
-                  Remise {{ encaissement.remise }} %
+                <h5 v-if="item.remise" class="black--text">
+                  Remise {{ item.remise }} %
                 </h5>
                 <h5 class="black--text">
-                  Montant Hébergement: {{ montant }} F
+                  Montant Hébergement: {{ montant }} FCFA
                 </h5>
               </div>
             </v-col>
@@ -100,16 +100,19 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="item in consommations" :key="item.code">
+                    <tr
+                      v-for="consommation in consommations"
+                      :key="consommation.code"
+                    >
                       <td class="text-center">
-                        {{ $moment(item.jour).format('llll') }}
+                        {{ $moment(consommation.jour).format('llll') }}
                       </td>
-                      <td class="text-center">{{ item.code }}</td>
-                      <td class="text-left">{{ item.nom }}</td>
-                      <td class="text-center">{{ item.quantite }}</td>
-                      <td class="text-right">{{ item.prix }}</td>
+                      <td class="text-center">{{ consommation.code }}</td>
+                      <td class="text-left">{{ consommation.nom }}</td>
+                      <td class="text-center">{{ consommation.quantite }}</td>
+                      <td class="text-right">{{ consommation.prix }}</td>
                       <td class="text-right">
-                        {{ item.quantite * item.prix }}
+                        {{ consommation.quantite * consommation.prix }}
                       </td>
                     </tr>
                   </tbody>
@@ -117,7 +120,7 @@
                     <tr>
                       <td colspan="5"><b>Total</b></td>
                       <td class="text-right">
-                        <b>{{ total }}</b>
+                        <!-- <b>{{ total }}</b> -->
                       </td>
                     </tr>
                   </tfoot>
@@ -146,10 +149,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="dialog = false">
-          Fermer
-        </v-btn>
-        <v-btn color="blue darken-1" text @click="print"> Imprimer </v-btn>
+        <v-btn color="error" text @click="dialog = false"> Fermer </v-btn>
+        <v-btn color="success" text @click="print"> Imprimer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -162,7 +163,7 @@ import VueHtmlToPaper from 'vue-html-to-paper'
 Vue.use(VueHtmlToPaper)
 export default {
   props: {
-    encaissement: {
+    item: {
       type: Object,
       required: true,
     },
@@ -170,19 +171,41 @@ export default {
   data: () => {
     return {
       dialog: false,
-      consommations: [],
     }
   },
   computed: {
     fullName() {
-      return (
-        this.encaissement.client_linked.nom +
-        ' ' +
-        this.encaissement.client_linked.prenom
-      )
+      return this.item.client_linked.nom + ' ' + this.item.client_linked.prenom
+    },
+    consommations() {
+      let resultat = []
+      if (this.item.consommation) {
+        const compare = (a, b) => {
+          if (this.$moment(a.jour).diff(b.jour) < 0) {
+            return -1
+          }
+          if (this.$moment(a.jour).diff(b.jour) < 0) {
+            return 1
+          }
+          return 0
+        }
+        const { cocktails, plats, produits, tournees } = this.item.consommation
+        const consommations = [...cocktails, ...plats, ...produits, ...tournees]
+        resultat = consommations.map((item) => {
+          return {
+            jour: item.pivot.created_at,
+            code: item.code,
+            nom: item.nom ?? item.titre,
+            quantite: item.pivot.quantite,
+            prix: item.pivot.prix_vente,
+          }
+        })
+        resultat = resultat.sort(compare)
+      }
+      return resultat
     },
     pieceInfos() {
-      const client = this.encaissement.client_linked
+      const client = this.item.client_linked
       let nature = 'CNI'
       if (client.pieces[0].nature !== 'cni') {
         nature = 'passeport'
@@ -191,12 +214,9 @@ export default {
     },
     montant() {
       return (
-        this.encaissement.prix *
-        (1 - this.encaissement.remise / 100) *
-        this.$moment(this.encaissement.sortie).diff(
-          this.encaissement.entree,
-          'days'
-        )
+        this.item.prix *
+        (1 - this.item.remise / 100) *
+        this.$moment(this.item.sortie).diff(this.item.entree, 'days')
       )
     },
     total() {
@@ -209,34 +229,31 @@ export default {
       return total
     },
   },
-  mounted() {
-    const compare = (a, b) => {
-      if (this.$moment(a.jour).diff(b.jour) < 0) {
-        return -1
-      }
-      if (this.$moment(a.jour).diff(b.jour) < 0) {
-        return 1
-      }
-      return 0
-    }
-    const {
-      cocktails,
-      plats,
-      produits,
-      tournees,
-    } = this.encaissement.consommation
-    const consommations = [...cocktails, ...plats, ...produits, ...tournees]
-    this.consommations = consommations.map((item) => {
-      return {
-        jour: item.pivot.created_at,
-        code: item.code,
-        nom: item.nom ?? item.titre,
-        quantite: item.pivot.quantite,
-        prix: item.pivot.prix_vente,
-      }
-    })
-    this.consommations = this.consommations.sort(compare)
-  },
+  // mounted() {
+  //   if (this.item.consommations) {
+  //     const compare = (a, b) => {
+  //       if (this.$moment(a.jour).diff(b.jour) < 0) {
+  //         return -1
+  //       }
+  //       if (this.$moment(a.jour).diff(b.jour) < 0) {
+  //         return 1
+  //       }
+  //       return 0
+  //     }
+  //     const { cocktails, plats, produits, tournees } = this.item.consommation
+  //     const consommations = [...cocktails, ...plats, ...produits, ...tournees]
+  //     this.consommations = consommations.map((item) => {
+  //       return {
+  //         jour: item.pivot.created_at,
+  //         code: item.code,
+  //         nom: item.nom ?? item.titre,
+  //         quantite: item.pivot.quantite,
+  //         prix: item.pivot.prix_vente,
+  //       }
+  //     })
+  //     this.consommations = this.consommations.sort(compare)
+  //   }
+  // },
   methods: {
     print() {
       const options = {
@@ -245,7 +262,7 @@ export default {
         styles: ['https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css'],
         timeout: 1000, // default timeout before the print window appears
         autoClose: true, // if false, the window will not close after printing
-        windowTitle: 'facture-' + this.encaissement.code, // override the window title
+        windowTitle: 'facture-' + this.item.code, // override the window title
       }
       this.$htmlToPaper('printable', options)
     },

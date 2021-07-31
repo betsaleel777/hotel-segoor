@@ -97,7 +97,6 @@ export default {
       }
     })
     this.reponses = reponses
-    console.log(this.produits)
   },
   methods: {
     reinitialise() {

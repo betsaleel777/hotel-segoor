@@ -42,7 +42,7 @@
       </v-btn> -->
     </v-app-bar>
     <v-main>
-      <v-container>
+      <v-container fluid>
         <alert-component />
         <nuxt />
         <snackbar-component />

@@ -103,6 +103,7 @@ export default {
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Statut', value: 'status', sortable: false },
         { text: 'Date', value: 'created_at' },
+        { text: 'Table', value: 'zone', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
@@ -113,7 +114,6 @@ export default {
       'parametre/departements/' + 'restaurant'
     )
     departement = requete.data.departement.id
-
     // recuperation de la liste des produits boissons en stock pour le départements en cours
     requete = await this.$axios.get(
       'stock/demandes/inventaire/buvable/' + departement
@@ -152,15 +152,15 @@ export default {
       'caisses/encaissements/departement/' + departement
     )
     this.encaissements = requete.data.encaissements.map((encaissement) => {
-      const { attribution_linked: attribution, produits, plats } = encaissement
       return {
         id: encaissement.id,
         code: encaissement.code,
         created_at: this.$moment(encaissement.created_at).format('ll'),
         status: encaissement.status,
-        attribution,
-        produits,
-        plats,
+        attribution_linked: encaissement.attribution,
+        produits: encaissement.produits,
+        plats: encaissement.plats,
+        zone: encaissement.zone,
       }
     })
   },

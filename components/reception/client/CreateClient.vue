@@ -27,8 +27,12 @@
       >
     </template>
     <v-card>
-      <v-card-title>
+      <v-card-title class="grey lighten-2">
         <span class="headline primary--text">Créer client</span>
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="reinitialise">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -248,13 +252,13 @@
                     <v-btn text color="primary" @click="menu2 = false">
                       Cancel
                     </v-btn>
-                    <v-btn-btn
+                    <v-btn
                       text
                       color="primary"
                       @click="$refs.menu2.save(piece.delivre_le)"
                     >
                       OK
-                    </v-btn-btn>
+                    </v-btn>
                   </v-date-picker>
                 </v-menu>
               </v-col>
@@ -362,8 +366,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

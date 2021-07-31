@@ -20,14 +20,18 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>
+      <v-card-title class="grey lighten-2">
         <span class="headline primary--text">Encaissement</span>
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="reinitialise">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">
           <v-container>
             <v-row>
-              <v-col cols="12">
+              <v-col cols="8">
                 <v-autocomplete
                   v-model="encaissement.attribution"
                   :items="attributions"
@@ -38,6 +42,15 @@
                   label="Clients en chambre"
                   required
                 ></v-autocomplete>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="encaissement.zone"
+                  dense
+                  outlined
+                  label="Numero de table"
+                  required
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -51,8 +64,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -81,6 +94,7 @@ export default {
     const defaultForm = Object.freeze({
       attribution: null,
       departement: null,
+      zone: null,
     })
     return {
       dialog: false,
@@ -112,6 +126,7 @@ export default {
       const tournees = this.articles.filter(
         (article) => article.genre === 'tournees'
       )
+
       this.$axios
         .post('caisses/encaissements/new', {
           ...this.encaissement,

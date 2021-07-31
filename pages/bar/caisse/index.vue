@@ -103,6 +103,7 @@ export default {
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Statut', value: 'status', sortable: false },
         { text: 'Date', value: 'created_at' },
+        { text: 'Table', value: 'zone', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
@@ -182,6 +183,7 @@ export default {
         code: encaissement.code,
         created_at: this.$moment(encaissement.created_at).format('ll'),
         status: encaissement.status,
+        zone: encaissement.zone,
         attribution,
         produits,
         plats,

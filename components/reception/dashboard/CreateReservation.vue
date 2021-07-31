@@ -6,10 +6,14 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>
+      <v-card-title class="grey lighten-2">
         <span class="headline primary--text"
           >Reserver chambre {{ infos.title }}</span
         >
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="reinitialise">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-form v-if="possible" ref="form">
@@ -149,8 +153,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -229,8 +233,9 @@ export default {
       this.$axios
         .post('reception/reservations/new', { ...this.reservation })
         .then((result) => {
-          // const { message, reservation } = result.data
-          location.href = '/reception'
+          this.$notifier.show({ text: result.data.message, variant: 'success' })
+          this.dialog = false
+          this.$emit('new-reservation')
         })
         .catch((err) => {
           const { data } = err.response
@@ -243,10 +248,9 @@ export default {
     checkDate() {
       let message = ''
       let possible = true
-      const now = moment().format('DD-MM-YYYY').toString()
       const start = moment(this.reservation.entree)
       if (moment().isAfter(start)) {
-        message += `Aucune Réservation de chambre pour des dates antérieures à aujourd'hui: ${now} n'est possible.`
+        message += `Aucune Réservation n'est possible pour cette date.`
         possible = false
       }
       return { possible, message }

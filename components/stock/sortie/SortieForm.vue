@@ -6,8 +6,12 @@
       >
     </template>
     <v-card>
-      <v-card-title>
+      <v-card-title class="grey lighten-2">
         <span class="headline primary--text">Ajouter un article</span>
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="reinitialise">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -63,13 +67,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="close"> annuler </v-btn>
-        <v-btn
-          :disabled="!activeConfirm"
-          color="blue darken-1"
-          text
-          @click="addItem"
-        >
+        <v-btn color="orange" text @click="close"> annuler </v-btn>
+        <v-btn :disabled="!activeConfirm" color="primary" text @click="addItem">
           confirmer
         </v-btn>
       </v-card-actions>

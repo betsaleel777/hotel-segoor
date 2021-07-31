@@ -6,8 +6,12 @@
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="justify-center primary--text headline"
+      <v-card-title class="justify-center primary--text headline grey lighten-2"
         ><div>Encaissement {{ item.code }} du {{ item.created_at }}</div>
+        <v-spacer></v-spacer>
+        <v-btn color="error" icon @click="closeShow">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text justify="center" align="center">
         <div class="text-center"><h4>Liste des Articles</h4></div>
@@ -120,7 +124,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-4" text @click="closeShow">Cancel</v-btn>
+        <v-btn color="error" text @click="closeShow">Fermer</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
