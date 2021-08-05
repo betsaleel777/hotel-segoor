@@ -3,7 +3,8 @@
     <v-card v-if="Object.keys(details).length > 0">
       <v-card-title class="grey lighten-2">
         <div class="headline primary--text">
-          Détails de l'hébergement {{ details.code }}
+          Hébergement {{ details.code }} chambre,
+          {{ details.chambre_linked.nom }}
         </div>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="dialog = false">
@@ -18,15 +19,14 @@
                 <h2 :class="getStatusColor">{{ status }}</h2>
                 <span>
                   <h4>
+                    <b>Client: </b>
                     {{
                       details.client_linked.nom +
                       ' ' +
                       details.client_linked.prenom
                     }}
                   </h4>
-                  <h4>{{ details.client_linked.contact }}</h4>
-                  <h4>Chambre: {{ details.chambre_linked.nom }}</h4>
-                  <h4>Accompagnants: {{ details.accompagnants }}</h4>
+                  <h4><b>Contatct: </b>{{ details.client_linked.contact }}</h4>
                 </span>
               </div>
             </v-col>
@@ -41,52 +41,57 @@
                     {{ $moment(details.entree).format('ll') }} au
                     {{ $moment(details.sortie).format('ll') }}
                   </h4>
-                  <h4>Montant: {{ montant }} FCFA</h4>
+                  <h4>Montant: {{ montantApayer }} FCFA</h4>
                 </span>
               </div>
             </v-col>
             <v-col cols="12">
               <div class="text-center">
-                <h2 class="primary--text">Versements du Client</h2>
+                <h2 class="primary--text">Paiements du Client</h2>
               </div>
               <v-container v-if="versements.length === 0">
                 <v-alert outlined type="info" prominent border="right">
-                  Aucun versement n'as déjà été effectué
+                  Aucun paiement n'as déjà été effectué
                 </v-alert>
               </v-container>
               <v-container v-else>
-                <v-row>
-                  <v-col cols="2"></v-col>
-                  <v-col cols="8">
-                    <v-simple-table>
-                      <template #default>
-                        <thead>
-                          <tr>
-                            <th class="text-left">Date</th>
-                            <th class="text-right">Montant</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="item in versements" :key="item.id">
-                            <td class="text-left">
-                              {{ $moment(item.created_at).format('llll') }}
-                            </td>
-                            <td class="text-right">{{ item.montant }} FCFA</td>
-                          </tr>
-                        </tbody>
-                        <tfoot>
-                          <tr>
-                            <td class="text-left"><b>Total versé</b></td>
-                            <td class="text-right">
-                              <b>{{ totalVerse }} FCFA</b>
-                            </td>
-                          </tr>
-                        </tfoot>
-                      </template>
-                    </v-simple-table>
-                  </v-col>
-                  <v-col cols="2"></v-col>
-                </v-row>
+                <v-simple-table>
+                  <template #default>
+                    <thead>
+                      <tr>
+                        <th class="text-left">Date</th>
+                        <th class="text-center">Moyen</th>
+                        <th class="text-right">Montant perçu</th>
+                        <th class="text-right">Monnaie rendue</th>
+                        <th class="text-right">Montant encaissé</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in versements" :key="item.id">
+                        <td class="text-left">
+                          {{ $moment(item.created_at).format('llll') }}
+                        </td>
+                        <td class="text-center">{{ moyenDePaiement(item) }}</td>
+                        <td class="text-right">{{ item.montant }} FCFA</td>
+                        <td class="text-right">{{ item.monnaie }} FCFA</td>
+                        <td class="text-right">
+                          {{ Number(item.montant) - Number(item.monnaie) }}
+                          FCFA
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="4" class="text-right">
+                          <b>Total versé</b>
+                        </td>
+                        <td class="text-right">
+                          <b>{{ totalVerse }} FCFA</b>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </template>
+                </v-simple-table>
               </v-container>
             </v-col>
           </v-row>
@@ -129,11 +134,20 @@ export default {
     value: Boolean,
   },
   data: () => ({
-    versements: [],
-    attribuable: false,
+    attribuable: true,
   }),
   computed: {
+    versements() {
+      let result = null
+      if (this.details.encaissement) {
+        result = this.details.encaissement.versements
+      } else {
+        result = []
+      }
+      return result
+    },
     getStatusColor() {
+      // console.log(this.details)
       if (this.status === 'impayée') {
         return 'red--text'
       } else if (this.status === 'en cours') {
@@ -142,7 +156,7 @@ export default {
         return 'green--text'
       }
     },
-    montant() {
+    montantApayer() {
       if (this.details) {
         return (
           this.details.prix *
@@ -155,7 +169,7 @@ export default {
     totalVerse() {
       let total = 0
       this.versements.forEach((versement) => {
-        total += versement.montant
+        total += versement.montant - versement.monnaie
       })
       return total
     },
@@ -175,17 +189,16 @@ export default {
       },
     },
   },
-  beforeUpdate() {
-    if (this.details.encaissement) {
-      this.versements = this.details.encaissement.versements
-    } else {
-      this.versements = []
-    }
-    const now = this.$moment()
-    this.attribuable = this.$moment(this.details.entree).isSame(now, 'days')
-    // console.log(this.details)
-  },
   methods: {
+    moyenDePaiement(item) {
+      if (item.mobile) {
+        return item.mobile.nom
+      } else if (item.espece) {
+        return 'espèce'
+      } else {
+        return item.cheque
+      }
+    },
     pushVersement(versement) {
       this.versements.push(versement)
     },

@@ -43,8 +43,8 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    // baseURL: 'http://hapi.segoor.net',
-    baseURL: 'http://localhost:8000', // Can be also an object with default options
+    baseURL: 'http://hapi.segoor.net',
+    // baseURL: 'http://localhost:8000', // Can be also an object with default options
     headers: {
       'Content-type': 'application/json',
     },

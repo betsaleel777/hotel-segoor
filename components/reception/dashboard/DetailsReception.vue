@@ -3,7 +3,8 @@
     <v-card v-if="Object.keys(details).length > 0">
       <v-card-title class="grey lighten-2">
         <div class="headline primary--text">
-          Détails de l'hébergement {{ details.code }}
+          Détails de l'hébergement {{ details.code }}, Chambre
+          {{ details.chambre_linked.nom }}
         </div>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="dialog = false">
@@ -17,35 +18,52 @@
               <div class="text-left">
                 <h2 :class="getStatusColor">{{ details.status }}</h2>
                 <span>
-                  <h4>
-                    {{ fullName }}
-                  </h4>
-                  <h4>{{ details.client_linked.contact }}</h4>
-                  <h4>Chambre: {{ details.chambre_linked.nom }}</h4>
-                  <h4>Accompagnants: {{ details.accompagnants }}</h4>
+                  <p>
+                    <b>Client:</b> {{ fullName }} <br />
+                    <b>Contact:</b> {{ details.client_linked.contact }}
+                  </p>
                 </span>
               </div>
             </v-col>
-            <v-divider vertical></v-divider>
             <v-col cols="6">
               <div class="text-right">
                 <h3>{{ $moment(details.created_at).format('ll') }}</h3>
-                <span>
-                  <h4>
-                    Nuitée: {{ details.prix * (1 - details.remise / 100) }}
-                  </h4>
-                  <h4>
-                    Du:
-                    {{ $moment(details.entree).format('ll') }} au
-                    {{ $moment(details.sortie).format('ll') }}
-                  </h4>
-                  <h4>Montant: {{ montant }}</h4>
-                </span>
               </div>
             </v-col>
             <v-col cols="12">
+              <!-- hébergement -->
               <div class="text-center">
-                <h2 class="primary--text">Consommation du Client</h2>
+                <h2 class="primary--text">Hébergement</h2>
+              </div>
+              <v-container>
+                <v-simple-table>
+                  <template #default>
+                    <thead>
+                      <tr>
+                        <th class="text-center">Chambre</th>
+                        <th class="text-center">Quantité</th>
+                        <th class="text-right">Nuitée</th>
+                        <th class="text-right">Montant</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="text-center">
+                          {{ details.chambre_linked.nom }}
+                        </td>
+                        <td class="text-center">
+                          {{ quantiteNuitee + ' ' }}
+                          jours
+                        </td>
+                        <td class="text-right">{{ nuitee }} FCFA</td>
+                        <td class="text-right">{{ montant }} FCFA</td>
+                      </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>
+              </v-container>
+              <div class="text-center">
+                <h2 class="primary--text">Consommation</h2>
               </div>
               <v-container v-if="consommations.length === 0">
                 <v-alert outlined type="info" prominent border="right">
@@ -73,17 +91,64 @@
                         <td class="text-center">{{ item.code }}</td>
                         <td class="text-left">{{ item.nom }}</td>
                         <td class="text-center">{{ item.quantite }}</td>
-                        <td class="text-right">{{ item.prix }}</td>
+                        <td class="text-right">{{ item.prix }} FCFA</td>
                         <td class="text-right">
-                          {{ item.quantite * item.prix }}
+                          {{ item.quantite * item.prix }} FCFA
                         </td>
                       </tr>
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colspan="5"><b>Total</b></td>
+                        <td class="text-right" colspan="5"><b>Total</b></td>
                         <td class="text-right">
-                          <b>{{ total }}</b>
+                          <b>{{ total }} FCFA</b>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </template>
+                </v-simple-table>
+              </v-container>
+              <div class="text-center">
+                <h2 class="primary--text">Paiements</h2>
+              </div>
+              <v-container v-if="versements.length === 0">
+                <v-alert outlined type="info" prominent border="right">
+                  Aucun paiement n'as déjà été effectué
+                </v-alert>
+              </v-container>
+              <v-container v-else>
+                <v-simple-table>
+                  <template #default>
+                    <thead>
+                      <tr>
+                        <th class="text-left">Date</th>
+                        <th class="text-center">Moyen</th>
+                        <th class="text-right">Montant perçu</th>
+                        <th class="text-right">Monnaie rendue</th>
+                        <th class="text-right">Montant encaissé</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in versements" :key="item.id">
+                        <td class="text-left">
+                          {{ $moment(item.created_at).format('llll') }}
+                        </td>
+                        <td class="text-center">{{ moyenDePaiement(item) }}</td>
+                        <td class="text-right">{{ item.montant }} FCFA</td>
+                        <td class="text-right">{{ item.monnaie }} FCFA</td>
+                        <td class="text-right">
+                          {{ Number(item.montant) - Number(item.monnaie) }}
+                          FCFA
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="4" class="text-right">
+                          <b>Total versé</b>
+                        </td>
+                        <td class="text-right">
+                          <b>{{ totalVerse }} FCFA</b>
                         </td>
                       </tr>
                     </tfoot>
@@ -93,10 +158,10 @@
             </v-col>
             <v-col cols="12">
               <div class="text-right">
-                <h2 class="pink--text darken-3">
+                <h3 class="pink--text darken-3">
                   Montant total à payer:
-                  {{ total + montant }}
-                </h2>
+                  {{ reste }} FCFA
+                </h3>
               </div>
             </v-col>
           </v-row>
@@ -105,7 +170,13 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click.stop="dialog = false">Fermer</v-btn>
-        <paiement-reception :item="details" @paid="onPaid" />
+        <paiement-reception
+          :reception="details"
+          :total="totalVerse"
+          :consommation="total"
+          @new-versement="pushVersement"
+          @paid="onPaid"
+        />
         <print-facture :item="details" />
       </v-card-actions>
     </v-card>
@@ -130,6 +201,15 @@ export default {
     value: Boolean,
   },
   computed: {
+    versements() {
+      let result = null
+      if (this.details.encaissement) {
+        result = this.details.encaissement.versements
+      } else {
+        result = []
+      }
+      return result
+    },
     fullName() {
       return (
         this.details.client_linked.nom + ' ' + this.details.client_linked.prenom
@@ -178,25 +258,40 @@ export default {
         return null
       }
     },
+    nuitee() {
+      return this.details.prix * (1 - this.details.remise / 100)
+    },
+    quantiteNuitee() {
+      return this.$moment(this.details.sortie).diff(this.details.entree, 'days')
+    },
     montant() {
       if (this.details) {
-        return (
-          this.details.prix *
-          (1 - this.details.remise / 100) *
-          this.$moment(this.details.sortie).diff(this.details.entree, 'days')
-        )
+        return this.nuitee * this.quantiteNuitee
       } else {
         return null
       }
     },
+    totalVerse() {
+      let resultat = 0
+      this.versements.forEach((versement) => {
+        resultat += versement.montant - versement.monnaie
+      })
+      return resultat
+    },
     total() {
-      let total = 0
+      let resultat = 0
       if (this.consommations.length > 0) {
         this.consommations.forEach((item) => {
-          total += item.prix * item.quantite
+          resultat += item.prix * item.quantite
         })
       }
-      return total
+      return resultat
+    },
+    montantApayer() {
+      return this.total + this.montant
+    },
+    reste() {
+      return this.montantApayer - this.totalVerse
     },
     dialog: {
       get() {
@@ -208,7 +303,22 @@ export default {
     },
   },
   methods: {
-    onPaid(encaissement) {},
+    moyenDePaiement(item) {
+      if (item.mobile) {
+        return item.mobile.nom
+      } else if (item.espece) {
+        return 'espèce'
+      } else {
+        return item.cheque
+      }
+    },
+    pushVersement(versement) {
+      this.versements.push(versement)
+    },
+    onPaid(versement) {
+      this.versements.push(versement)
+      this.dialog = false
+    },
   },
 }
 </script>
