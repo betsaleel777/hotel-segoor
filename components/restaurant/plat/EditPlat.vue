@@ -56,7 +56,12 @@
                   outlined
                   label="Nom du Plat"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Nom du plat
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="5">
                 <v-autocomplete
@@ -70,7 +75,11 @@
                   outlined
                   label="Categorie"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Categorie <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="1">
                 <create-categorie @new-categorie="pushCategorie" />
@@ -113,7 +122,13 @@
                   outlined
                   label="Coût de revient"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Coût de revient<span class="red--text"
+                      ><strong>* </strong></span
+                    >
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
@@ -124,7 +139,13 @@
                   outlined
                   label="Prix de vente"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Prix de vente<span class="red--text"
+                      ><strong>* </strong></span
+                    >
+                  </template>
+                </v-text-field>
               </v-col>
             </v-row>
           </v-container>

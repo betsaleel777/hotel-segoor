@@ -281,6 +281,7 @@ export default {
       this.dialog = false
     },
     pushClient(client) {
+      client.nom = client.nom + ' ' + client.prenom
       this.clientsLocales.push(client)
     },
     save() {

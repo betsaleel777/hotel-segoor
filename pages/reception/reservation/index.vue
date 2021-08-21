@@ -12,13 +12,6 @@
               <side-reception />
             </v-col>
             <v-col cols="12" sm="6" md="9">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="recherche ..."
-                single-line
-                hide-details
-              ></v-text-field>
               <v-data-table
                 no-data-text="Aucune reception"
                 :loading="$fetchState.pending"
@@ -28,6 +21,22 @@
                 :search="search"
                 :items-per-page="10"
               >
+                <template #[`top`]>
+                  <v-toolbar flat>
+                    <v-btn dark color="primary" nuxt to="/reception">
+                      <v-icon left>mdi-arrow-left</v-icon>
+                      RETOUR
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      append-icon="mdi-magnify"
+                      label="recherche ..."
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </v-toolbar>
+                </template>
                 <template #[`item.status`]="{ item }">
                   <v-chip small outlined :color="getColor(item.status)" dark>
                     {{ item.status }}
@@ -79,7 +88,6 @@ export default {
       chambres: [],
       reservations: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Client', value: 'client.nom', sortable: false },
         { text: 'Chambre', value: 'chambre.nom', sortable: false },
         { text: 'Debut', value: 'entree' },

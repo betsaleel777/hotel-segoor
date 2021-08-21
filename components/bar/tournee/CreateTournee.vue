@@ -40,7 +40,11 @@
                   outlined
                   label="Titre"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Titre <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="4">
                 <v-text-field
@@ -52,7 +56,12 @@
                   label="Le prix de la tournée"
                   type="number"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Le prix de la tournée
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
@@ -64,7 +73,12 @@
                   label="Nombre de ballons"
                   type="number"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Nombre de ballons
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
@@ -78,7 +92,12 @@
                   type="number"
                   suffix="cl"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Contenance de la bouteille
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="9">
                 <v-autocomplete
@@ -90,9 +109,14 @@
                   item-text="nom"
                   dense
                   outlined
-                  label="Produit"
+                  label="Article"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Article
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="3">
                 <create-produit

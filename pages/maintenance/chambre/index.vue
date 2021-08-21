@@ -3,17 +3,15 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Acceuil gestion des chambres
+          Maintenance
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-gestion-chambre />
+              <side-maintenance :modules="modules" />
             </v-col>
-            <v-col justify="center" align="center" cols="12" sm="6" md="9">
-              Informations générales liées au chambres
-            </v-col>
+            <v-col cols="12" sm="6" md="9"></v-col>
           </v-row>
         </v-card-text>
         <v-card-actions> </v-card-actions>
@@ -23,10 +21,14 @@
 </template>
 
 <script>
-import SideGestionChambre from '~/components/gestion-chambre/SideGestionChambre.vue'
-
+import SideMaintenance from '~/components/maintenance/SideMaintenance.vue'
 export default {
-  components: { SideGestionChambre },
+  components: { SideMaintenance },
+  computed: {
+    modules() {
+      return this.$store.state.modules
+    },
+  },
 }
 </script>
 

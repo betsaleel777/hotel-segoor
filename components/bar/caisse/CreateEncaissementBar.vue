@@ -16,7 +16,7 @@
       </v-btn>
       <v-btn v-else v-bind="attrs" dark color="primary" v-on="on">
         <v-icon left>mdi-plus-thick</v-icon>
-        ENCAISSER
+        CREER LA FACTURE
       </v-btn>
     </template>
     <v-card>
@@ -126,22 +126,33 @@ export default {
       const tournees = this.articles.filter(
         (article) => article.genre === 'tournees'
       )
-
-      this.$axios
-        .post('caisses/encaissements/new', {
-          ...this.encaissement,
-          plats,
-          boissons,
-          cocktails,
-          tournees,
+      if (
+        boissons.length === 0 &&
+        cocktails.length === 0 &&
+        tournees.length === 0 &&
+        plats.length === 0
+      ) {
+        this.$notifier.show({
+          text: "Aucun article n'as encore été selectioné.",
+          variant: 'warning',
         })
-        .then((result) => {
-          const { message, encaissement } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.reinitialise()
-          this.$emit('new-encaissement', encaissement)
-        })
-        .catch()
+      } else {
+        this.$axios
+          .post('caisses/encaissements/new', {
+            ...this.encaissement,
+            plats,
+            boissons,
+            cocktails,
+            tournees,
+          })
+          .then((result) => {
+            const { message, encaissement } = result.data
+            this.$notifier.show({ text: message, variant: 'success' })
+            this.reinitialise()
+            this.$emit('new-encaissement', encaissement)
+          })
+          .catch()
+      }
     },
     listeUpdate(reponses) {
       this.articles = reponses

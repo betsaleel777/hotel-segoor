@@ -41,7 +41,11 @@
                   outlined
                   label="Client"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Client <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="1">
                 <create-client @new-client="pushClient" />
@@ -55,88 +59,32 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  ref="menu1"
-                  v-model="menu1"
-                  :close-on-content-click="false"
-                  :return-value.sync="reservation.entree"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <v-text-field
+                  v-model="reservation.entree"
+                  :error="errors.entree.exist"
+                  :error-messages="errors.entree.message"
+                  label="Entrée"
+                  type="date"
+                  required
                 >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="reservation.entree"
-                      :error="errors.entree.exist"
-                      :error-messages="errors.entree.message"
-                      label="Debut"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                  <template #label>
+                    Entrée<span class="red--text"><strong>* </strong></span>
                   </template>
-                  <v-date-picker
-                    v-model="reservation.entree"
-                    :allowed-dates="allowDates"
-                    no-title
-                    scrollable
-                  >
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu1 = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu1.save(reservation.entree)"
-                    >
-                      OK
-                    </v-btn>
-                  </v-date-picker>
-                </v-menu>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  ref="menu2"
-                  v-model="menu2"
-                  :close-on-content-click="false"
-                  :return-value.sync="reservation.sortie"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <v-text-field
+                  v-model="reservation.sortie"
+                  :error="errors.sortie.exist"
+                  :error-messages="errors.sortie.message"
+                  label="Sortie"
+                  type="date"
+                  required
                 >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="reservation.sortie"
-                      :error="errors.sortie.exist"
-                      :error-messages="errors.sortie.message"
-                      label="Fin"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                  <template #label>
+                    Sortie <span class="red--text"><strong>* </strong></span>
                   </template>
-                  <v-date-picker
-                    v-model="reservation.sortie"
-                    :allowed-dates="allowDates"
-                    no-title
-                    scrollable
-                  >
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu2 = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu2.save(reservation.sortie)"
-                    >
-                      OK
-                    </v-btn>
-                  </v-date-picker>
-                </v-menu>
+                </v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -147,6 +95,7 @@
           prominent
           text
           type="info"
+          class="mt-10"
         >
           {{ message }}
         </v-alert>
@@ -181,28 +130,24 @@ export default {
     },
   },
   data: () => {
-    const bodyError = { exist: false, message: null }
-    const defaultForm = Object.freeze({
-      entree: '',
-      sortie: '',
-      status: null,
-      accompagnants: null,
-      client: null,
-      chambre: null,
-    })
     return {
       dialog: false,
-      menu1: false,
-      menu2: false,
       message: '',
       possible: true,
-      reservation: Object.assign({}, defaultForm),
+      reservation: {
+        entree: '',
+        sortie: '',
+        status: null,
+        accompagnants: null,
+        client: null,
+        chambre: null,
+      },
       errors: {
-        entree: bodyError,
-        sortie: bodyError,
-        status: bodyError,
-        client: bodyError,
-        chambre: bodyError,
+        entree: { exist: false, message: null },
+        sortie: { exist: false, message: null },
+        status: { exist: false, message: null },
+        client: { exist: false, message: null },
+        chambre: { exist: false, message: null },
       },
       clientsLocales: [],
     }
@@ -222,11 +167,18 @@ export default {
     },
     reinitialise() {
       errorsInitialise(this.errors)
-      // eslint-disable-next-line no-unused-expressions
-      // this.possible ? this.$refs.form.reset() : null
+      this.reservation = {
+        entree: '',
+        sortie: '',
+        status: null,
+        accompagnants: null,
+        client: null,
+        chambre: null,
+      }
       this.dialog = false
     },
     pushClient(client) {
+      client.nom = client.nom + ' ' + client.prenom
       this.clientsLocales.push(client)
     },
     save() {

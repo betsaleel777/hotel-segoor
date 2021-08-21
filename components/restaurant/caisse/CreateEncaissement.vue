@@ -39,6 +39,7 @@
                   item-text="nom"
                   dense
                   outlined
+                  clearable
                   label="Clients en chambre"
                   required
                 ></v-autocomplete>
@@ -97,8 +98,6 @@ export default {
       dialog: false,
       encaissement: Object.assign({}, defaultForm),
       articles: [],
-      plats: [],
-      boissons: [],
     }
   },
   mounted() {
@@ -115,23 +114,43 @@ export default {
       this.dialog = false
     },
     save() {
-      this.plats = this.articles.filter((article) => article.genre === 'plats')
-      this.boissons = this.articles.filter(
+      const plats = this.articles.filter((article) => article.genre === 'plats')
+      const boissons = this.articles.filter(
         (article) => article.genre === 'boissons'
       )
-      this.$axios
-        .post('caisses/encaissements/new', {
-          ...this.encaissement,
-          plats: this.plats,
-          boissons: this.boissons,
+      const cocktails = this.articles.filter(
+        (article) => article.genre === 'cocktails'
+      )
+      const tournees = this.articles.filter(
+        (article) => article.genre === 'tournees'
+      )
+      if (
+        boissons.length === 0 &&
+        cocktails.length === 0 &&
+        tournees.length === 0 &&
+        plats.length === 0
+      ) {
+        this.$notifier.show({
+          text: "Aucun article n'as encore été selectioné.",
+          variant: 'warning',
         })
-        .then((result) => {
-          const { message, encaissement } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.reinitialise()
-          this.$emit('new-encaissement', encaissement)
-        })
-        .catch()
+      } else {
+        this.$axios
+          .post('caisses/encaissements/new', {
+            ...this.encaissement,
+            plats,
+            boissons,
+            cocktails,
+            tournees,
+          })
+          .then((result) => {
+            const { message, encaissement } = result.data
+            this.$notifier.show({ text: message, variant: 'success' })
+            this.reinitialise()
+            this.$emit('new-encaissement', encaissement)
+          })
+          .catch()
+      }
     },
     listeUpdate(reponses) {
       this.articles = reponses

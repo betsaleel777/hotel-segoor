@@ -10,26 +10,6 @@ export const state = () => ({
       sousModules: [],
     },
     {
-      name: 'gestionChambre',
-      link: {
-        icon: 'mdi-home-city',
-        title: 'Gestion des chambres',
-        to: '/gestion-chambre',
-      },
-      sousModules: [
-        {
-          icon: 'mdi-bed',
-          text: 'Chambres',
-          to: '/gestion-chambre/chambre',
-        },
-        {
-          icon: 'mdi-cog',
-          text: 'Maintenances',
-          to: '/gestion-chambre/maintenance',
-        },
-      ],
-    },
-    {
       name: 'reception',
       link: {
         icon: 'mdi-card-account-details',
@@ -39,7 +19,7 @@ export const state = () => ({
       sousModules: [
         // {
         //   icon: 'mdi-home',
-        //   text: 'Hall  de Réception',
+        //   text: 'Hall de Réception',
         //   to: '/reception/hall',
         // },
         // {
@@ -47,16 +27,16 @@ export const state = () => ({
         //   text: 'Réservation',
         //   to: '/reception/reservation',
         // },
+        // {
+        //   icon: 'mdi-cash-register',
+        //   text: 'Caisse',
+        //   to: '/reception/caisse',
+        // },
         {
           icon: 'mdi-account-group',
           text: 'Gestion de la Clientelle',
           to: '/reception/clientelle',
         },
-        // {
-        //   icon: 'mdi-cash',
-        //   text: 'Caisse',
-        //   to: '/reception/caisse',
-        // },
       ],
     },
     {
@@ -118,7 +98,7 @@ export const state = () => ({
           to: '/restaurant/inventaire',
         },
         {
-          icon: 'mdi-cash',
+          icon: 'mdi-cash-register',
           text: 'Caisse',
           to: '/restaurant/caisse',
         },
@@ -158,7 +138,7 @@ export const state = () => ({
           to: '/bar/inventaire',
         },
         {
-          icon: 'mdi-cash',
+          icon: 'mdi-cash-register',
           text: 'Caisse',
           to: '/bar/caisse',
         },
@@ -169,21 +149,51 @@ export const state = () => ({
         },
       ],
     },
-    // {
-    //   name: 'parametre',
-    //   link: {
-    //     icon: 'mdi-cogs',
-    //     title: 'Parametres',
-    //     to: '/parametre',
-    //   },
-    //   sousModules: [
-    //     {
-    //       icon: 'mdi-currency-usd',
-    //       text: 'Prix des Articles',
-    //       to: '/parametre/cocktail',
-    //     },
-    //   ],
-    // },
+    {
+      name: 'maintenance',
+      link: {
+        icon: 'mdi-home-city',
+        title: 'Maintenance hôtel',
+        to: '/maintenance',
+      },
+      sousModules: [
+        {
+          icon: 'mdi-bed',
+          text: 'Chambres',
+          to: '/maintenance/chambre',
+        },
+      ],
+    },
+    {
+      name: 'parametre',
+      link: {
+        icon: 'mdi-cog',
+        title: 'Parametres',
+        to: '/parametre',
+      },
+      sousModules: [
+        {
+          icon: 'mdi-shape',
+          text: 'Catégories',
+          to: '/parametre/categorie',
+        },
+        {
+          icon: 'mdi-bed',
+          text: 'Chambres',
+          to: '/parametre/chambre',
+        },
+        {
+          icon: 'mdi-cash',
+          text: 'Paiements mobile',
+          to: '/parametre/paiement-mobile',
+        },
+        // {
+        //   icon: 'mdi-sitemap',
+        //   text: 'Départements',
+        //   to: '/parametre/departement',
+        // },
+      ],
+    },
   ],
 })
 
@@ -193,23 +203,31 @@ export const getters = {
       return element.link
     })
   },
-  sousModulesChambre: (state) => {
+  sousModulesReception: (state) => {
     return state.modules[1].sousModules
   },
-  sousModulesReception: (state) => {
+  sousModulesStock: (state) => {
     return state.modules[2].sousModules
   },
-  sousModulesStock: (state) => {
+  sousModulesRestaurant: (state) => {
     return state.modules[3].sousModules
   },
-  sousModulesRestaurant: (state) => {
+  sousModulesBar: (state) => {
     return state.modules[4].sousModules
   },
-  sousModulesBar: (state) => {
+  sousModulesMaintenance: (state) => {
     return state.modules[5].sousModules
   },
-  // sousModulesParametre: (state) => {
-  //   return state.modules[6].sousModules
+  sousModulesParametre: (state) => {
+    return state.modules[6].sousModules
+  },
+  // // authenticate
+  // isAuthenticated(state) {
+  //   return state.auth.loggedIn
+  // },
+
+  // loggedInUser(state) {
+  //   return state.auth.user
   // },
 }
 

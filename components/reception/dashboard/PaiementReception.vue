@@ -7,14 +7,16 @@
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline grey lighten-2"
-        ><div>Paiement pour l'hébergement {{ reception.code }}</div>
+        ><div>
+          Paiement pour l'hébergement chambre {{ reception.chambre_linked.nom }}
+        </div>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
       <v-card-text justify="center" align="center">
-        <v-form ref="form">
+        <v-form ref="form" v-model="valid">
           <v-container>
             <h4 class="pink--text mb-5">
               le montant qui reste à payer est: {{ reste }} FCFA
@@ -86,7 +88,13 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="close">Fermer</v-btn>
-        <v-btn color="success" text @click="createVersement">Enregistrer</v-btn>
+        <v-btn
+          :disabled="!encaissable"
+          color="success"
+          text
+          @click="createVersement"
+          >Enregistrer</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -97,6 +105,12 @@ import {
   errorsInitialise,
   errorsWriting,
 } from '~/components/helper/errorsHandle'
+const checkEncaissable = function (montant, monnaie, reste) {
+  return (
+    Number(montant) > Number(monnaie) &&
+    Number(montant) - Number(monnaie) <= Number(reste)
+  )
+}
 export default {
   props: {
     reception: {
@@ -115,10 +129,12 @@ export default {
   data: () => {
     return {
       dialog: false,
+      encaissable: true,
+      valid: false,
       versement: {
-        montant: null,
-        cheque: null,
+        montant: 0,
         monnaie: 0,
+        cheque: null,
         espece: null,
         mobile_money: null,
       },
@@ -133,21 +149,32 @@ export default {
         espece: false,
         mobile: false,
       },
+      waysPayementRules: [(v) => !!v || 'le moyen de paiement est requis'],
+      montantRules: [(v) => !!v || 'le montant perçu est requis'],
     }
   },
   computed: {
+    nuiteeAvecRemise() {
+      return this.reception.prix * (1 - this.reception.remise / 100)
+    },
     montantApayer() {
       if (this.reception) {
-        return (
-          this.reception.prix *
-          this.$moment(this.reception.sortie).diff(
-            this.reception.entree,
-            'days'
-          )
-        )
+        return this.nuiteeAvecRemise * this.quantiteNuitee
       } else {
         return null
       }
+    },
+    quantiteNuitee() {
+      return this.$moment(this.reception.sortie).diff(
+        this.reception.entree,
+        'days'
+      )
+    },
+    remise() {
+      return (
+        ((this.reception.prix * this.reception.remise) / 100) *
+        this.quantiteNuitee
+      )
     },
     dejaVerse() {
       return (
@@ -159,32 +186,34 @@ export default {
       return this.montantApayer - Number(this.total) + this.consommation
     },
   },
+  watch: {
+    'versement.montant'(montant) {
+      this.encaissable = checkEncaissable(
+        montant,
+        this.versement.monnaie,
+        this.reste
+      )
+    },
+    'versement.monnaie'(monnaie) {
+      this.encaissable = checkEncaissable(
+        this.versement.montant,
+        monnaie,
+        this.reste
+      )
+    },
+  },
   mounted() {
     this.$axios.get('caisses/mobilesMoney').then((result) => {
       this.mobileWays = result.data.mobiles
     })
   },
   methods: {
-    validate() {
-      const wayPayementChoice =
-        Boolean(this.versement.cheque) ||
-        Boolean(this.versement.mobile_money) ||
-        Boolean(this.versement.espece)
-      const monnaieCheck =
-        Number(this.versement.montant) > Number(this.versement.monnaie)
-      let montantCheck = false
-      if (monnaieCheck) {
-        montantCheck = this.montantApayer >= this.dejaVerse
-      }
-      return (
-        Number(this.versement.montant) !== 0 &&
-        wayPayementChoice &&
-        monnaieCheck &&
-        montantCheck
-      )
-    },
     createVersement() {
-      if (!this.validate()) {
+      const payementChoice =
+        Boolean(this.versement.mobile_money) ||
+        Boolean(this.versement.espece) ||
+        Boolean(this.versement.monnaie)
+      if (!this.$refs.form.validate() && payementChoice) {
         this.$notifier.show({
           text: 'Certaines valeurs soumises sont incorrectes',
           variant: 'error',
@@ -221,6 +250,7 @@ export default {
       this.dialog = false
       this.$refs.form.reset()
       this.versement.monnaie = 0
+      this.versement.montant = 0
       this.activateWay = { cheque: false, espece: false, mobile: false }
       errorsInitialise(this.errors)
     },

@@ -11,9 +11,7 @@
         Veuillez confirmer l'entrée du client
         <b>{{ item.client_linked.nom.toUpperCase() }}</b> en chambre
         <b>{{ item.chambre_linked.nom }}</b
-        >.<br />
-        Cette entrée est effectuée à partir de la réservation
-        <b>{{ item.code }}</b>
+        >.
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

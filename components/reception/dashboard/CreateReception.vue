@@ -26,6 +26,7 @@
                   dense
                   outlined
                   label="Accompagnants"
+                  min="0"
                 >
                 </v-text-field>
               </v-col>
@@ -41,7 +42,11 @@
                   outlined
                   label="Client"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Client <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="1">
                 <create-client @new-client="pushClient" />
@@ -55,88 +60,32 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  ref="menu1"
-                  v-model="menu1"
-                  :close-on-content-click="false"
-                  :return-value.sync="attribution.entree"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <v-text-field
+                  v-model="attribution.entree"
+                  :error="errors.entree.exist"
+                  :error-messages="errors.entree.message"
+                  label="Entrée"
+                  type="date"
+                  required
                 >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="attribution.entree"
-                      :error="errors.entree.exist"
-                      :error-messages="errors.entree.message"
-                      label="Debut"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                  <template #label>
+                    Entrée <span class="red--text"><strong>* </strong></span>
                   </template>
-                  <v-date-picker
-                    v-model="attribution.entree"
-                    :allowed-dates="allowDates"
-                    no-title
-                    scrollable
-                  >
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu1 = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu1.save(attribution.entree)"
-                    >
-                      OK
-                    </v-btn>
-                  </v-date-picker>
-                </v-menu>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  ref="menu2"
-                  v-model="menu2"
-                  :close-on-content-click="false"
-                  :return-value.sync="attribution.sortie"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <v-text-field
+                  v-model="attribution.sortie"
+                  :error="errors.sortie.exist"
+                  :error-messages="errors.sortie.message"
+                  label="Sortie"
+                  type="date"
+                  required
                 >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="attribution.sortie"
-                      :error="errors.sortie.exist"
-                      :error-messages="errors.sortie.message"
-                      label="Fin"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                  <template #label>
+                    Sortie <span class="red--text"><strong>* </strong></span>
                   </template>
-                  <v-date-picker
-                    v-model="attribution.sortie"
-                    :allowed-dates="allowDates"
-                    no-title
-                    scrollable
-                  >
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu2 = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu2.save(attribution.sortie)"
-                    >
-                      OK
-                    </v-btn>
-                  </v-date-picker>
-                </v-menu>
+                </v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
@@ -160,6 +109,7 @@
           prominent
           text
           type="info"
+          class="mt-10"
         >
           {{ message }}
         </v-alert>
@@ -193,29 +143,25 @@ export default {
     },
   },
   data: () => {
-    const bodyError = { exist: false, message: null }
-    const defaultForm = Object.freeze({
-      entree: '',
-      sortie: '',
-      status: null,
-      accompagnants: null,
-      client: null,
-      chambre: null,
-      remise: 0,
-    })
     return {
       dialog: false,
-      menu1: false,
-      menu2: false,
       message: '',
       possible: true,
-      attribution: Object.assign({}, defaultForm),
+      attribution: {
+        entree: '',
+        sortie: '',
+        status: null,
+        accompagnants: null,
+        client: null,
+        chambre: null,
+        remise: 0,
+      },
       errors: {
-        entree: bodyError,
-        sortie: bodyError,
-        status: bodyError,
-        client: bodyError,
-        chambre: bodyError,
+        entree: { exist: false, message: null },
+        sortie: { exist: false, message: null },
+        status: { exist: false, message: null },
+        client: { exist: false, message: null },
+        chambre: { exist: false, message: null },
       },
       clientsLocales: [],
     }
@@ -235,8 +181,15 @@ export default {
     },
     reinitialise() {
       errorsInitialise(this.errors)
-      // eslint-disable-next-line no-unused-expressions
-      // this.possible ? this.$refs.form.reset() : null
+      this.attribution = {
+        entree: '',
+        sortie: '',
+        status: null,
+        accompagnants: null,
+        client: null,
+        chambre: null,
+        remise: 0,
+      }
       this.dialog = false
     },
     pushClient(client) {

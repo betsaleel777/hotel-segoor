@@ -3,7 +3,7 @@
     <v-card v-if="Object.keys(details).length > 0">
       <v-card-title class="grey lighten-2">
         <div class="headline primary--text">
-          Hébergement {{ details.code }} chambre,
+          Hébergement chambre,
           {{ details.chambre_linked.nom }}
         </div>
         <v-spacer></v-spacer>
@@ -16,36 +16,53 @@
           <v-row>
             <v-col cols="6">
               <div class="text-left">
-                <h2 :class="getStatusColor">{{ status }}</h2>
-                <span>
-                  <h4>
-                    <b>Client: </b>
-                    {{
-                      details.client_linked.nom +
-                      ' ' +
-                      details.client_linked.prenom
-                    }}
-                  </h4>
-                  <h4><b>Contatct: </b>{{ details.client_linked.contact }}</h4>
-                </span>
+                <h2 :class="getStatusColor">{{ details.status }}</h2>
+                <p>
+                  <b>Client:</b> {{ fullName }} <br />
+                  <b>Contact:</b> {{ details.client_linked.contact }}
+                </p>
               </div>
             </v-col>
-            <v-divider vertical></v-divider>
             <v-col cols="6">
               <div class="text-right">
                 <h3>{{ $moment(details.created_at).format('ll') }}</h3>
-                <span>
-                  <h4>Nuitée: {{ details.prix }} FCFA</h4>
-                  <h4>
-                    Du:
-                    {{ $moment(details.entree).format('ll') }} au
-                    {{ $moment(details.sortie).format('ll') }}
-                  </h4>
-                  <h4>Montant: {{ montantApayer }} FCFA</h4>
-                </span>
               </div>
             </v-col>
             <v-col cols="12">
+              <div class="text-center">
+                <h2 class="primary--text">Hébergement</h2>
+              </div>
+              <v-container>
+                <v-container>
+                  <v-simple-table>
+                    <template #default>
+                      <thead>
+                        <tr>
+                          <th class="text-center">Chambre</th>
+                          <th class="text-center">Quantité</th>
+                          <th class="text-right">Nuitée</th>
+                          <th class="text-right">Montant</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="text-center">
+                            {{ details.chambre_linked.nom }}
+                          </td>
+                          <td class="text-center">
+                            {{ quantiteNuitee + ' ' }}
+                            jours
+                          </td>
+                          <td class="text-right">{{ details.prix }} FCFA</td>
+                          <td class="text-right">
+                            <b>{{ montant }} FCFA</b>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </v-container>
+              </v-container>
               <div class="text-center">
                 <h2 class="primary--text">Paiements du Client</h2>
               </div>
@@ -156,12 +173,24 @@ export default {
         return 'green--text'
       }
     },
+    fullName() {
+      return (
+        this.details.client_linked.nom + ' ' + this.details.client_linked.prenom
+      )
+    },
+    quantiteNuitee() {
+      return this.$moment(this.details.sortie).diff(this.details.entree, 'days')
+    },
+    montant() {
+      if (this.details) {
+        return this.details.prix * this.quantiteNuitee
+      } else {
+        return null
+      }
+    },
     montantApayer() {
       if (this.details) {
-        return (
-          this.details.prix *
-          this.$moment(this.details.sortie).diff(this.details.entree, 'days')
-        )
+        return this.details.prix * this.quantiteNuitee
       } else {
         return 0
       }

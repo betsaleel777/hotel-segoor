@@ -1,9 +1,9 @@
 <template>
-  <v-navigation-drawer class="d-print-none" permanent expand-on-hover>
+  <v-navigation-drawer class="d-print-none" permanent>
     <v-list nav dense>
       <v-list-item-group color="blue darken-4">
         <v-list-item
-          v-for="(module, i) in sousModulesReception"
+          v-for="(module, i) in modules"
           :key="i"
           nuxt
           :to="module.to"
@@ -21,11 +21,26 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 export default {
-  computed: {
-    ...mapGetters(['sousModulesReception']),
-  },
+  data: () => ({
+    modules: [
+      {
+        icon: 'mdi-home-circle',
+        text: 'Hébergements',
+        to: '/reception/hall',
+      },
+      {
+        icon: 'mdi-shield-home',
+        text: 'Réservation',
+        to: '/reception/reservation',
+      },
+      {
+        icon: 'mdi-account-group',
+        text: 'Gestion de la Clientelle',
+        to: '/reception/clientelle',
+      },
+    ],
+  }),
 }
 </script>
 

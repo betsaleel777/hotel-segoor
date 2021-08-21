@@ -29,6 +29,7 @@
                   dense
                   outlined
                   label="Accompagnants"
+                  min="0"
                 >
                 </v-text-field>
               </v-col>
@@ -243,6 +244,7 @@ export default {
       this.dialog = false
     },
     pushClient(client) {
+      client.nom = client.nom + ' ' + client.prenom
       this.clientsLocales.push(client)
     },
     save() {

@@ -1,13 +1,26 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600px">
-    <template #activator="{ on }">
-      <v-btn elevation="1" icon fab dark x-small color="pink" v-on="on">
-        <v-icon small> mdi-eye </v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" max-width="600px">
+    <template #activator="{ on: dialog }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            color="pink"
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small> mdi-eye </v-icon>
+          </v-btn>
+        </template>
+        <span>visualiser</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline grey lighten-2"
-        ><div>Sortie {{ item.code }} du {{ item.created_at }}</div>
+        ><div>Sortie {{ item.titre }} du {{ item.created_at }}</div>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="closeShow">
           <v-icon>mdi-close</v-icon>
@@ -19,7 +32,6 @@
           <template #default>
             <thead>
               <tr>
-                <th class="text-left">Réference</th>
                 <th class="text-left">Description</th>
                 <th class="text-left">Quantité demandées</th>
                 <th class="text-left">Quantité livrées</th>
@@ -27,7 +39,6 @@
             </thead>
             <tbody>
               <tr v-for="(article, index) in articles" :key="index" dense>
-                <td>{{ article.code }}</td>
                 <td style="width: 30%">
                   {{
                     article.nom.charAt(0).toUpperCase() + article.nom.slice(1)
@@ -58,7 +69,7 @@ export default {
     },
   },
   data: () => ({
-    dialog: false,
+    dialogue: false,
     articles: [],
   }),
   mounted() {
@@ -66,7 +77,7 @@ export default {
   },
   methods: {
     closeShow() {
-      this.dialog = false
+      this.dialogue = false
     },
   },
 }

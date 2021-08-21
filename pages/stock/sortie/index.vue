@@ -69,7 +69,6 @@ export default {
       search: '',
       sorties: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Titre', value: 'titre', sortable: false },
         { text: 'Département', value: 'departement', sortable: false },
         { text: 'Demandé le', value: 'demande_le' },

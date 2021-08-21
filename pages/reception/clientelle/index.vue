@@ -8,9 +8,14 @@
         <v-divider></v-divider>
         <v-card-text>
           <v-row>
-            <v-col cols="12" sm="6" md="3">
+            <v-toolbar flat>
               <side-reception />
-            </v-col>
+              <v-spacer></v-spacer>
+              <v-btn text dark color="primary" nuxt to="/reception">
+                <v-icon left>mdi-arrow-left</v-icon>
+                Acceuil
+              </v-btn>
+            </v-toolbar>
             <v-col cols="12" sm="6" md="12">
               <v-data-table
                 no-data-text="Aucun client"
@@ -60,7 +65,7 @@
 
 <script>
 /* eslint-disable camelcase */
-import SideReception from '~/components/reception/SideReception'
+import SideReception from '~/components/reception/SideReceptionPrincipale.vue'
 import EditClient from '~/components/reception/client/EditClient.vue'
 import DeleteClient from '~/components/reception/client/DeleteClient.vue'
 import CreateClient from '~/components/reception/client/CreateClient.vue'
@@ -77,7 +82,6 @@ export default {
       search: '',
       clients: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Prenom', value: 'prenom' },
         { text: 'Contact', value: 'contact', sortable: false },
         { text: 'Pays', value: 'pays', sortable: false },

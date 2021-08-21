@@ -38,9 +38,15 @@
                   :error-messages="errors.nom.message"
                   dense
                   outlined
-                  label="Designation"
+                  label="Désignation"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Désignation<span class="red--text"
+                      ><strong> *</strong></span
+                    >
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
@@ -53,7 +59,13 @@
                   placeholder="prix de vente du cocktail"
                   type="number"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    prix de vente du cocktail<span class="red--text"
+                      ><strong> *</strong></span
+                    >
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-textarea
@@ -74,8 +86,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

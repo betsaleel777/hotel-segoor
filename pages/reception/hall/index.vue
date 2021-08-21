@@ -23,13 +23,10 @@
               >
                 <template #[`top`]>
                   <v-toolbar flat>
-                    <create-reception
-                      :clients="clients"
-                      :chambres="chambres"
-                      :reservations="reservations"
-                      :floating="false"
-                      @new-attribution="pushAttribution"
-                    />
+                    <v-btn dark color="primary" nuxt to="/reception">
+                      <v-icon left>mdi-arrow-left</v-icon>
+                      RETOUR
+                    </v-btn>
                     <v-spacer></v-spacer>
                     <v-text-field
                       v-model="search"
@@ -54,25 +51,18 @@
                   <!-- <delete-attribution-form
                     :item="item"
                     @deleted-attribution="attributionDeleted"
-                  />
+                  />-->
                   <free-attribution
                     v-if="item.status !== 'libérée'"
                     :item="item"
                     @free-attribution="attributionFree"
-                  /> -->
+                  />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <create-reception
-            :clients="clients"
-            :chambres="chambres"
-            :reservations="reservations"
-            @new-attribution="pushAttribution"
-          />
-        </v-card-actions>
+        <v-card-actions> </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
@@ -80,19 +70,16 @@
 
 <script>
 import FreeAttribution from '~/components/reception/hall/FreeReception'
-import CreateReception from '~/components/reception/hall/CreateReception.vue'
 import SideReception from '~/components/reception/SideReception.vue'
 import DeleteAttributionForm from '~/components/reception/hall/DeleteReception'
 import EditAttributionForm from '~/components/reception/hall/EditReception'
-import { checkReservationDate } from '~/components/helper/checkUtils'
+// import { checkReservationDate } from '~/components/helper/checkUtils'
 export default {
   components: {
     SideReception,
-    CreateReception,
     // eslint-disable-next-line vue/no-unused-components
     DeleteAttributionForm,
     EditAttributionForm,
-    // eslint-disable-next-line vue/no-unused-components
     FreeAttribution,
   },
   data() {
@@ -100,10 +87,9 @@ export default {
       search: '',
       clients: [],
       attributions: [],
-      reservations: [],
+      // reservations: [],
       chambres: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Client', value: 'client.nom', sortable: false },
         { text: 'Chambre', value: 'chambre.nom', sortable: false },
         { text: 'Debut', value: 'entreeDisplay' },
@@ -114,36 +100,40 @@ export default {
     }
   },
   async fetch() {
-    let calebasse = await this.$axios.get('reception/clients')
-    const clients = calebasse.data.clients
-    calebasse = await this.$axios.get('reception/attributions')
-    const attributions = calebasse.data.attributions.map((attribution) => {
-      // eslint-disable-next-line camelcase
-      const { chambre_linked, client_linked, ...rest } = attribution
-      const { code, id, entree, status, sortie } = rest
+    let requete = await this.$axios.get('reception/clients')
+    const clients = requete.data.clients
+    requete = await this.$axios.get('reception/attributions')
+    const attributions = requete.data.attributions.map((attribution) => {
       return {
-        id,
-        code,
-        status,
-        chambre: { id: chambre_linked.id, nom: chambre_linked.nom },
-        client: { id: client_linked.id, nom: client_linked.nom },
-        entreeDisplay: this.$moment(entree).format('ll'),
-        sortieDisplay: this.$moment(sortie).format('ll'),
-        entree,
-        sortie,
+        id: attribution.id,
+        code: attribution.code,
+        status: attribution.status,
+        chambre: {
+          id: attribution.chambre_linked.id,
+          nom: attribution.chambre_linked.nom,
+        },
+        client: {
+          id: attribution.client_linked.id,
+          nom: attribution.client_linked.nom,
+        },
+        entreeDisplay: this.$moment(attribution.entree).format('ll'),
+        sortieDisplay: this.$moment(attribution.sortie).format('ll'),
+        entree: attribution.entree,
+        sortie: attribution.sortie,
       }
     })
-    calebasse = await this.$axios.get('reception/reservations/reserved')
-    let reservations = calebasse.data.reservations.map((reservation) => {
-      const { id, code, entree, sortie } = reservation
-      return { id, nom: code, entree, sortie }
-    })
-    reservations = checkReservationDate(reservations)
-    calebasse = await this.$axios.get('gestion-chambre/chambres/passage')
-    const chambres = calebasse.data.chambres
+    // requete = await this.$axios.get('reception/reservations/reserved')
+    // console.log(requete.data.reservations)
+    // let reservations = requete.data.reservations.map((reservation) => {
+    //   const { id, code, entree, sortie } = reservation
+    //   return { id, nom: code, entree, sortie }
+    // })
+    // reservations = checkReservationDate(reservations)
+    requete = await this.$axios.get('gestion-chambre/chambres/passage')
+    const chambres = requete.data.chambres
     this.clients = clients
     this.attributions = attributions
-    this.reservations = reservations
+    // this.reservations = reservations
     this.chambres = chambres
   },
   methods: {

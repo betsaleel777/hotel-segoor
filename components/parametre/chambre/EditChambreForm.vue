@@ -1,24 +1,27 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
-    <template #activator="{ on, attrs }">
-      <v-btn
-        elevation="1"
-        icon
-        fab
-        dark
-        x-small
-        color="primary"
-        v-bind="attrs"
-        v-on="on"
-      >
-        <v-icon small> mdi-pencil </v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" persistent max-width="600px">
+    <template #activator="{ on: dialog, attrs }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            color="primary"
+            v-bind="attrs"
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small> mdi-pencil </v-icon>
+          </v-btn>
+        </template>
+        <span>modifier</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text"
-          >modifier chambre {{ chambre.code }}</span
-        >
+        <span class="headline primary--text">modifier chambre </span>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -37,7 +40,11 @@
                   outlined
                   label="libelle"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    libelle<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="4">
                 <v-text-field
@@ -48,7 +55,11 @@
                   outlined
                   label="Prix"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Prix<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="12" sm="9" md="10">
                 <v-autocomplete
@@ -62,7 +73,11 @@
                   outlined
                   label="Standing"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Standing<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="12" sm="3" md="2">
                 <create-categorie-form @new-categorie="pushCategorie" />
@@ -100,7 +115,7 @@ export default {
   },
   data: () => {
     return {
-      dialog: false,
+      dialogue: false,
       chambre: {
         id: null,
         categorie: null,
@@ -130,7 +145,7 @@ export default {
         montant: { exist: false, message: null },
         nom: { exist: false, message: null },
       }
-      this.dialog = false
+      this.dialogue = false
     },
     pushCategorie(categorie) {
       this.categoriesLocales.push(categorie)
@@ -142,7 +157,7 @@ export default {
         })
         .then((result) => {
           const { message, chambre } = result.data
-          this.dialog = false
+          this.dialogue = false
           this.$notifier.show({ text: message, variant: 'success' })
           this.$emit('edited-chambre', chambre)
           this.reinitialise()

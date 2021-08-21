@@ -1,24 +1,27 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
-    <template #activator="{ on, attrs }">
-      <v-btn
-        elevation="1"
-        icon
-        fab
-        dark
-        x-small
-        color="primary"
-        v-bind="attrs"
-        v-on="on"
-      >
-        <v-icon small> mdi-pencil </v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" persistent max-width="620px">
+    <template #activator="{ on: dialog, attrs }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            color="primary"
+            v-bind="attrs"
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small> mdi-pencil </v-icon>
+          </v-btn>
+        </template>
+        <span>modifier</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text"
-          >Modifier l'article {{ produit.code }}</span
-        >
+        <span class="headline primary--text">Modifier l'article</span>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -53,7 +56,12 @@
                   outlined
                   label="Description"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Description
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-checkbox
@@ -80,16 +88,18 @@
                   row
                   @change="mesureCheck"
                 >
-                  <v-radio
-                    label="Unité"
-                    color="primary"
-                    value="unité"
-                  ></v-radio>
-                  <v-radio
-                    label="Mesure"
-                    color="primary"
-                    value="poids"
-                  ></v-radio>
+                  <v-radio label="Unité" color="primary" value="unité">
+                    <template #label>
+                      Unité
+                      <span class="red--text"><strong>* </strong></span>
+                    </template>
+                  </v-radio>
+                  <v-radio label="Mesure" color="primary" value="poids">
+                    <template #label>
+                      Mesure
+                      <span class="red--text"><strong>* </strong></span>
+                    </template>
+                  </v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="7">
@@ -100,16 +110,22 @@
                   dense
                   row
                 >
-                  <v-radio
-                    label="Standard"
-                    color="primary"
-                    value="standard"
-                  ></v-radio>
+                  <v-radio label="Standard" color="primary" value="standard">
+                    <template #label>
+                      Standard
+                      <span class="red--text"><strong>* </strong></span>
+                    </template>
+                  </v-radio>
                   <v-radio
                     label="Assaisonement"
                     color="primary"
                     value="assaisonement"
-                  ></v-radio>
+                  >
+                    <template #label>
+                      Assaisonement
+                      <span class="red--text"><strong>* </strong></span>
+                    </template>
+                  </v-radio>
                 </v-radio-group>
               </v-col>
               <v-col v-if="mesurable" cols="12">
@@ -144,7 +160,12 @@
                   outlined
                   label="Categorie"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Categorie
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="1">
                 <create-categorie @new-categorie="pushCategorie" />
@@ -222,7 +243,7 @@ export default {
       categorie: null,
     })
     return {
-      dialog: false,
+      dialogue: false,
       mesurable: false,
       produit: Object.assign({}, defaultForm),
       priceDisabled: false,
@@ -251,7 +272,7 @@ export default {
     reinitialise() {
       this.produit = Object.assign({}, this.item)
       errorsInitialise(this.errors)
-      this.dialog = false
+      this.dialogue = false
     },
     mesureCheck() {
       if (this.produit.mode === 'poids') {
@@ -272,7 +293,7 @@ export default {
         .put('stock/produits/' + this.item.id, { ...this.produit })
         .then((result) => {
           const { message, produit } = result.data
-          this.dialog = false
+          this.dialogue = false
           this.$notifier.show({ text: message, variant: 'success' })
           this.$emit('edited-produit', produit)
         })

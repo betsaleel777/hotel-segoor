@@ -11,7 +11,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="close">Fermer</v-btn>
-        <v-btn color="green" text @click="edit">Accepter</v-btn>
+        <v-btn color="success" text @click="edit">Accepter</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -37,6 +37,50 @@
       </v-btn> -->
       <v-toolbar-title v-text="title" />
       <v-spacer />
+      <!-- <div class="text-center">
+        <v-menu
+          v-model="menu"
+          :close-on-content-click="false"
+          :nudge-width="100"
+          open-on-hover
+          offset-y
+        >
+          <template #activator="{ on, attrs }">
+            <v-btn color="indigo" text dark v-bind="attrs" v-on="on">
+              {{ 'nom utilisateur' }}
+            </v-btn>
+          </template>
+
+          <v-card>
+            <v-list>
+              <v-list-item>
+                <v-list-item-avatar>
+                  <img src="/segoor.jpg" :alt="'utilisateur'" />
+                </v-list-item-avatar>
+
+                <v-list-item-content>
+                  <v-list-item-title>{{ 'nom utilisateur' }}</v-list-item-title>
+                  <v-list-item-subtitle>Administrateur</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <v-divider></v-divider>
+            <v-list>
+              <v-list-item-icon>
+                <v-icon color="orange darken-2" v-text="'mdi-account'"></v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title v-text="'profile'"></v-list-item-title>
+              </v-list-item-content>
+            </v-list>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" text @click="menu = false"> Fermer </v-btn>
+              <v-btn color="error" text @click="logout"> Deconnexion </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-menu>
+      </div> -->
       <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>mdi-menu</v-icon>
       </v-btn> -->
@@ -81,6 +125,7 @@ export default {
   components: { SnackbarComponent, AlertComponent },
   data() {
     return {
+      menu: false,
       clipped: false,
       drawer: true,
       fixed: false,
@@ -92,6 +137,9 @@ export default {
   },
   computed: {
     ...mapGetters(['modules']),
+  },
+  methods: {
+    async logout() {},
   },
 }
 </script>

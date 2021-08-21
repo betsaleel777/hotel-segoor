@@ -9,7 +9,7 @@
       <v-card-title class="grey lighten-2">
         <span class="headline primary--text">Ajouter un article</span>
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="reinitialise">
+        <v-btn color="error" icon @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>

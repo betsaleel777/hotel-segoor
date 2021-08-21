@@ -1,18 +1,23 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
-    <template #activator="{ on, attrs }">
-      <v-btn
-        v-bind="attrs"
-        color="primary"
-        dark
-        absolute
-        bottom
-        right
-        fab
-        v-on="on"
-      >
-        <v-icon>mdi-plus-circle</v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" persistent max-width="600px">
+    <template #activator="{ on: dialog, attrs }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            v-bind="attrs"
+            color="primary"
+            dark
+            absolute
+            bottom
+            right
+            fab
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon>mdi-plus-circle</v-icon>
+          </v-btn>
+        </template>
+        <span>completer</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title>
@@ -69,7 +74,7 @@ export default {
       montant: null,
     })
     return {
-      dialog: false,
+      dialogue: false,
       versement: Object.assign({}, defaultForm),
       hint: '',
       errors: {
@@ -80,7 +85,7 @@ export default {
   methods: {
     reinitialise() {
       this.$refs.form.reset()
-      this.dialog = false
+      this.dialogue = false
     },
     save() {
       this.$axios

@@ -42,16 +42,22 @@
                   {{ item.quantite + ' ' }}{{ item.mesure }}
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <v-btn
-                    :to="'/stock/achat/' + item.id"
-                    color="pink"
-                    elevation="1"
-                    icon
-                    fab
-                    dark
-                    x-small
-                    ><v-icon small> mdi-eye</v-icon></v-btn
-                  >
+                  <v-tooltip top>
+                    <template #activator="{ on: tooltip }">
+                      <v-btn
+                        :to="'/stock/achat/' + item.id"
+                        color="pink"
+                        elevation="1"
+                        icon
+                        fab
+                        dark
+                        x-small
+                        v-on="{ ...tooltip }"
+                        ><v-icon small> mdi-eye</v-icon></v-btn
+                      >
+                    </template>
+                    <span>visualiser achats</span>
+                  </v-tooltip>
                 </template>
               </v-data-table>
             </v-col>
@@ -79,7 +85,6 @@ export default {
       produits: [],
       achats: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Description', value: 'nom' },
         { text: 'Disponible', value: 'quantite' },
         { text: 'Actions', value: 'actions', sortable: false },

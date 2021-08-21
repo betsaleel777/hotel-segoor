@@ -82,7 +82,6 @@ export default {
       plats: [],
       categories: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Nom', value: 'nom' },
         { text: 'Categorie', value: 'categorieNom', sortable: false },
         { text: 'Coût de revient', value: 'achat' },

@@ -11,7 +11,7 @@
           >Ajouter ingrédient de préparation</span
         >
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="reinitialise">
+        <v-btn color="error" icon @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -30,7 +30,11 @@
                   dense
                   label="Ingrédient"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Ingrédient<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="6">
                 <v-text-field
@@ -40,7 +44,11 @@
                   dense
                   type="number"
                   label="Quantité"
-                ></v-text-field>
+                >
+                  <template #label>
+                    Quantité<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-textarea
@@ -55,13 +63,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="close"> annuler </v-btn>
-        <v-btn
-          :disabled="!activeConfirm"
-          color="blue darken-1"
-          text
-          @click="addItem"
-        >
+        <v-btn color="error" text @click="close"> annuler </v-btn>
+        <v-btn :disabled="!activeConfirm" color="primary" text @click="addItem">
           confirmer
         </v-btn>
       </v-card-actions>

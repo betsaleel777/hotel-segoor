@@ -75,7 +75,6 @@ export default {
     return {
       search: '',
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Designation', value: 'nom', sortable: false },
         { text: 'Prix de vente', value: 'montant' },
         { text: 'Actions', value: 'actions', sortable: false },

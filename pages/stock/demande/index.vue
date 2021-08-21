@@ -39,7 +39,7 @@
                   </v-chip>
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <show-demande :item="item" />
+                  <show-demande-stock :item="item" />
                   <process-demande
                     v-if="item.status === 'en cours'"
                     :item="item"
@@ -61,20 +61,19 @@
 /* eslint-disable camelcase */
 import SideStock from '~/components/stock/SideStock.vue'
 import ProcessDemande from '~/components/stock/demande/ProcessDemande'
-import ShowDemande from '~/components/restaurant/demande/ShowDemande.vue'
+import ShowDemandeStock from '~/components/stock/demande/ShowDemandeStock.vue'
 
 export default {
   components: {
     SideStock,
     ProcessDemande,
-    ShowDemande,
+    ShowDemandeStock,
   },
   data() {
     return {
       search: '',
       demandes: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Titre', value: 'titre', sortable: false },
         { text: 'Département', value: 'departement.nom', sortable: false },
         { text: 'Statut', value: 'status', sortable: false },
@@ -94,6 +93,7 @@ export default {
         id,
         departement_linked,
         produits,
+        sortie,
       } = demande
       return {
         id,
@@ -103,6 +103,7 @@ export default {
         created_at: this.$moment(created_at).format('ll'),
         produits,
         departement: { id: departement_linked.id, nom: departement_linked.nom },
+        sortie,
       }
     })
     this.demandes = demandes

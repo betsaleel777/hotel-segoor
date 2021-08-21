@@ -11,7 +11,11 @@
         outlined
         label="Articles"
         required
-      ></v-autocomplete>
+      >
+        <template #label>
+          Articles<span class="red--text"><strong> *</strong></span>
+        </template>
+      </v-autocomplete>
     </v-col>
     <v-col cols="4">
       <v-text-field
@@ -20,10 +24,13 @@
         outlined
         label="Nombre de tournée"
         type="number"
-        suffix="tournée(s)"
         min="0"
         required
-      ></v-text-field>
+      >
+        <template #label>
+          Nombre de tournée<span class="red--text"><strong> *</strong></span>
+        </template>
+      </v-text-field>
     </v-col>
     <v-col cols="1">
       <v-btn dark color="primary" elevation="4" fab small @click="addTournee"

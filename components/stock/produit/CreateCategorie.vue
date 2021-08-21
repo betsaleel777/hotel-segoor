@@ -33,7 +33,11 @@
                   outlined
                   label="Nom"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Nom <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
             </v-row>
           </v-container>

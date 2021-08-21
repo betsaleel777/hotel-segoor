@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
+  <v-dialog v-model="dialog" persistent max-width="620px">
     <template #activator="{ on, attrs }">
       <v-btn
         v-if="floating"
@@ -57,7 +57,12 @@
                   outlined
                   label="Description"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Description
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-checkbox
@@ -83,16 +88,16 @@
                   row
                   @change="mesureCheck"
                 >
-                  <v-radio
-                    label="Unité"
-                    color="primary"
-                    value="unité"
-                  ></v-radio>
-                  <v-radio
-                    label="Mesure"
-                    color="primary"
-                    value="poids"
-                  ></v-radio>
+                  <v-radio label="Unité" color="primary" value="unité">
+                    <template #label>
+                      Unité <span class="red--text"><strong>* </strong></span>
+                    </template>
+                  </v-radio>
+                  <v-radio label="Mesure" color="primary" value="poids">
+                    <template #label>
+                      Mesure <span class="red--text"><strong>* </strong></span>
+                    </template>
+                  </v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="7">
@@ -103,16 +108,22 @@
                   dense
                   row
                 >
-                  <v-radio
-                    label="Standard"
-                    color="primary"
-                    value="standard"
-                  ></v-radio>
+                  <v-radio label="Standard" color="primary" value="standard">
+                    <template #label>
+                      Standard
+                      <span class="red--text"><strong>* </strong></span>
+                    </template>
+                  </v-radio>
                   <v-radio
                     label="Assaisonement"
                     color="primary"
                     value="assaisonement"
-                  ></v-radio>
+                  >
+                    <template #label>
+                      Assaisonement
+                      <span class="red--text"><strong>* </strong></span>
+                    </template>
+                  </v-radio>
                 </v-radio-group>
               </v-col>
               <v-col v-if="mesurable" cols="12">
@@ -146,7 +157,11 @@
                   outlined
                   label="Categorie"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Categorie <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="1">
                 <create-categorie @new-categorie="pushCategorie" />
@@ -209,23 +224,22 @@ export default {
     },
   },
   data: () => {
-    const defaultForm = {
-      mode: '',
-      type: '',
-      image: [],
-      nom: '',
-      mesure: '',
-      montant: 0,
-      pour_plat: false,
-      pour_tournee: false,
-      description: '',
-      etagere: '',
-      categorie: {},
-    }
     return {
       dialog: false,
       mesurable: false,
-      produit: defaultForm,
+      produit: {
+        mode: '',
+        type: '',
+        image: [],
+        nom: '',
+        mesure: '',
+        montant: 0,
+        pour_plat: false,
+        pour_tournee: false,
+        description: '',
+        etagere: '',
+        categorie: null,
+      },
       priceDisabled: false,
       errors: {
         mode: { exist: false, message: null },
@@ -244,7 +258,19 @@ export default {
   },
   methods: {
     reinitialise() {
-      this.$refs.form.reset()
+      this.produit = {
+        mode: '',
+        type: '',
+        image: [],
+        nom: '',
+        mesure: '',
+        montant: 0,
+        pour_plat: false,
+        pour_tournee: false,
+        description: '',
+        etagere: '',
+        categorie: null,
+      }
       errorsInitialise(this.errors)
       this.dialog = false
     },

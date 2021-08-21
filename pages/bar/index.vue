@@ -24,7 +24,6 @@
 
 <script>
 import SideGestionBar from '~/components/bar/SideGestionBar.vue'
-
 export default {
   components: {
     SideGestionBar,

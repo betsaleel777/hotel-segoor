@@ -1,9 +1,22 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500px">
-    <template #activator="{ on }">
-      <v-btn elevation="1" icon fab dark x-small color="pink" v-on="on">
-        <v-icon small> mdi-eye </v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" max-width="500px">
+    <template #activator="{ on: dialog }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            color="pink"
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small> mdi-eye </v-icon>
+          </v-btn>
+        </template>
+        <span>visualiser</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline"
@@ -87,7 +100,7 @@ export default {
     },
   },
   data: () => ({
-    dialog: false,
+    dialogue: false,
     versements: [],
     objet: {},
     chambre: {},
@@ -117,7 +130,7 @@ export default {
   },
   methods: {
     closeShow() {
-      this.dialog = false
+      this.dialogue = false
     },
   },
 }

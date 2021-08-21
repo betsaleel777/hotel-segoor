@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-gestion-chambre />
+              <side-parametre />
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
@@ -70,17 +70,17 @@
 </template>
 
 <script>
-import SideGestionChambre from '~/components/gestion-chambre/SideGestionChambre.vue'
-import CreateFormModal from '~/components/gestion-chambre/chambre/CreateChambreForm.vue'
-import EditChambreForm from '~/components/gestion-chambre/chambre/EditChambreForm.vue'
-import DeleteChambreForm from '~/components/gestion-chambre/chambre/DeleteChambreForm.vue'
+import CreateFormModal from '~/components/parametre/chambre/CreateChambreForm.vue'
+import EditChambreForm from '~/components/parametre/chambre/EditChambreForm.vue'
+import DeleteChambreForm from '~/components/parametre/chambre/DeleteChambreForm.vue'
+import SideParametre from '~/components/parametre/SideParametre.vue'
 
 export default {
   components: {
-    SideGestionChambre,
     CreateFormModal,
     EditChambreForm,
     DeleteChambreForm,
+    SideParametre,
   },
   data() {
     return {
@@ -88,7 +88,6 @@ export default {
       chambres: [],
       categories: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Nom', value: 'nom', sortable: false },
         { text: 'Standing', value: 'standing', sortable: false },
         { text: 'Status', value: 'status', sortable: false },

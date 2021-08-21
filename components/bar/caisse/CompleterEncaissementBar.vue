@@ -1,18 +1,23 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="900px">
-    <template #activator="{ on, attrs }">
-      <v-btn
-        v-bind="attrs"
-        color="primary"
-        elevation="1"
-        icon
-        fab
-        dark
-        x-small
-        v-on="on"
-      >
-        <v-icon small>mdi-cart-plus</v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" persistent max-width="900px">
+    <template #activator="{ on: dialog, attrs }">
+      <v-tooltip>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            v-bind="attrs"
+            color="primary"
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small>mdi-cart-plus</v-icon>
+          </v-btn>
+        </template>
+        <span>completer</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
@@ -91,7 +96,7 @@ export default {
   },
   data() {
     return {
-      dialog: false,
+      dialogue: false,
       articles: [],
       produitsSelected: [],
     }
@@ -118,7 +123,7 @@ export default {
   },
   methods: {
     reinitialise() {
-      this.dialog = false
+      this.dialogue = false
     },
     save() {
       const plats = this.articles.filter((article) => article.genre === 'plats')

@@ -1,8 +1,12 @@
 import colors from 'vuetify/es5/util/colors'
+import { fr } from 'vuetify/lib/locale'
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   ssr: false,
+  env: {
+    AUTH_API: process.env.AUTH_API || 'http://localhost:8000',
+  },
   head: {
     titleTemplate: '%s - hotel-segoor',
     title: 'hotel-segoor',
@@ -38,22 +42,11 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/toast',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'http://hapi.segoor.net',
-    // baseURL: 'http://localhost:8000', // Can be also an object with default options
-    headers: {
-      'Content-type': 'application/json',
-    },
-  },
-  // toast global configuration
-  toast: {
-    position: 'top-right',
-    theme: 'toasted-primary',
-    duration: 5000,
+    baseURL: process.env.AUTH_API, // Can be also an object with default options
   },
   // moment global configuration
   moment: {
@@ -63,6 +56,11 @@ export default {
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
+    locale: {
+      defaultLocale: 'fr',
+      fallbackLocale: 'fr',
+      messages: { fr },
+    },
     theme: {
       dark: false,
       light: true,

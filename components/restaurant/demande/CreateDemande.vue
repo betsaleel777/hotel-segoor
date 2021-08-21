@@ -41,7 +41,11 @@
                   :error-messages="errors.titre.message"
                   dense
                   label="Titre"
-                ></v-text-field>
+                >
+                  <template #label>
+                    Titre<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
             </v-row>
             <!-- liste des article demandés -->

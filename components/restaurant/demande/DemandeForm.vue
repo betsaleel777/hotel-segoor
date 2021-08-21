@@ -28,7 +28,11 @@
                   dense
                   label="Article"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Article<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="6">
                 <v-text-field
@@ -38,7 +42,11 @@
                   dense
                   type="number"
                   label="Quantité"
-                ></v-text-field>
+                >
+                  <template #label>
+                    Quantité<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
             </v-row>
           </v-container>

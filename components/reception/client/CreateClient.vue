@@ -47,7 +47,11 @@
                   outlined
                   label="Nom"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Nom<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
@@ -58,7 +62,11 @@
                   outlined
                   label="Prenom"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Prenom <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
@@ -72,77 +80,45 @@
               <v-col cols="12">
                 <v-text-field
                   v-model="client.pere"
-                  :error="errors.pere.exist"
-                  :error-messages="errors.pere.message"
                   dense
                   outlined
                   label="Nom complet du père"
-                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
                   v-model="client.mere"
-                  :error="errors.mere.exist"
-                  :error-messages="errors.mere.message"
                   dense
                   outlined
                   label="Nom complet du mère"
-                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
                   v-model="client.pays"
-                  :error="errors.pays.exist"
-                  :error-messages="errors.pays.message"
                   label="Pays d'origine"
                   required
                 >
                 </v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  ref="menu1"
-                  v-model="menu1"
-                  :close-on-content-click="false"
-                  :return-value.sync="client.naissance"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <v-text-field
+                  v-model="client.naissance"
+                  :error="errors.naissance.exist"
+                  :error-messages="errors.naissance.message"
+                  label="Date de Naissance"
+                  type="date"
+                  required
                 >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="client.naissance"
-                      :error="errors.naissance.exist"
-                      :error-messages="errors.naissance.message"
-                      label="Date de Naissance"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                  <template #label>
+                    Date de Naissance
+                    <span class="red--text"><strong>* </strong></span>
                   </template>
-                  <v-date-picker v-model="client.naissance" no-title scrollable>
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu1 = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu1.save(client.naissance)"
-                    >
-                      OK
-                    </v-btn>
-                  </v-date-picker>
-                </v-menu>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
                   v-model="client.domicile"
-                  :error="errors.domicile.exist"
-                  :error-messages="errors.domicile.message"
                   dense
                   outlined
                   label="Domicilier à "
@@ -163,8 +139,6 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="client.contact"
-                  :error="errors.contact.exist"
-                  :error-messages="errors.contact.message"
                   dense
                   outlined
                   label="Téléphone"
@@ -185,8 +159,6 @@
               <v-col cols="12">
                 <v-text-field
                   v-model="client.profession"
-                  :error="errors.profession.exist"
-                  :error-messages="errors.profession.message"
                   dense
                   outlined
                   label="Profession"
@@ -207,12 +179,18 @@
                   :error-messages="errors.nature.message"
                   row
                 >
-                  <v-radio label="CNI" color="primary" value="cni"></v-radio>
-                  <v-radio
-                    label="Passeport"
-                    color="primary"
-                    value="passeport"
-                  ></v-radio>
+                  <v-radio label="CNI" color="primary" value="cni">
+                    <template #label>
+                      CNI
+                      <span class="red--text"><strong> *</strong></span>
+                    </template>
+                  </v-radio>
+                  <v-radio label="Passeport" color="primary" value="passeport">
+                    <template #label>
+                      Passeport
+                      <span class="red--text"><strong> *</strong></span>
+                    </template>
+                  </v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="12">
@@ -223,87 +201,33 @@
                   dense
                   outlined
                   label="Numéro"
-                ></v-text-field>
+                >
+                  <template #label>
+                    Numéro <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  ref="menu2"
-                  v-model="menu2"
-                  :close-on-content-click="false"
-                  :return-value.sync="piece.delivre_le"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <v-text-field
+                  v-model="piece.delivre_le"
+                  label="Délivré le"
+                  type="date"
+                  required
                 >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="piece.delivre_le"
-                      :error="errors.delivre_le.exist"
-                      :error-messages="errors.delivre_le.message"
-                      label="Délivré le"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker v-model="piece.delivre_le" no-title scrollable>
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu2 = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu2.save(piece.delivre_le)"
-                    >
-                      OK
-                    </v-btn>
-                  </v-date-picker>
-                </v-menu>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-menu
-                  ref="menu3"
-                  v-model="menu3"
-                  :close-on-content-click="false"
-                  :return-value.sync="piece.expire_le"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <v-text-field
+                  v-model="piece.expire_le"
+                  label="Expire le"
+                  type="date"
+                  required
                 >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="piece.expire_le"
-                      :error="errors.expire_le.exist"
-                      :error-messages="errors.expire_le.message"
-                      label="Expire le"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker v-model="piece.expire_le" no-title scrollable>
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu3 = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu3.save(piece.expire_le)"
-                    >
-                      OK
-                    </v-btn>
-                  </v-date-picker>
-                </v-menu>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
                   v-model="piece.lieu_piece"
-                  :error="errors.lieu_piece.exist"
-                  :error-messages="errors.lieu_piece.message"
                   outlined
                   dense
                   label="à ..."
@@ -312,53 +236,19 @@
               <v-col cols="6">
                 <v-text-field
                   v-model="piece.maker"
-                  :error="errors.maker.exist"
-                  :error-messages="errors.maker.message"
                   outlined
                   dense
                   label="Par ..."
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-menu
-                  ref="menu4"
-                  v-model="menu4"
-                  :close-on-content-click="false"
-                  :return-value.sync="piece.entree_pays"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
+                <v-text-field
+                  v-model="piece.entree_pays"
+                  label="Date d'entrée dans le pays"
+                  type="date"
+                  required
                 >
-                  <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="piece.entree_pays"
-                      :error="errors.entree_pays.exist"
-                      :error-messages="errors.entree_pays.message"
-                      label="Date d'entrée dans le pays"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="piece.entree_pays"
-                    no-title
-                    scrollable
-                  >
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu4 = false">
-                      Cancel
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menu4.save(piece.entree_pays)"
-                    >
-                      OK
-                    </v-btn>
-                  </v-date-picker>
-                </v-menu>
+                </v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -394,7 +284,6 @@ export default {
     },
   },
   data: () => ({
-    menu1: false,
     dialog: false,
     client: {
       nom: '',
@@ -413,13 +302,8 @@ export default {
     errors: {
       nom: { exist: false, message: null },
       prenom: { exist: false, message: null },
-      pere: { exist: false, message: null },
-      mere: { exist: false, message: null },
       naissance: { exist: false, message: null },
-      pays: { exist: false, message: null },
-      domicile: { exist: false, message: null },
       contact: { exist: false, message: null },
-      profession: { exist: false, message: null },
     },
   }),
   methods: {

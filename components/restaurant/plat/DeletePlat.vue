@@ -1,9 +1,22 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500px">
-    <template #activator="{ on }">
-      <v-btn elevation="1" icon fab dark x-small color="error" v-on="on">
-        <v-icon small> mdi-delete </v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" max-width="500px">
+    <template #activator="{ on: dialog }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            color="error"
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small> mdi-delete </v-icon>
+          </v-btn>
+        </template>
+        <span>supprimer</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="justify-center error--text headline"
@@ -11,13 +24,11 @@
       </v-card-title>
       <v-card-text justify="center" align="center">
         Voulez vous réelement supprimer du plat
-        <b>{{ item.nom.toUpperCase() }}</b
-        ><br />
-        code: <b>{{ item.code }}</b>
+        <b>{{ item.nom.toUpperCase() }}</b>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="closeDelete">Cancel</v-btn>
+        <v-btn color="error" text @click="dialogue = false">Fermer</v-btn>
         <v-btn color="primary" text @click="deleteItemConfirm(item.id)"
           >OK</v-btn
         >
@@ -37,7 +48,7 @@ export default {
   },
   data: () => {
     return {
-      dialog: false,
+      dialogue: false,
     }
   },
   methods: {
@@ -45,12 +56,9 @@ export default {
       this.$axios.delete('/restaurant/plats/' + id).then((result) => {
         const { message, plat } = result.data
         this.$notifier.show({ text: message, variant: 'success' })
-        this.closeDelete()
+        this.dialogue = false
         this.$emit('deleted-plat', plat)
       })
-    },
-    closeDelete() {
-      this.dialog = false
     },
   },
 }

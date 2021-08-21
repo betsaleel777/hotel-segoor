@@ -12,26 +12,32 @@
               <side-restaurant />
             </v-col>
             <v-col cols="9">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="recherche ..."
-                single-line
-                hide-details
-              ></v-text-field>
-              <v-data-table
-                no-data-text="Inventaire vide"
-                :loading="$fetchState.pending"
-                loading-text="En chargement ..."
-                :headers="headers"
-                :items="lignes"
-                :search="search"
-                :items-per-page="10"
-              >
-                <template #[`item.disponible`]="{ item }">
-                  {{ item.disponible + ' ' }}{{ item.mesure }}
-                </template>
-              </v-data-table>
+              <v-row>
+                <v-col cols="2"></v-col>
+                <v-col cols="8">
+                  <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="recherche ..."
+                    single-line
+                    hide-details
+                  ></v-text-field>
+                  <v-data-table
+                    no-data-text="Inventaire vide"
+                    :loading="$fetchState.pending"
+                    loading-text="En chargement ..."
+                    :headers="headers"
+                    :items="lignes"
+                    :search="search"
+                    :items-per-page="10"
+                  >
+                    <template #[`item.disponible`]="{ item }">
+                      {{ item.disponible + ' ' }}{{ item.mesure }}
+                    </template>
+                  </v-data-table>
+                </v-col>
+                <v-col cols="2"></v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-card-text>
@@ -53,7 +59,6 @@ export default {
       search: '',
       lignes: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Description', value: 'nom' },
         { text: 'Disponible', value: 'disponible' },
       ],

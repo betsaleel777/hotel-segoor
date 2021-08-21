@@ -48,20 +48,16 @@
                   </v-chip>
                 </template>
                 <template #[`item.prix`]="{ item }">
-                  <div class="text-right">
-                    {{ item.prix }}
-                  </div>
+                  {{ item.prix }} FCFA
                 </template>
                 <template #[`item.montant`]="{ item }">
-                  <div class="text-right">
-                    {{ item.vendues * item.prix }}
-                  </div>
+                  {{ item.vendues * item.prix }} FCFA
                 </template>
                 <template #[`body.append`]>
                   <tr>
-                    <td colspan="5"><b>Montant total vendu</b></td>
+                    <td colspan="4"><b>Montant total vendu</b></td>
                     <td class="text-right">
-                      <b>{{ total }}</b>
+                      <b>{{ total }} FCFA</b>
                     </td>
                   </tr>
                 </template>
@@ -90,12 +86,11 @@ export default {
       lignes: [],
       total: 0,
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
-        { text: 'Description', value: 'nom' },
-        { text: 'Type Article', value: 'type' },
-        { text: 'Quantités', value: 'vendues' },
-        { text: 'Prix de vente', value: 'prix' },
-        { text: 'Montant', value: 'montant' },
+        { text: 'Description', value: 'nom', align: 'left' },
+        { text: 'Type Article', value: 'type', align: 'center' },
+        { text: 'Quantités', value: 'vendues', align: 'center' },
+        { text: 'Prix de vente', value: 'prix', align: 'right' },
+        { text: 'Montant', value: 'montant', align: 'right' },
       ],
     }
   },

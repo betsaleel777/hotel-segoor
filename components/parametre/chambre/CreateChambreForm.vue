@@ -40,7 +40,11 @@
                   outlined
                   label="libelle"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    libelle<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="4">
                 <v-text-field
@@ -51,7 +55,11 @@
                   outlined
                   label="Prix"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Prix<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="12" sm="9" md="11">
                 <v-autocomplete
@@ -65,7 +73,11 @@
                   outlined
                   label="Categorie"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Standing<span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="12" sm="3" md="1">
                 <create-categorie-form @new-categorie="pushCategorie" />

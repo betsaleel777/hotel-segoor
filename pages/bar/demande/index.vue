@@ -59,8 +59,8 @@
 </template>
 
 <script>
-import SideGestionBar from '~/components/bar/SideGestionBar.vue'
 /* eslint-disable camelcase */
+import SideGestionBar from '~/components/bar/SideGestionBar.vue'
 import CreateDemande from '~/components/restaurant/demande/CreateDemande.vue'
 import ShowDemande from '~/components/restaurant/demande/ShowDemande.vue'
 
@@ -75,10 +75,9 @@ export default {
       search: '',
       demandes: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Titre', value: 'titre', sortable: false },
-        { text: 'Statut', value: 'status', sortable: false },
-        { text: 'Date', value: 'created_at' },
+        { text: 'Statut', value: 'status', align: 'center', sortable: false },
+        { text: 'Date', value: 'created_at', align: 'center' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
@@ -98,6 +97,7 @@ export default {
         id,
         departement_linked,
         produits,
+        sortie,
       } = demande
       return {
         id,
@@ -107,6 +107,7 @@ export default {
         created_at: this.$moment(created_at).format('ll'),
         produits,
         departement: departement_linked.id,
+        sortie,
       }
     })
     this.demandes = demandes

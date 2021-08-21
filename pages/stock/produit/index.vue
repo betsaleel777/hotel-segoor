@@ -78,7 +78,6 @@ export default {
       produits: [],
       categories: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
         { text: 'Description', value: 'nom' },
         { text: 'Famille', value: 'categorie.nom' },
         { text: 'Actions', value: 'actions', sortable: false },

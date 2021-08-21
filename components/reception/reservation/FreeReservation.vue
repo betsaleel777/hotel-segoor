@@ -16,10 +16,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-4" text @click="closeDelete">Cancel</v-btn>
-        <v-btn color="blue darken-4" text @click="freeItemConfirm(item.id)"
-          >OK</v-btn
-        >
+        <v-btn color="error" text @click="closeDelete">Fermer</v-btn>
+        <v-btn color="primary" text @click="freeItemConfirm(item.id)">OK</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>

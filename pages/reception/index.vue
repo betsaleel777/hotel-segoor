@@ -7,23 +7,20 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <side-reception />
-            </v-col>
-            <v-col cols="12" sm="6" md="9">
-              <v-toolbar class="elevation-0">
-                <!-- <v-toolbar-title>Title</v-toolbar-title> -->
-                <v-spacer></v-spacer>
-                <v-btn color="indigo">
-                  <v-icon left>mdi-cash-multiple</v-icon>Paiements
-                </v-btn>
-              </v-toolbar>
-            </v-col>
-            <v-col justify="center" align="center" cols="12" sm="6" md="12">
-              <FullCalendar ref="calendrier" :options="calendarOptions" />
-            </v-col>
-          </v-row>
+          <v-toolbar class="elevation-0">
+            <side-reception />
+            <v-spacer></v-spacer>
+            <v-btn color="blue" nuxt to="/reception/reservation">
+              <v-icon color="white" left>mdi-shield-home</v-icon>Reservations
+            </v-btn>
+            <v-btn class="ml-2" color="amber" nuxt to="/reception/hall">
+              <v-icon color="white" left>mdi-home-circle</v-icon>Hébergements
+            </v-btn>
+            <v-btn class="ml-2" color="indigo">
+              <v-icon color="white" left>mdi-cash-multiple</v-icon>Paiements
+            </v-btn>
+          </v-toolbar>
+          <FullCalendar ref="calendrier" :options="calendarOptions" />
         </v-card-text>
         <v-card-actions></v-card-actions>
       </v-card>
@@ -77,7 +74,7 @@ import DetailsReception from '~/components/reception/dashboard/DetailsReception.
 import DetailsReservation from '~/components/reception/dashboard/DetailsReservation.vue'
 import CreateReservation from '~/components/reception/dashboard/CreateReservation'
 import CreateReception from '~/components/reception/dashboard/CreateReception'
-import SideReception from '~/components/reception/SideReception.vue'
+import SideReception from '~/components/reception/SideReceptionPrincipale.vue'
 import EditEvent from '~/components/reception/dashboard/EditEvent.vue'
 
 export default {
@@ -113,6 +110,8 @@ export default {
           center: 'title',
           right: 'resourceTimelineMonth',
         },
+        height: 450,
+        resourceAreaHeaderContent: 'CHAMBRES',
         editable: true,
         selectable: true,
         selectOverlap: false,
@@ -124,6 +123,7 @@ export default {
         select: this.handleSelect,
         eventClick: this.handleEventClick,
         eventResize: this.handleResize,
+        eventDidMount: this.eventRender,
         resources(fetchInfo, successCallback, failureCallback) {
           $axios.get('gestion-chambre/chambres').then((result) => {
             const chambres = result.data.chambres.map((chambre) => {
@@ -136,20 +136,30 @@ export default {
         events(fetchInfo, successCallback, failureCallback) {
           $axios.get('reception/reservations/events').then((result) => {
             const events = result.data.events.map((event) => {
+              const colorize = () => {
+                if (event.status === 'occupée') {
+                  return '#E53935'
+                } else if (event.status === 'libérée') {
+                  return '#66BB6A'
+                } else if (event.status === 'annulée') {
+                  return '#FFCA28'
+                } else {
+                  return '#1E88E5'
+                }
+              }
               return {
                 id: event.id,
                 resourceId: event.chambre,
-                title: `${event.code} ${event.client_linked.nom}-${event.client_linked.contact}`,
+                title: `${event.client_linked.nom.toUpperCase()} ${event.client_linked.prenom.toUpperCase()} ${
+                  event.client_linked.contact
+                }`,
                 start: moment(event.entree).format('YYYY-MM-DD').toString(),
                 end: moment(event.sortie).format('YYYY-MM-DD').toString(),
-                backgroundColor:
-                  event.reservation === null || event.attribution !== null
-                    ? 'red'
-                    : 'blue',
+                backgroundColor: colorize(),
                 // eventBorderColor:
                 // eventTextColor:
                 extendedProps: {
-                  attribution: event.attribution,
+                  status: event.status,
                 },
                 overlap: false,
               }
@@ -162,7 +172,10 @@ export default {
   },
   async mounted() {
     const calebasse = await this.$axios.get('reception/clients')
-    const clients = calebasse.data.clients
+    const clients = calebasse.data.clients.map((client) => {
+      const { nom, prenom, ...rest } = client
+      return { nom: nom + ' ' + prenom, ...rest }
+    })
     const calendar = this.$refs.calendrier.getApi()
     this.events = calendar.getEvents()
     this.clients = clients
@@ -181,7 +194,7 @@ export default {
         // console.log('attribution conditions de validation')
       } else if (start.isSame(now) || start.isBefore(now)) {
         this.$notifier.show({
-          text: 'Aucune reservation est permise pour cette date',
+          text: "Aucune modification n'est permise pour cette date",
           variant: 'warning',
         })
         this.refresh()
@@ -190,21 +203,21 @@ export default {
       }
     },
     handleEventClick(info) {
-      if (info.event.backgroundColor === 'red') {
+      const status = info.event.extendedProps.status
+      if (status === 'occupée') {
         this.$axios
           .get('reception/attributions/' + info.event.id)
           .then((result) => {
             this.details = result.data.attribution
             this.dialog1 = true
           })
-      } else if (info.event.backgroundColor === 'green') {
+      } else if (status === 'libérée') {
         this.$axios
           .get('reception/attributions/' + info.event.id)
           .then((result) => {
             this.details = result.data.attribution
             this.dialog1 = true
           })
-        // desactiver le bouton faire payer
       } else {
         this.$axios
           .get('reception/reservations/' + info.event.id)

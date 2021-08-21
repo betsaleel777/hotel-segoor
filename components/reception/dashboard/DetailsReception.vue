@@ -3,7 +3,7 @@
     <v-card v-if="Object.keys(details).length > 0">
       <v-card-title class="grey lighten-2">
         <div class="headline primary--text">
-          Détails de l'hébergement {{ details.code }}, Chambre
+          Détails de l'hébergement,Chambre
           {{ details.chambre_linked.nom }}
         </div>
         <v-spacer></v-spacer>
@@ -17,12 +17,10 @@
             <v-col cols="6">
               <div class="text-left">
                 <h2 :class="getStatusColor">{{ details.status }}</h2>
-                <span>
-                  <p>
-                    <b>Client:</b> {{ fullName }} <br />
-                    <b>Contact:</b> {{ details.client_linked.contact }}
-                  </p>
-                </span>
+                <p>
+                  <b>Client:</b> {{ fullName }} <br />
+                  <b>Contact:</b> {{ details.client_linked.contact }}
+                </p>
               </div>
             </v-col>
             <v-col cols="6">
@@ -43,6 +41,7 @@
                         <th class="text-center">Chambre</th>
                         <th class="text-center">Quantité</th>
                         <th class="text-right">Nuitée</th>
+                        <th class="text-right">Remise</th>
                         <th class="text-right">Montant</th>
                       </tr>
                     </thead>
@@ -55,8 +54,13 @@
                           {{ quantiteNuitee + ' ' }}
                           jours
                         </td>
-                        <td class="text-right">{{ nuitee }} FCFA</td>
-                        <td class="text-right">{{ montant }} FCFA</td>
+                        <td class="text-right">{{ nuiteeAvecRemise }} FCFA</td>
+                        <td class="text-right">
+                          ({{ details.remise }}%), {{ remise }}FCFA
+                        </td>
+                        <td class="text-right">
+                          <b>{{ montant }} FCFA</b>
+                        </td>
                       </tr>
                     </tbody>
                   </template>
@@ -76,7 +80,6 @@
                     <thead>
                       <tr>
                         <th class="text-center">Date</th>
-                        <th class="text-center">Code</th>
                         <th class="text-left">Désignation</th>
                         <th class="text-center">Quantité</th>
                         <th class="text-right">Prix</th>
@@ -88,7 +91,6 @@
                         <td class="text-center">
                           {{ $moment(item.jour).format('llll') }}
                         </td>
-                        <td class="text-center">{{ item.code }}</td>
                         <td class="text-left">{{ item.nom }}</td>
                         <td class="text-center">{{ item.quantite }}</td>
                         <td class="text-right">{{ item.prix }} FCFA</td>
@@ -99,9 +101,19 @@
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td class="text-right" colspan="5"><b>Total</b></td>
+                        <td class="text-right" colspan="4">
+                          <b>Total de consommation</b>
+                        </td>
                         <td class="text-right">
                           <b>{{ total }} FCFA</b>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="text-right" colspan="4">
+                          <b>Frais d'hôtel</b>
+                        </td>
+                        <td class="text-right">
+                          <b>{{ total + montant }} FCFA</b>
                         </td>
                       </tr>
                     </tfoot>
@@ -177,7 +189,7 @@
           @new-versement="pushVersement"
           @paid="onPaid"
         />
-        <print-facture :item="details" />
+        <print-facture :item="details" :total="totalVerse" @free="onFree" />
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -258,7 +270,7 @@ export default {
         return null
       }
     },
-    nuitee() {
+    nuiteeAvecRemise() {
       return this.details.prix * (1 - this.details.remise / 100)
     },
     quantiteNuitee() {
@@ -266,10 +278,15 @@ export default {
     },
     montant() {
       if (this.details) {
-        return this.nuitee * this.quantiteNuitee
+        return this.nuiteeAvecRemise * this.quantiteNuitee
       } else {
         return null
       }
+    },
+    remise() {
+      return (
+        ((this.details.prix * this.details.remise) / 100) * this.quantiteNuitee
+      )
     },
     totalVerse() {
       let resultat = 0
@@ -314,9 +331,13 @@ export default {
     },
     pushVersement(versement) {
       this.versements.push(versement)
+      this.dialog = false
     },
     onPaid(versement) {
       this.versements.push(versement)
+      this.dialog = false
+    },
+    onFree() {
       this.dialog = false
     },
   },

@@ -17,7 +17,7 @@
       <v-card-title class="justify-center primary--text headline grey lighten-2"
         ><div>Demande {{ item.code }} du {{ item.created_at }}</div>
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="reinitialise">
+        <v-btn color="error" icon @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -57,14 +57,14 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="close">Fermer</v-btn>
+        <v-btn color="warning" text @click="reject(item.id)">Rejetter</v-btn>
         <v-btn
           :disabled="errorFound"
-          color="green darken-4"
+          color="success"
           text
           @click="accept(item.id)"
           >Valider</v-btn
         >
-        <v-btn color="orange" text @click="reject(item.id)">Rejetter</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>

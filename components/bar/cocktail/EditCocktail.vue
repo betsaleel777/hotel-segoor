@@ -1,24 +1,27 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
-    <template #activator="{ on, attrs }">
-      <v-btn
-        v-bind="attrs"
-        color="primary"
-        elevation="1"
-        icon
-        fab
-        dark
-        x-small
-        v-on="on"
-      >
-        <v-icon small>mdi-pencil</v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" persistent max-width="600px">
+    <template #activator="{ on: dialog, attrs }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            v-bind="attrs"
+            color="primary"
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small>mdi-pencil</v-icon>
+          </v-btn>
+        </template>
+        <span>modifier</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text"
-          >Modifier cocktail {{ item.code }}</span
-        >
+        <span class="headline primary--text">Modifier cocktail</span>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -71,8 +74,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -102,7 +105,7 @@ export default {
       description: null,
     })
     return {
-      dialog: false,
+      dialogue: false,
       cocktail: Object.assign({}, defaultForm),
       errors: {
         nom: { exist: false, message: null },
@@ -130,7 +133,7 @@ export default {
     reinitialise() {
       this.initialisation()
       errorsInitialise(this.errors)
-      this.dialog = false
+      this.dialogue = false
     },
     save() {
       this.$axios

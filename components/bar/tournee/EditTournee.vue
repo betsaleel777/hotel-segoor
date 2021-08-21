@@ -1,23 +1,27 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
-    <template #activator="{ on, attrs }">
-      <v-btn
-        elevation="1"
-        icon
-        fab
-        dark
-        x-small
-        color="primary"
-        v-bind="attrs"
-        v-on="on"
-      >
-        <v-icon small>mdi-pencil</v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" persistent max-width="600px">
+    <template #activator="{ on: dialog, attrs }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            color="primary"
+            v-bind="attrs"
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small>mdi-pencil</v-icon>
+          </v-btn>
+        </template>
+        <span>modifier</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text"
-          >modifier la tournée {{ item.code }}</span
+        <span class="headline primary--text">modifier la tournée </span
         ><v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -36,7 +40,11 @@
                   outlined
                   label="Titre"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Titre <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="4">
                 <v-text-field
@@ -48,7 +56,12 @@
                   label="Le prix de la tournée"
                   type="number"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Prix de la tournée
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
@@ -60,7 +73,12 @@
                   label="Nombre de ballons"
                   type="number"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Nombre de ballons
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
@@ -73,7 +91,12 @@
                   suffix="cl"
                   type="number"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Contenance
+                    <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="9">
                 <v-autocomplete
@@ -85,9 +108,13 @@
                   item-text="nom"
                   dense
                   outlined
-                  label="Produit"
+                  label="Article"
                   required
-                ></v-autocomplete>
+                >
+                  <template #label>
+                    Article <span class="red--text"><strong>* </strong></span>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="3">
                 <create-produit
@@ -141,7 +168,7 @@ export default {
       contenance: null,
     })
     return {
-      dialog: false,
+      dialogue: false,
       tournee: Object.assign({}, defaultForm),
       errors: {
         produit: { exist: false, message: null },
@@ -163,7 +190,7 @@ export default {
     reinitialise() {
       this.tournee = Object.assign({}, this.item)
       errorsInitialise(this.errors)
-      this.dialog = false
+      this.dialogue = false
     },
     pushProduit(produit) {
       this.produitsLocales.push(produit)
@@ -175,7 +202,7 @@ export default {
           const { message, tournee } = result.data
           this.$notifier.show({ text: message, variant: 'success' })
           this.$emit('edited-tournee', tournee)
-          this.dialog = false
+          this.dialogue = false
         })
         .catch((err) => {
           const { data } = err.response
