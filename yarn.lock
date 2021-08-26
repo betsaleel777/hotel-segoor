@@ -908,14 +908,21 @@
   dependencies:
     tslib "^2.0.3"
 
-"@fullcalendar/core@~5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-5.6.0.tgz#c0ea59235047828c9d0409432966bebc71df0bec"
-  integrity sha512-RK7WM2oWAd4GJ3Ib6a3ftTmz2UxUD4N2JmH8ml+E3bprS9/wjnfvZppikx30UxKUBCAzQcBGOKV8GXh0Wk7FvA==
+"@fullcalendar/common@~5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/common/-/common-5.9.0.tgz#e920ebddb5a144b0ec1e3f184dbbbf442ba46d65"
+  integrity sha512-wfUDRg53gzUU7Ng1wqjvvM2ncFx+5PiyCq5k2KjEbMourv7m4Zw6B3xlhpQbfUv3WOnbJgwLLNLFEMcsEJpXBQ==
   dependencies:
-    "@fullcalendar/common" "~5.6.0"
+    tslib "^2.1.0"
+
+"@fullcalendar/core@~5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-5.9.0.tgz#3caa31c87187f64a62252d3dbd57be4b36e8e5f2"
+  integrity sha512-3+zSm8ykXqM2vEGYp4P/BEoR2TB0W9mN6zBGZ6SY9y0nC+Fc0+ZXJmFlYmrEYSdO4kmREnlxntkp1+o9mu8PIQ==
+  dependencies:
+    "@fullcalendar/common" "~5.9.0"
     preact "^10.0.5"
-    tslib "^2.0.3"
+    tslib "^2.1.0"
 
 "@fullcalendar/daygrid@^5.6.0":
   version "5.6.0"
@@ -981,13 +988,13 @@
     "@fullcalendar/scrollgrid" "~5.6.0"
     tslib "^2.0.3"
 
-"@fullcalendar/vue@^5.6.0":
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/vue/-/vue-5.6.0.tgz#a1cff802d18c5175254393ac07547441fe4a5ba5"
-  integrity sha512-GTbWqRE2GTC747CH0fbZzvYhkc6bGYoxUxWR3Pz9HEdQLTPmNu2JWZCNC9z4SpppIQHgbvvz4EAeJxXBg7ruUA==
+"@fullcalendar/vue@^5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/vue/-/vue-5.9.0.tgz#994a9c1e91d3c3799363cf304ad2d9d60c15e385"
+  integrity sha512-P18svkJldj9dz0AZN0PTKzhcXOJJ9Do5T0iI9GNOXu+WqdQJdtBEyl87A+VgWn85CvefWqf5Yc44U4LdW1QjiA==
   dependencies:
-    "@fullcalendar/core" "~5.6.0"
-    tslib "^2.0.3"
+    "@fullcalendar/core" "~5.9.0"
+    tslib "^2.1.0"
 
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
@@ -8447,10 +8454,10 @@ tslib@^1.8.1, tslib@^1.9.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.3:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
-  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
+tslib@^2.0.3, tslib@^2.1.0:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
+  integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
 
 tsutils@^3.17.1:
   version "3.21.0"
