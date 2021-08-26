@@ -93,6 +93,7 @@ export default {
       this.$axios
         .post('parametre/departements/new', {
           nom: this.nom,
+          user: this.user.id,
           description: this.description,
         })
         .then((result) => {

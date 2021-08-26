@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-gestion-bar />
+              <side-stock />
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
@@ -24,6 +24,7 @@
                 <template #[`top`]>
                   <v-toolbar flat>
                     <create-tournee
+                      v-can="'creation tournee'"
                       :produits="produits"
                       :categories="categories"
                       :floating="false"
@@ -50,12 +51,14 @@
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-tournee
+                    v-can="'modification tournee'"
                     :produits="produits"
                     :categories="categories"
                     :item="item"
                     @edited-tournee="tourneeEdited"
                   />
                   <delete-tournee
+                    v-can="'suppression tournee'"
                     :item="item"
                     @deleted-tournee="tourneeDeleted"
                   />
@@ -66,6 +69,7 @@
         </v-card-text>
         <v-card-actions>
           <create-tournee
+            v-can="'creation tournee'"
             :categories="categories"
             :produits="produits"
             @new-tournee="pushTournee"
@@ -78,17 +82,17 @@
 
 <script>
 /* eslint-disable camelcase */
-import SideGestionBar from '~/components/bar/SideGestionBar.vue'
-import CreateTournee from '~/components/bar/tournee/CreateTournee.vue'
-import DeleteTournee from '~/components/bar/tournee/DeleteTournee.vue'
-import EditTournee from '~/components/bar/tournee/EditTournee.vue'
+import CreateTournee from '~/components/stock/tournee/CreateTournee.vue'
+import DeleteTournee from '~/components/stock/tournee/DeleteTournee.vue'
+import EditTournee from '~/components/stock/tournee/EditTournee.vue'
+import SideStock from '~/components/stock/SideStock.vue'
 
 export default {
   components: {
-    SideGestionBar,
     CreateTournee,
     DeleteTournee,
     EditTournee,
+    SideStock,
   },
   data() {
     return {

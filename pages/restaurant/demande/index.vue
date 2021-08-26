@@ -24,6 +24,7 @@
                 <template #[`top`]>
                   <v-toolbar flat>
                     <create-demande
+                      v-can="'creation demande restau'"
                       :from="'restaurant'"
                       :floating="false"
                       @new-demande="pushDemande"
@@ -51,7 +52,11 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-demande :from="'restaurant'" @new-demande="pushDemande" />
+          <create-demande
+            v-can="'creation demande restau'"
+            :from="'restaurant'"
+            @new-demande="pushDemande"
+          />
         </v-card-actions>
       </v-card>
     </v-col>

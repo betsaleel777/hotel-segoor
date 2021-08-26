@@ -17,5 +17,8 @@ export default {
   components: {
     SegoorLogo,
   },
+  created() {
+    this.$gates.setPermissions(this.user.permissions)
+  },
 }
 </script>

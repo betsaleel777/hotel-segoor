@@ -24,6 +24,7 @@
                 <template #[`top`]>
                   <v-toolbar flat>
                     <create-achat
+                      v-can="'creation achat'"
                       :floating="false"
                       :produits="produits"
                       @new-achat="pushAchat"
@@ -64,7 +65,11 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-achat :produits="produits" @new-achat="pushAchat" />
+          <create-achat
+            v-can="'creation achat'"
+            :produits="produits"
+            @new-achat="pushAchat"
+          />
         </v-card-actions>
       </v-card>
     </v-col>

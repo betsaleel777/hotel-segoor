@@ -132,14 +132,14 @@ export default {
     }
   },
   mounted() {
-    this.chambre = Object.assign({}, this.item)
+    this.chambre = this.item
   },
   beforeUpdate() {
     this.categoriesLocales = this.categories
   },
   methods: {
     reinitialise() {
-      this.chambre = Object.assign({}, this.item)
+      this.chambre = this.item
       this.errors = {
         categorie: { exist: false, message: null },
         montant: { exist: false, message: null },

@@ -5,6 +5,7 @@
         <v-list-item
           v-for="(module, i) in sousModulesReception"
           :key="i"
+          v-can="module.permission"
           nuxt
           :to="module.to"
         >

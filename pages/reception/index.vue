@@ -10,13 +10,28 @@
           <v-toolbar class="elevation-0">
             <side-reception />
             <v-spacer></v-spacer>
-            <v-btn color="blue" nuxt to="/reception/reservation">
+            <v-btn
+              v-can="'accès réservation'"
+              color="blue"
+              nuxt
+              to="/reception/reservation"
+            >
               <v-icon color="white" left>mdi-shield-home</v-icon>Reservations
             </v-btn>
-            <v-btn class="ml-2" color="amber" nuxt to="/reception/hall">
+            <v-btn
+              v-can="'acces hébergement'"
+              class="ml-2"
+              color="amber"
+              nuxt
+              to="/reception/hall"
+            >
               <v-icon color="white" left>mdi-home-circle</v-icon>Hébergements
             </v-btn>
-            <v-btn class="ml-2" color="indigo">
+            <v-btn
+              v-can="'accès factures réception'"
+              class="ml-2"
+              color="indigo"
+            >
               <v-icon color="white" left>mdi-cash-multiple</v-icon>Paiements
             </v-btn>
           </v-toolbar>

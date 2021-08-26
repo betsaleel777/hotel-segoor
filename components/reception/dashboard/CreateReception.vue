@@ -87,7 +87,7 @@
                   </template>
                 </v-text-field>
               </v-col>
-              <v-col cols="12">
+              <v-col v-can="'accès remise hébergement'" cols="12">
                 <v-text-field
                   v-model="attribution.remise"
                   type="number"
@@ -197,7 +197,10 @@ export default {
     },
     save() {
       this.$axios
-        .post('reception/attributions/new', { ...this.attribution })
+        .post('reception/attributions/new', {
+          ...this.attribution,
+          user: this.user.id,
+        })
         .then((result) => {
           this.$notifier.show({ text: result.data.message, variant: 'success' })
           this.dialog = false

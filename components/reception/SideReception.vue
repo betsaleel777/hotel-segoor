@@ -5,6 +5,7 @@
         <v-list-item
           v-for="(module, i) in modules"
           :key="i"
+          v-can="module.permission"
           nuxt
           :to="module.to"
         >
@@ -28,16 +29,19 @@ export default {
         icon: 'mdi-home-circle',
         text: 'Hébergements',
         to: '/reception/hall',
+        permission: 'acces hébergement',
       },
       {
         icon: 'mdi-shield-home',
         text: 'Réservation',
         to: '/reception/reservation',
+        permission: 'accès réservation',
       },
       {
         icon: 'mdi-account-group',
         text: 'Gestion de la Clientelle',
         to: '/reception/clientelle',
+        permission: 'acces clientelle',
       },
     ],
   }),

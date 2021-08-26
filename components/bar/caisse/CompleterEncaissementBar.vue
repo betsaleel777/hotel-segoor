@@ -142,6 +142,7 @@ export default {
           boissons,
           tournees,
           cocktails,
+          user: this.user.id,
         })
         .then((result) => {
           const { message, encaissement } = result.data

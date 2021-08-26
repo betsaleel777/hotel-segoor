@@ -97,6 +97,7 @@ export default {
             ? this.versement.reservation.id
             : null,
           montant: this.versement.montant,
+          user: this.user.id,
           mode: this.mode,
         })
         .then((result) => {

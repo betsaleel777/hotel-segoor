@@ -141,6 +141,7 @@ export default {
         .post('bar/cocktails/new', {
           ...this.cocktail,
           ingredients: this.liste,
+          user: this.user.id,
         })
         .then((result) => {
           const { message, cocktail } = result.data

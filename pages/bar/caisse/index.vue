@@ -24,6 +24,7 @@
                 <template #[`top`]>
                   <v-toolbar flat>
                     <create-encaissement-bar
+                      v-can="'creation facture bar'"
                       :produits="produits"
                       :attributions="attributions"
                       :floating="false"
@@ -48,6 +49,7 @@
                   <show-encaissement-bar :item="item" />
                   <completer-encaissement-bar
                     v-if="item.status === 'impayé'"
+                    v-can="'modification facture bar'"
                     :item="item"
                     :produits="produits"
                     @completed-encaissement="encaissementCompleted"
@@ -70,6 +72,7 @@
         </v-card-text>
         <v-card-actions>
           <create-encaissement-bar
+            v-can="'creation facture bar'"
             :produits="produits"
             :attributions="attributions"
             @new-encaissement="pushEncaissement"

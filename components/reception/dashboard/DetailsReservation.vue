@@ -123,6 +123,7 @@
           @reservation-converted="onConvert"
         />
         <paiement-reservation
+          v-can="'accès paiements réception'"
           :reservation="details"
           :total="totalVerse"
           @new-versement="pushVersement"

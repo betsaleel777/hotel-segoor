@@ -6,6 +6,7 @@ export const state = () => ({
         icon: 'mdi-gauge',
         title: 'Dashboard',
         to: '/',
+        permission: 'accès dashboard general',
       },
       sousModules: [],
     },
@@ -15,6 +16,7 @@ export const state = () => ({
         icon: 'mdi-card-account-details',
         title: 'Gestion de la Réception',
         to: '/reception',
+        permission: 'accès gestion réception',
       },
       sousModules: [
         // {
@@ -36,6 +38,7 @@ export const state = () => ({
           icon: 'mdi-account-group',
           text: 'Gestion de la Clientelle',
           to: '/reception/clientelle',
+          permission: 'acces clientelle',
         },
       ],
     },
@@ -45,32 +48,56 @@ export const state = () => ({
         icon: 'mdi-package-variant-closed',
         title: 'Gestion Du Stock',
         to: '/stock',
+        permission: 'acces gestion stock',
       },
       sousModules: [
         {
           icon: 'mdi-cart',
           text: 'Articles',
           to: '/stock/produit',
+          permission: 'acces article',
+        },
+        {
+          icon: 'mdi-food-turkey',
+          text: 'Plats',
+          to: '/stock/plat',
+          permission: 'acces plat',
+        },
+        {
+          icon: 'mdi-glass-cocktail',
+          text: 'Cocktails',
+          to: '/stock/cocktail',
+          permission: 'acces cocktail',
+        },
+        {
+          icon: 'mdi-glass-mug-variant',
+          text: 'Tournées',
+          to: '/stock/tournee',
+          permission: 'acces tournee',
         },
         {
           icon: 'mdi-message-arrow-right',
           text: 'Gestion des Demandes',
           to: '/stock/demande',
+          permission: 'acces demande stock',
         },
         {
           icon: 'mdi-package-variant',
           text: 'Gestion des sorties',
           to: '/stock/sortie',
+          permission: 'acces sortie',
         },
         {
           icon: 'mdi-warehouse',
           text: 'Inventaire',
           to: '/stock/inventaire',
+          permission: 'acces inventaire stock',
         },
         {
           icon: 'mdi-basket-plus',
           text: 'Approvisionements',
           to: '/stock/achat',
+          permission: 'acces achat',
         },
       ],
     },
@@ -80,32 +107,32 @@ export const state = () => ({
         icon: 'mdi-silverware-fork-knife',
         title: 'Gestion Du Restaurant',
         to: '/restaurant',
+        permission: 'acces gestion restaurant',
       },
       sousModules: [
-        {
-          icon: 'mdi-food-turkey',
-          text: 'Plats',
-          to: '/restaurant/plat',
-        },
         {
           icon: 'mdi-message-arrow-right',
           text: 'Gestion des Demandes',
           to: '/restaurant/demande',
+          permission: 'acces demande restau',
         },
         {
           icon: 'mdi-warehouse',
           text: 'Inventaire',
           to: '/restaurant/inventaire',
+          permission: 'acces inventaire restau',
         },
         {
           icon: 'mdi-cash-register',
           text: 'Caisse',
           to: '/restaurant/caisse',
+          permission: 'acces caisse restau',
         },
         {
           icon: 'mdi-bank',
           text: 'Finance',
           to: '/restaurant/finance',
+          permission: 'acces finance restau',
         },
       ],
     },
@@ -115,37 +142,32 @@ export const state = () => ({
         icon: 'mdi-glass-mug',
         title: 'Gestion Du Bar',
         to: '/bar',
+        permission: 'acces gestion bar',
       },
       sousModules: [
-        {
-          icon: 'mdi-glass-cocktail',
-          text: 'Cocktails',
-          to: '/bar/cocktail',
-        },
-        {
-          icon: 'mdi-glass-mug-variant',
-          text: 'Tournées',
-          to: '/bar/tournee',
-        },
         {
           icon: 'mdi-message-arrow-right',
           text: 'Gestion des Demandes',
           to: '/bar/demande',
+          permission: 'acces demande bar',
         },
         {
           icon: 'mdi-warehouse',
           text: 'Inventaire',
           to: '/bar/inventaire',
+          permission: 'acces inventaire bar',
         },
         {
           icon: 'mdi-cash-register',
           text: 'Caisse',
           to: '/bar/caisse',
+          permission: 'acces caisse bar',
         },
         {
           icon: 'mdi-bank',
           text: 'Finance',
           to: '/bar/finance',
+          permission: 'acces finance restau',
         },
       ],
     },
@@ -155,6 +177,7 @@ export const state = () => ({
         icon: 'mdi-home-city',
         title: 'Maintenance hôtel',
         to: '/maintenance',
+        permission: 'acces maintenance hotel',
       },
       sousModules: [
         {
@@ -170,28 +193,33 @@ export const state = () => ({
         icon: 'mdi-cog',
         title: 'Parametres',
         to: '/parametre',
+        permission: 'acces gestion parametre',
       },
       sousModules: [
         {
           icon: 'mdi-shape',
           text: 'Catégories',
           to: '/parametre/categorie',
+          permission: 'acces parametre categorie',
         },
         {
           icon: 'mdi-bed',
           text: 'Chambres',
           to: '/parametre/chambre',
+          permission: 'acces parametre chambre',
         },
         {
           icon: 'mdi-cash',
           text: 'Paiements mobile',
           to: '/parametre/paiement-mobile',
+          permission: 'acces parametre paiement',
         },
-        // {
-        //   icon: 'mdi-sitemap',
-        //   text: 'Départements',
-        //   to: '/parametre/departement',
-        // },
+        {
+          icon: 'mdi-sitemap',
+          text: 'Utilisateurs & rôles',
+          to: '/parametre/user-role',
+          permission: 'acces parametre permission',
+        },
       ],
     },
   ],
@@ -221,14 +249,13 @@ export const getters = {
   sousModulesParametre: (state) => {
     return state.modules[6].sousModules
   },
-  // // authenticate
-  // isAuthenticated(state) {
-  //   return state.auth.loggedIn
-  // },
-
-  // loggedInUser(state) {
-  //   return state.auth.user
-  // },
+  // authenticate
+  isAuthenticated(state) {
+    return state.auth.loggedIn
+  },
+  user(state) {
+    return state.auth.user
+  },
 }
 
 export const mutations = {}

@@ -197,6 +197,7 @@ export default {
             mobile_money: this.versement.mobile_money,
             espece: this.versement.espece,
             cheque: this.versement.cheque,
+            user: this.user.id,
           })
           .then((result) => {
             const { message, versement, status } = result.data

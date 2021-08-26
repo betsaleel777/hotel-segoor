@@ -179,6 +179,7 @@ export default {
             : null,
           montant: this.versement.montant,
           mode: this.mode,
+          user: this.user.id,
         })
         .then((result) => {
           const { message, encaissement } = result.data

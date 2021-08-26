@@ -145,7 +145,10 @@ export default {
     },
     save() {
       this.$axios
-        .post('gestion-chambre/chambres/new', { ...this.chambre })
+        .post('gestion-chambre/chambres/new', {
+          ...this.chambre,
+          user: this.user.id,
+        })
         .then((result) => {
           const { message, chambre } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

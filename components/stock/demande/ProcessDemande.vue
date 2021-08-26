@@ -57,7 +57,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="close">Fermer</v-btn>
-        <v-btn color="warning" text @click="reject(item.id)">Rejetter</v-btn>
+        <v-btn color="warning" text @click="reject">Rejetter</v-btn>
         <v-btn
           :disabled="errorFound"
           color="success"
@@ -126,13 +126,15 @@ export default {
           this.$toast.error(err.response.data.message)
         })
     },
-    reject(id) {
-      this.$axios.get('stock/demandes/reject/' + id).then((result) => {
-        const { message, demande } = result.data
-        this.$notifier.show({ text: message, variant: 'success' })
-        this.close()
-        this.$emit('rejected-demande', demande)
-      })
+    reject() {
+      this.$axios
+        .get('stock/demandes/reject/' + this.item.id)
+        .then((result) => {
+          const { message, demande } = result.data
+          this.$notifier.show({ text: message, variant: 'success' })
+          this.close()
+          this.$emit('rejected-demande', demande)
+        })
     },
     close() {
       // this.articles = Object.freeze(this.item.produits)

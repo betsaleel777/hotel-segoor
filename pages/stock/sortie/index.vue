@@ -23,7 +23,11 @@
               >
                 <template #[`top`]>
                   <v-toolbar flat>
-                    <create-sortie :floating="false" @new-sortie="pushSortie" />
+                    <create-sortie
+                      v-can="'creation sortie'"
+                      :floating="false"
+                      @new-sortie="pushSortie"
+                    />
                     <v-spacer></v-spacer>
                     <v-text-field
                       v-model="search"
@@ -45,7 +49,7 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-sortie @new-sortie="pushSortie" />
+          <create-sortie v-can="'creation sortie'" @new-sortie="pushSortie" />
         </v-card-actions>
       </v-card>
     </v-col>

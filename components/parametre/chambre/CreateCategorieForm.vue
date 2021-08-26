@@ -29,7 +29,12 @@
                   outlined
                   label="Nom"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Nom
+                    <span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -37,8 +42,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> Créer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -63,7 +68,10 @@ export default {
     },
     save() {
       this.$axios
-        .post('gestion-chambre/categories/new', { nom: this.nom })
+        .post('gestion-chambre/categories/new', {
+          nom: this.nom,
+          user: this.user.id,
+        })
         .then((result) => {
           const { message, categorie } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

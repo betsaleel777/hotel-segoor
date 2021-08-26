@@ -2,26 +2,21 @@
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template #activator="{ on, attrs }">
       <v-btn
-        v-if="floating"
-        v-bind="attrs"
-        color="primary"
-        dark
-        absolute
-        bottom
-        right
+        elevation="1"
+        icon
         fab
+        dark
+        x-small
+        color="primary"
+        v-bind="attrs"
         v-on="on"
       >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn v-else v-bind="attrs" dark color="primary" v-on="on">
-        <v-icon left>mdi-plus-thick</v-icon>
-        AJOUTER
+        <v-icon small> mdi-pencil </v-icon>
       </v-btn>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">créer un plat</span>
+        <span class="headline primary--text">modifier un plat</span>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -101,7 +96,10 @@
               </v-col>
             </v-row>
             <!-- liste des ingredients -->
-            <ingredient-list :ingredients="[]" @new-in-list="listeUpdate" />
+            <ingredient-list
+              :ingredients="ingredients"
+              @new-in-list="listeUpdate"
+            />
             <v-row>
               <v-btn
                 :disabled="!(ingredients.length > 0)"
@@ -155,8 +153,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="primary" text @click="save"> Créer </v-btn>
+        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="blue darken-1" text @click="save"> modifier</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -167,6 +165,7 @@ import CreateCategorie from './CreateCategorie.vue'
 import IngredientList from './IngredientList'
 import {
   errorsInitialise,
+  // eslint-disable-next-line no-unused-vars
   errorsWriting,
 } from '~/components/helper/errorsHandle'
 import imagePreviewMixin from '~/components/mixins/ImagePreviewMixin'
@@ -175,27 +174,26 @@ export default {
   components: { CreateCategorie, IngredientList },
   mixins: [imagePreviewMixin],
   props: {
+    item: {
+      type: Object,
+      required: true,
+    },
     categories: {
       type: Array,
       required: true,
     },
-    floating: {
-      type: Boolean,
-      default: true,
-    },
   },
   data: () => {
-    const defaultForm = Object.freeze({
-      categorie: null,
-      achat: null,
-      vente: null,
-      nom: null,
-      image: [],
-      description: '',
-    })
     return {
       dialog: false,
-      plat: Object.assign({}, defaultForm),
+      plat: {
+        categorie: null,
+        achat: null,
+        vente: null,
+        nom: null,
+        image: [],
+        description: '',
+      },
       ingredients: [],
       errors: {
         categorie: { exist: false, message: null },
@@ -208,13 +206,17 @@ export default {
       categoriesLocales: [],
     }
   },
+  mounted() {
+    this.plat = this.item
+    this.ingredients = this.item.ingredients
+  },
   beforeUpdate() {
     this.categoriesLocales = this.categories
   },
   methods: {
     reinitialise() {
-      this.$refs.form.reset()
-      this.ingredients.splice(0)
+      this.plat = this.item
+      this.ingredients = this.item.ingredients
       errorsInitialise(this.errors)
       this.dialog = false
     },
@@ -229,17 +231,23 @@ export default {
         .then((result) => {
           this.plat.achat = result.data.achat
         })
+        .catch((err) => {
+          this.$toast.error(err.response.data.message)
+        })
     },
     save() {
       const ingredients = this.ingredients
       if (ingredients.length > 0) {
         this.$axios
-          .post('restaurant/plats/new', { ...this.plat, ingredients })
+          .put('restaurant/plats/' + this.item.id, {
+            ...this.plat,
+            ingredients,
+          })
           .then((result) => {
             const { message, plat } = result.data
-            this.$notifier.show({ text: message, variant: 'success' })
             this.reinitialise()
-            this.$emit('new-plat', plat)
+            this.$notifier.show({ text: message, variant: 'success' })
+            this.$emit('edited-plat', plat)
           })
           .catch((err) => {
             const { data } = err.response
@@ -250,8 +258,8 @@ export default {
           })
       } else {
         this.$notifier.show({
-          text: 'Aucun ingrédients de préparation indiqués.',
-          variant: 'warning',
+          text: 'Aucun ingrédients de préparation indiqué.',
+          variant: 'error',
         })
       }
     },

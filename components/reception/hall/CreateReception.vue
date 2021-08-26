@@ -286,7 +286,10 @@ export default {
     },
     save() {
       this.$axios
-        .post('reception/attributions/new', { ...this.attribution })
+        .post('reception/attributions/new', {
+          ...this.attribution,
+          user: this.user.id,
+        })
         .then((result) => {
           const { message, attribution } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

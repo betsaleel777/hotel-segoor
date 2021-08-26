@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-gestion-bar />
+              <side-restaurant />
             </v-col>
             <v-col cols="9">
               <v-data-table
@@ -73,12 +73,12 @@
 
 <script>
 import DateChoiceFinance from '~/components/ReglageChoiceFinance.vue'
-import SideGestionBar from '~/components/bar/SideGestionBar.vue'
+import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
 let departement = 0
 export default {
   components: {
     DateChoiceFinance,
-    SideGestionBar,
+    SideRestaurant,
   },
   data() {
     return {

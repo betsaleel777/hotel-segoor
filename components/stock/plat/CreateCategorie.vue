@@ -71,7 +71,10 @@ export default {
     },
     save() {
       this.$axios
-        .post('restaurant/categories/new', { nom: this.nom })
+        .post('restaurant/categories/new', {
+          nom: this.nom,
+          user: this.user.id,
+        })
         .then((result) => {
           const { message, categorie } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

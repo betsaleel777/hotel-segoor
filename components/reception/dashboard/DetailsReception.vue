@@ -183,6 +183,7 @@
         <v-spacer></v-spacer>
         <v-btn color="error" text @click.stop="dialog = false">Fermer</v-btn>
         <paiement-reception
+          v-can="'accès paiements réception'"
           :reception="details"
           :total="totalVerse"
           :consommation="total"

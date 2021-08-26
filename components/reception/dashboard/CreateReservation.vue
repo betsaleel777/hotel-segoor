@@ -183,7 +183,10 @@ export default {
     },
     save() {
       this.$axios
-        .post('reception/reservations/new', { ...this.reservation })
+        .post('reception/reservations/new', {
+          ...this.reservation,
+          user: this.user.id,
+        })
         .then((result) => {
           this.$notifier.show({ text: result.data.message, variant: 'success' })
           this.dialog = false

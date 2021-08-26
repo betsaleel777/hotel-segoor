@@ -196,7 +196,7 @@ export default {
     },
     save() {
       this.$axios
-        .post('bar/tournees/new', { ...this.tournee })
+        .post('bar/tournees/new', { ...this.tournee, user: this.user.id })
         .then((result) => {
           const { message, tournee } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

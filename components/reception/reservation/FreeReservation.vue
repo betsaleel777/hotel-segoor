@@ -16,8 +16,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="closeDelete">Fermer</v-btn>
-        <v-btn color="primary" text @click="freeItemConfirm(item.id)">OK</v-btn>
+        <v-btn color="error" text @click="dialog = false">Fermer</v-btn>
+        <v-btn color="primary" text @click="freeItemConfirm">OK</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
@@ -39,22 +39,21 @@ export default {
     }
   },
   methods: {
-    freeItemConfirm(id) {
-      this.$axios.put('reception/reservations/abort/' + id).then((result) => {
-        const { message, reservation } = result.data
-        this.$notifier.show({ text: message, variant: 'success' })
-        this.closeDelete()
-        this.$emit('free-reservation', reservation)
-      })
+    freeItemConfirm() {
+      this.$axios
+        .put('reception/reservations/abort/' + this.item.id)
+        .then((result) => {
+          const { message, reservation } = result.data
+          this.$notifier.show({ text: message, variant: 'success' })
+          this.closeDelete()
+          this.$emit('free-reservation', reservation)
+        })
     },
     checkDate(fin) {
       // moment.locale('fr')
       // const now = moment().format('ll')
       // const sortie = moment(fin)
       // return sortie.isAfter(now)
-    },
-    closeDelete() {
-      this.dialog = false
     },
   },
 }

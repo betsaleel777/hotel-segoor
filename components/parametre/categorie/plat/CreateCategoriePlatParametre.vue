@@ -27,7 +27,12 @@
                   outlined
                   label="Nom"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    Nom
+                    <span class="red--text"><strong> *</strong></span>
+                  </template>
+                </v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -61,7 +66,10 @@ export default {
     },
     save() {
       this.$axios
-        .post('parametre/categories/plats/new', { nom: this.nom })
+        .post('parametre/categories/plats/new', {
+          nom: this.nom,
+          user: this.user.id,
+        })
         .then((result) => {
           const { message, categorie } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

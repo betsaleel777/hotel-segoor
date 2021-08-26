@@ -48,6 +48,7 @@ export default {
         chambre: this.item.chambre,
         client: this.item.client,
         prix: this.item.chambre_linked.prix_vente,
+        user: this.user.id,
       }
       this.$axios
         .post('reception/attributions/new', postData)

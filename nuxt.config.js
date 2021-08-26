@@ -24,7 +24,11 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '~/plugins/notifier.js', ssr: false }],
+  plugins: [
+    { src: '~/plugins/notifier.js', ssr: false },
+    { src: '~/plugins/user.js', ssr: false },
+    { src: '~/plugins/vue-gates', ssr: false },
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -42,11 +46,40 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
   ],
-
+  router: {
+    middleware: ['auth'],
+  },
+  auth: {
+    strategies: {
+      laravelJWT: {
+        provider: 'laravel/jwt',
+        url: '/',
+        endpoints: {
+          login: { url: '/login', method: 'post' },
+          refresh: { url: '/refresh', method: 'post' },
+          user: { url: '/user', method: 'get' },
+          logout: { url: '/logout', method: 'post' },
+        },
+        token: {
+          property: 'access_token',
+          maxAge: 60 * 60,
+        },
+        refreshToken: {
+          maxAge: 20160 * 60,
+        },
+      },
+    },
+  },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     baseURL: process.env.AUTH_API, // Can be also an object with default options
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    // credentials:true
+    // withCredentials: true,
   },
   // moment global configuration
   moment: {

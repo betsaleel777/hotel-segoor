@@ -249,7 +249,10 @@ export default {
     },
     save() {
       this.$axios
-        .post('reception/reservations/new', { ...this.reservation })
+        .post('reception/reservations/new', {
+          ...this.reservation,
+          user: this.user.id,
+        })
         .then((result) => {
           const { message, reservation } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

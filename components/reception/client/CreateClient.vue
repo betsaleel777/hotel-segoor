@@ -314,7 +314,11 @@ export default {
     },
     save() {
       this.$axios
-        .post('reception/clients/new', { ...this.client, ...this.piece })
+        .post('reception/clients/new', {
+          ...this.client,
+          ...this.piece,
+          user: this.user.id,
+        })
         .then((result) => {
           const { message, client } = result.data
           this.$notifier.show({ text: message, variant: 'success' })

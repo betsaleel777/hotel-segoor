@@ -39,11 +39,13 @@
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-produit
+                    v-can="'modification article'"
                     :categories="categories"
                     :item="item"
                     @edited-produit="produitEdited"
                   />
                   <delete-produit
+                    v-can="'suppression article'"
                     :item="item"
                     @deleted-produit="produitDeleted"
                   />

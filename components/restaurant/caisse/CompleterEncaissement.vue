@@ -128,6 +128,7 @@ export default {
         .put('caisses/encaissements/' + this.item.id, {
           plats: this.plats,
           boissons: this.boissons,
+          user: this.user.id,
         })
         .then((result) => {
           const { message, encaissement } = result.data

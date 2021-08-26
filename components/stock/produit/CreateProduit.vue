@@ -292,7 +292,7 @@ export default {
       this.$axios
         .post(
           'stock/produits/new',
-          { ...this.produit }
+          { ...this.produit, user: this.user.id }
           // {
           //   headers: {
           //     'Content-Type': 'multipart/form-data',

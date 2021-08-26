@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-gestion-bar />
+              <side-stock />
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
@@ -24,6 +24,7 @@
                 <template #[`top`]>
                   <v-toolbar flat>
                     <create-cocktail
+                      v-can="'creation cocktail'"
                       :floating="false"
                       @new-cocktail="ajouter"
                     />
@@ -41,15 +42,25 @@
                   {{ item.montant + ' FCFA' }}
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <edit-cocktail :item="item" @edited-cocktail="modifier" />
-                  <delete-cocktail :item="item" />
+                  <edit-cocktail
+                    v-can="'modification cocktail'"
+                    :item="item"
+                    @edited-cocktail="modifier"
+                  />
+                  <delete-cocktail
+                    v-can="'suppression cocktail'"
+                    :item="item"
+                  />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-cocktail @new-cocktail="ajouter" />
+          <create-cocktail
+            v-can="'creation cocktail'"
+            @new-cocktail="ajouter"
+          />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -58,18 +69,18 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import CreateCocktail from '~/components/bar/cocktail/CreateCocktail.vue'
-import DeleteCocktail from '~/components/bar/cocktail/DeleteCocktail.vue'
-import EditCocktail from '~/components/bar/cocktail/EditCocktail.vue'
+import CreateCocktail from '~/components/stock/cocktail/CreateCocktail.vue'
+import DeleteCocktail from '~/components/stock/cocktail/DeleteCocktail.vue'
+import EditCocktail from '~/components/stock/cocktail/EditCocktail.vue'
 /* eslint-disable camelcase */
-import SideGestionBar from '~/components/bar/SideGestionBar.vue'
+import SideStock from '~/components/stock/SideStock.vue'
 
 export default {
   components: {
-    SideGestionBar,
     CreateCocktail,
     DeleteCocktail,
     EditCocktail,
+    SideStock,
   },
   data() {
     return {

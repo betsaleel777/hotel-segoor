@@ -74,6 +74,7 @@
 
 <script>
 export default {
+  auth: false,
   layout: 'login',
   data: () => ({
     email: '',
@@ -86,11 +87,19 @@ export default {
   }),
   methods: {
     async login() {
-      await this.$axios.post('/login', {
-        email: this.email,
-        password: this.password,
-      })
-      await this.$router.push('/')
+      await this.$auth
+        .loginWith('laravelJWT', {
+          data: { email: this.email, password: this.password },
+        })
+        .then(() => {
+          this.$router.push('/')
+        })
+        .catch((err) => {
+          this.$notifier.show({
+            text: err.response.data.error,
+            variant: 'error',
+          })
+        })
     },
   },
 }

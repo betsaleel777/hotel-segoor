@@ -113,6 +113,7 @@ export default {
             articles,
             departement: this.departement,
             titre: this.titre,
+            user: this.user.id,
           })
           .then((result) => {
             const { message, demande } = result.data

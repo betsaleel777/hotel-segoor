@@ -9,7 +9,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <side-restaurant />
+              <side-stock />
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
@@ -23,6 +23,7 @@
                 ><template #[`top`]>
                   <v-toolbar flat>
                     <create-plat
+                      v-can="'creation plat'"
                       :floating="false"
                       :categories="categories"
                       @new-plat="pushPlat"
@@ -45,18 +46,27 @@
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-plat
+                    v-can="'modification plat'"
                     :categories="categories"
                     :item="item"
                     @edited-plat="platEdited"
                   />
-                  <delete-plat :item="item" @deleted-plat="platDeleted" />
+                  <delete-plat
+                    v-can="'suppression plat'"
+                    :item="item"
+                    @deleted-plat="platDeleted"
+                  />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-plat :categories="categories" @new-plat="pushPlat" />
+          <create-plat
+            v-can="'creation plat'"
+            :categories="categories"
+            @new-plat="pushPlat"
+          />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -65,16 +75,16 @@
 
 <script>
 /* eslint-disable no-unused-vars */
-import CreatePlat from '~/components/restaurant/plat/CreatePlat.vue'
-import DeletePlat from '~/components/restaurant/plat/DeletePlat.vue'
-import EditPlat from '~/components/restaurant/plat/EditPlat.vue'
-import SideRestaurant from '~/components/restaurant/SideRestaurant'
+import CreatePlat from '~/components/stock/plat/CreatePlat.vue'
+import DeletePlat from '~/components/stock/plat/DeletePlat.vue'
+import EditPlat from '~/components/stock/plat/EditPlat.vue'
+import SideStock from '~/components/stock/SideStock.vue'
 export default {
   components: {
-    SideRestaurant,
     CreatePlat,
     DeletePlat,
     EditPlat,
+    SideStock,
   },
   data() {
     return {
