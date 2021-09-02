@@ -104,7 +104,7 @@
                   v-model="tournee.produit"
                   :errors="errors.produit.exist"
                   :error-messages="errors.produit.message"
-                  :items="produitsLocales"
+                  :items="produits"
                   item-value="id"
                   item-text="nom"
                   dense
@@ -119,11 +119,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col cols="3">
-                <create-produit
-                  :floating="false"
-                  :categories="categories"
-                  @new-produit="pushProduit"
-                />
+                <create-produit :floating="false" :categories="categories" />
               </v-col>
             </v-row>
           </v-container>
@@ -139,6 +135,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import {
   errorsInitialise,
   errorsWriting,
@@ -162,16 +159,15 @@ export default {
     },
   },
   data: () => {
-    const defaultForm = Object.freeze({
-      produit: null,
-      montant: null,
-      titre: null,
-      nombre: null,
-      contenance: null,
-    })
     return {
       dialog: false,
-      tournee: Object.assign({}, defaultForm),
+      tournee: {
+        produit: null,
+        montant: null,
+        titre: null,
+        nombre: null,
+        contenance: null,
+      },
       errors: {
         produit: { exist: false, message: null },
         montant: { exist: false, message: null },
@@ -179,29 +175,20 @@ export default {
         nombre: { exist: false, message: null },
         contenance: { exist: false, message: null },
       },
-      produitsLocales: [],
     }
   },
-  beforeUpdate() {
-    this.produitsLocales = this.produits
-  },
   methods: {
+    ...mapActions('stock/tournee', ['ajouter']),
     reinitialise() {
       this.$refs.form.reset()
       errorsInitialise(this.errors)
       this.dialog = false
     },
-    pushProduit(produit) {
-      this.produitsLocales.push(produit)
-    },
     save() {
-      this.$axios
-        .post('bar/tournees/new', { ...this.tournee, user: this.user.id })
+      this.ajouter(this.tournee)
         .then((result) => {
-          const { message, tournee } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
-          this.$emit('new-tournee', tournee)
         })
         .catch((err) => {
           const { data } = err.response

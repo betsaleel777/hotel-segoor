@@ -85,6 +85,7 @@ export default {
   moment: {
     defaultLocale: 'fr',
     locales: ['fr'],
+    plugins: ['moment-range'],
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {

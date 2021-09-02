@@ -20,7 +20,6 @@
         outlined
         label="Nombre de tournée"
         type="number"
-        suffix="tournée(s)"
         min="0"
         required
       ></v-text-field>
@@ -30,45 +29,93 @@
         ><v-icon dark>mdi-plus</v-icon></v-btn
       >
     </v-col>
-    <article-edit-list :item="item" />
+    <v-row>
+      <v-col cols="12">
+        <v-list-item v-for="(ligne, index) in liste" :key="index" dense>
+          <!-- <v-list-item-avatar>
+          <v-btn icon>
+            <v-icon color="primary lighten-1" @click="show = true"
+              >mdi-information</v-icon
+            >
+          </v-btn>
+        </v-list-item-avatar> -->
+          <v-list-item-content>
+            <v-list-item-title
+              >{{ ligne.titre + ' '
+              }}{{
+                '(' + Number(ligne.quantite) + ' tournées)'
+              }}</v-list-item-title
+            >
+            <v-divider></v-divider>
+          </v-list-item-content>
+          <!-- <v-tooltip v-model="show" top>
+          <span>{{ liste.description }}</span>
+        </v-tooltip> -->
+          <v-list-item-action>
+            <v-btn icon>
+              <v-icon color="error lighten-1" @click="retirer(ligne)"
+                >mdi-trash-can-outline</v-icon
+              >
+            </v-btn>
+          </v-list-item-action>
+        </v-list-item>
+      </v-col>
+    </v-row>
   </v-row>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import ArticleEditList from './ArticleEditList.vue'
+import { mapActions, mapGetters } from 'vuex'
 export default {
-  components: { ArticleEditList },
   props: {
-    item: {
-      type: Number,
+    ingredients: {
+      type: Array,
       required: true,
     },
   },
   data: () => ({
     tournee: {},
     quantite: 0,
-    tournees: [],
+    liste: [],
   }),
+  computed: {
+    ...mapGetters('stock/tournee', ['tournees']),
+  },
   mounted() {
-    this.$axios.get('bar/tournees').then((result) => {
-      this.tournees = result.data.tournees
-    })
+    this.getAll()
+    this.liste = Object.assign([], this.ingredients)
   },
   methods: {
-    ...mapActions('cocktail', ['addEditContent']),
+    ...mapActions('stock/tournee', ['getAll']),
     addTournee() {
       if (this.tournee && this.quantite !== 0) {
-        this.addEditContent({
-          id: this.item,
-          content: { ...this.tournee, quantite: this.quantite },
-        })
+        const index = this.liste.findIndex(
+          (element) => element.id === this.tournee.id
+        )
+        if (index === -1) {
+          this.liste.push({
+            titre: this.tournee.titre,
+            id: this.tournee.id,
+            quantite: this.quantite,
+          })
+        } else {
+          this.liste.splice(index, 1, {
+            titre: this.tournee.titre,
+            id: this.tournee.id,
+            quantite: this.quantite,
+          })
+        }
         this.tournee = {}
         this.quantite = 0
+        this.$emit('update-list', this.liste)
       } else {
         const message = 'veuillez remplir correctement les champs'
         this.$notifier.show({ text: message, variant: 'error' })
       }
+    },
+    retirer(item) {
+      const index = this.liste.findIndex((element) => element.id === item.id)
+      if (index !== -1) this.liste.splice(index, 1)
     },
   },
 }

@@ -67,7 +67,7 @@ export default {
     ...mapActions('role-permission/role', ['ajouter']),
     reinitialise() {
       this.dialog = false
-      // errorsInitialise(this.errors)
+      errorsInitialise(this.errors)
       this.role = {
         name: '',
       }
@@ -82,7 +82,7 @@ export default {
             text: result.message,
             variant: 'success',
           })
-          this.dialog = false
+          this.reinitialise()
         })
         .catch((err) => {
           if (err.response.data) {

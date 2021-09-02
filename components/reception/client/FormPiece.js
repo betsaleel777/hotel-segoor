@@ -1,14 +1,13 @@
 const formPiece = {
   data() {
-    // const today = new Date().toISOString().substr(0, 10)
     return {
       piece: {
-        nature: '',
-        numero_piece: '',
-        delivre_le: '',
-        expire_le: '',
-        lieu_piece: '',
-        maker: '',
+        nature: null,
+        numero_piece: null,
+        delivre_le: null,
+        expire_le: null,
+        lieu_piece: null,
+        maker: null,
         entree_pays: null,
       },
       errors: {

@@ -26,7 +26,6 @@
                     <create-cocktail
                       v-can="'creation cocktail'"
                       :floating="false"
-                      @new-cocktail="ajouter"
                     />
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -42,11 +41,7 @@
                   {{ item.montant + ' FCFA' }}
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <edit-cocktail
-                    v-can="'modification cocktail'"
-                    :item="item"
-                    @edited-cocktail="modifier"
-                  />
+                  <edit-cocktail v-can="'modification cocktail'" :item="item" />
                   <delete-cocktail
                     v-can="'suppression cocktail'"
                     :item="item"
@@ -57,10 +52,7 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-cocktail
-            v-can="'creation cocktail'"
-            @new-cocktail="ajouter"
-          />
+          <create-cocktail v-can="'creation cocktail'" />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -99,7 +91,7 @@ export default {
     ...mapGetters('cocktail', ['cocktails']),
   },
   methods: {
-    ...mapActions('cocktail', ['getAll', 'modifier', 'ajouter']),
+    ...mapActions('cocktail', ['getAll']),
   },
 }
 </script>

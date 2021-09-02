@@ -103,7 +103,7 @@
                   v-model="tournee.produit"
                   :errors="errors.produit.exist"
                   :error-messages="errors.produit.message"
-                  :items="produitsLocales"
+                  :items="produits"
                   item-value="id"
                   item-text="nom"
                   dense
@@ -117,11 +117,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col cols="3">
-                <create-produit
-                  :floating="false"
-                  :categories="categories"
-                  @new-produit="pushProduit"
-                />
+                <create-produit :floating="false" :categories="categories" />
               </v-col>
             </v-row>
           </v-container>
@@ -137,6 +133,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import {
   errorsInitialise,
   errorsWriting,
@@ -160,16 +157,15 @@ export default {
     },
   },
   data: () => {
-    const defaultForm = Object.freeze({
-      produit: null,
-      montant: null,
-      titre: null,
-      nombre: null,
-      contenance: null,
-    })
     return {
       dialogue: false,
-      tournee: Object.assign({}, defaultForm),
+      tournee: {
+        produit: null,
+        montant: null,
+        titre: null,
+        nombre: null,
+        contenance: null,
+      },
       errors: {
         produit: { exist: false, message: null },
         montant: { exist: false, message: null },
@@ -177,31 +173,22 @@ export default {
         nombre: { exist: false, message: null },
         contenance: { exist: false, message: null },
       },
-      produitsLocales: [],
     }
   },
   mounted() {
-    this.tournee = Object.assign({}, this.item)
-  },
-  beforeUpdate() {
-    this.produitsLocales = this.produits
+    this.tournee = this.item
   },
   methods: {
+    ...mapActions('stock/tournee', ['modifier']),
     reinitialise() {
-      this.tournee = Object.assign({}, this.item)
+      this.tournee = this.item
       errorsInitialise(this.errors)
       this.dialogue = false
     },
-    pushProduit(produit) {
-      this.produitsLocales.push(produit)
-    },
     save() {
-      this.$axios
-        .put('bar/tournees/' + this.item.id, { ...this.tournee })
+      this.modifier({ id: this.item.id, ...this.tournee })
         .then((result) => {
-          const { message, tournee } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.$emit('edited-tournee', tournee)
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.dialogue = false
         })
         .catch((err) => {

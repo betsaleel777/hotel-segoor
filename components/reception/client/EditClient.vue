@@ -83,7 +83,7 @@
                   v-model="client.mere"
                   dense
                   outlined
-                  label="Nom complet du mère"
+                  label="Nom complet de la mère"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -263,6 +263,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import formPiece from './FormPiece'
 import {
   errorsInitialise,
@@ -280,18 +281,18 @@ export default {
   data: () => ({
     dialogue: false,
     client: {
-      nom: '',
-      prenom: '',
-      pere: '',
-      mere: '',
-      naissance: '',
-      pays: '',
-      departement: '',
-      jeune_fille: '',
-      domicile: '',
-      email: '',
-      contact: '',
-      profession: '',
+      nom: null,
+      prenom: null,
+      pere: null,
+      mere: null,
+      naissance: null,
+      pays: null,
+      departement: null,
+      jeune_fille: null,
+      domicile: null,
+      email: null,
+      contact: null,
+      profession: null,
     },
     errors: {
       nom: { exist: false, message: null },
@@ -301,28 +302,28 @@ export default {
     },
   }),
   mounted() {
-    this.client = Object.assign({}, this.item)
-    this.piece = this.chambre = Object.assign({}, this.item.piece)
+    const { piece, ...rest } = this.item
+    this.client = rest
+    this.piece = piece
   },
   methods: {
+    ...mapActions('reception/client', ['modifier']),
     reinitialise() {
-      this.client = Object.assign({}, this.item)
-      this.piece = this.chambre = Object.assign({}, this.item.piece)
+      const { piece, ...rest } = this.item
+      this.client = rest
+      this.piece = piece
       errorsInitialise(this.errors)
       this.dialogue = false
     },
     save() {
-      this.$axios
-        .put('reception/clients/' + this.item.id, {
-          ...this.client,
-          ...this.piece,
-        })
+      this.modifier({
+        ...this.client,
+        ...this.piece,
+        piece: this.piece,
+        id: this.item.id,
+      })
         .then((result) => {
-          const { message, client } = result.data
-          if (Object.keys(client).length > 0) {
-            this.$notifier.show({ text: message, variant: 'success' })
-            this.$emit('edited-client', client)
-          }
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
         })
         .catch((err) => {

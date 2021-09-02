@@ -68,7 +68,7 @@
                   v-model="plat.categorie"
                   :errors="errors.categorie.exist"
                   :error-messages="errors.categorie.message"
-                  :items="categoriesLocales"
+                  :items="categories"
                   item-value="id"
                   item-text="nom"
                   dense
@@ -82,7 +82,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col cols="1">
-                <create-categorie @new-categorie="pushCategorie" />
+                <create-categorie />
               </v-col>
               <v-col cols="12">
                 <v-textarea
@@ -161,6 +161,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import CreateCategorie from './CreateCategorie.vue'
 import IngredientList from './IngredientList'
 import {
@@ -203,25 +204,19 @@ export default {
         image: { exist: false, message: null },
         nom: { exist: false, message: null },
       },
-      categoriesLocales: [],
     }
   },
   mounted() {
     this.plat = this.item
     this.ingredients = this.item.ingredients
   },
-  beforeUpdate() {
-    this.categoriesLocales = this.categories
-  },
   methods: {
+    ...mapActions('stock/plat', ['modifier']),
     reinitialise() {
       this.plat = this.item
       this.ingredients = this.item.ingredients
       errorsInitialise(this.errors)
       this.dialog = false
-    },
-    pushCategorie(categorie) {
-      this.categoriesLocales.push(categorie)
     },
     price() {
       this.$axios
@@ -238,16 +233,10 @@ export default {
     save() {
       const ingredients = this.ingredients
       if (ingredients.length > 0) {
-        this.$axios
-          .put('restaurant/plats/' + this.item.id, {
-            ...this.plat,
-            ingredients,
-          })
+        this.modifier({ id: this.item.id, ...this.plat, ingredients })
           .then((result) => {
-            const { message, plat } = result.data
+            this.$notifier.show({ text: result.message, variant: 'success' })
             this.reinitialise()
-            this.$notifier.show({ text: message, variant: 'success' })
-            this.$emit('edited-plat', plat)
           })
           .catch((err) => {
             const { data } = err.response

@@ -23,10 +23,9 @@
               >
                 <template #[`top`]>
                   <v-toolbar flat>
-                    <create-form-modal
+                    <create-chambre-form
                       :categories="categories"
                       :floating="false"
-                      @new-chambre="pushChambre"
                     />
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -44,25 +43,15 @@
                   </v-chip>
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <edit-chambre-form
-                    :categories="categories"
-                    :item="item"
-                    @edited-chambre="chambreEdited"
-                  />
-                  <delete-chambre-form
-                    :item="item"
-                    @deleted-chambre="chambreDeleted"
-                  />
+                  <edit-chambre-form :categories="categories" :item="item" />
+                  <delete-chambre-form :item="item" />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-form-modal
-            :categories="categories"
-            @new-chambre="pushChambre"
-          />
+          <create-chambre-form :categories="categories" />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -70,23 +59,22 @@
 </template>
 
 <script>
-import CreateFormModal from '~/components/parametre/chambre/CreateChambreForm.vue'
+import { mapGetters, mapActions } from 'vuex'
+import CreateChambreForm from '~/components/parametre/chambre/CreateChambreForm.vue'
 import EditChambreForm from '~/components/parametre/chambre/EditChambreForm.vue'
 import DeleteChambreForm from '~/components/parametre/chambre/DeleteChambreForm.vue'
 import SideParametre from '~/components/parametre/SideParametre.vue'
 
 export default {
   components: {
-    CreateFormModal,
     EditChambreForm,
     DeleteChambreForm,
+    CreateChambreForm,
     SideParametre,
   },
   data() {
     return {
       search: '',
-      chambres: [],
-      categories: [],
       headers: [
         { text: 'Nom', value: 'nom', sortable: false },
         { text: 'Standing', value: 'standing', sortable: false },
@@ -96,50 +84,27 @@ export default {
       ],
     }
   },
-  async fetch() {
-    let calebasse = await this.$axios.get('gestion-chambre/chambres')
-    this.chambres = calebasse.data.chambres.map((chambre) => {
-      // eslint-disable-next-line camelcase
-      const { prix_list, categorie_linked, ...rest } = chambre
-      const { id, nom, status, code } = rest
-      return {
-        id,
-        code,
-        categorie: categorie_linked.id,
-        nom,
-        montant: prix_list[0].montant,
-        standing: categorie_linked.nom,
-        status,
-      }
-    })
-    calebasse = await this.$axios.get('gestion-chambre/categories')
-    this.categories = calebasse.data.categories
+  fetch() {
+    this.getChambres()
+    this.getCategories()
+  },
+  computed: {
+    ...mapGetters('parametre/chambre', ['chambres']),
+    ...mapGetters('parametre/categorie-chambre', ['categories']),
   },
   methods: {
+    ...mapActions({
+      getChambres: 'parametre/chambre/getAll',
+      getCategories: 'parametre/categorie-chambre/getAll',
+    }),
     getColor(status) {
       if (status === 'libre') {
         return 'green'
       } else if (status === 'occupée') {
         return 'red'
-      } else if (status === 'reservée') {
-        return 'blue'
       } else {
         return 'orange'
       }
-    },
-    pushChambre(chambre) {
-      this.chambres.push(chambre)
-    },
-    chambreEdited(chambre) {
-      const index = this.chambres.findIndex(
-        (element) => element.id === chambre.id
-      )
-      this.chambres.splice(index, 1, chambre)
-    },
-    chambreDeleted(chambre) {
-      this.chambres = this.chambres.filter(
-        (element) => element.id !== chambre.id
-      )
     },
   },
 }

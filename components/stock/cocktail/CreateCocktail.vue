@@ -41,11 +41,6 @@
                   label="Désignation"
                   required
                 >
-                  <template #label>
-                    Désignation<span class="red--text"
-                      ><strong> *</strong></span
-                    >
-                  </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
@@ -58,6 +53,7 @@
                   label="Montant"
                   placeholder="prix de vente du cocktail"
                   type="number"
+                  min="0"
                   required
                 >
                   <template #label>
@@ -80,7 +76,7 @@
                 <h3 class="text-center">Composants du coktail</h3>
               </v-col>
             </v-row>
-            <article-form-cocktail />
+            <article-form-cocktail @update-list="listeUpdate" />
           </v-container>
         </v-form>
       </v-card-text>
@@ -94,7 +90,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import ArticleFormCocktail from './ArticleFormCocktail.vue'
 import {
   errorsInitialise,
@@ -111,43 +107,36 @@ export default {
     },
   },
   data: () => {
-    const defaultForm = Object.freeze({
-      nom: null,
-      montant: null,
-      description: null,
-    })
     return {
       dialog: false,
-      cocktail: Object.assign({}, defaultForm),
+      ingredients: [],
+      cocktail: {
+        nom: null,
+        montant: null,
+        description: null,
+      },
       errors: {
         nom: { exist: false, message: null },
         montant: { exist: false, message: null },
       },
     }
   },
-  computed: {
-    ...mapGetters('cocktail', ['liste']),
-  },
   methods: {
-    ...mapActions('cocktail', ['viderList']),
+    ...mapActions('cocktail', ['ajouter']),
     reinitialise() {
       this.$refs.form.reset()
-      this.viderList()
       errorsInitialise(this.errors)
+      this.ingredients = []
       this.dialog = false
     },
     save() {
-      this.$axios
-        .post('bar/cocktails/new', {
-          ...this.cocktail,
-          ingredients: this.liste,
-          user: this.user.id,
-        })
+      this.ajouter({
+        ...this.cocktail,
+        ingredients: this.ingredients,
+      })
         .then((result) => {
-          const { message, cocktail } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
-          this.$emit('new-cocktail', cocktail)
         })
         .catch((err) => {
           const { data } = err.response
@@ -156,6 +145,9 @@ export default {
             errorsWriting(data, this.errors)
           }
         })
+    },
+    listeUpdate(element) {
+      this.ingredients.push(...element)
     },
   },
 }

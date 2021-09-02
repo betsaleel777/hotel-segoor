@@ -1,6 +1,6 @@
 <template>
   <v-data-table
-    no-data-text="Aucune Categories de Plats"
+    no-data-text="Aucune Categories"
     :loading="loading"
     loading-text="En chargement ..."
     :headers="headers"
@@ -11,7 +11,7 @@
   >
     <template #[`top`]>
       <v-toolbar flat>
-        <create-categorie-article-parametre @new-categorie="pushCategorie" />
+        <create-categorie-article-parametre />
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -23,32 +23,25 @@
       </v-toolbar>
     </template>
     <template #[`item.actions`]="{ item }">
-      <edit-categorie-article
-        :item="item"
-        @edited-categorie="categorieEdited"
-      />
-      <delete-categorie-article
-        :item="item"
-        @deleted-categorie="categorieDeleted"
-      />
+      <edit-categorie-article :item="item" />
+      <delete-categorie-article :item="item" />
     </template>
   </v-data-table>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import CreateCategorieArticleParametre from './CreateCategorieArticleParametre.vue'
 import DeleteCategorieArticle from './DeleteCategorieArticle.vue'
 import EditCategorieArticle from './EditCategorieArticle.vue'
-
 export default {
   components: {
-    DeleteCategorieArticle,
     EditCategorieArticle,
+    DeleteCategorieArticle,
     CreateCategorieArticleParametre,
   },
   data: () => ({
     search: '',
-    categories: [],
     loading: null,
     headers: [
       { text: 'Nom', value: 'nom' },
@@ -61,28 +54,17 @@ export default {
       },
     ],
   }),
+  computed: {
+    ...mapGetters('parametre/categorie-article', ['categories']),
+  },
   mounted() {
-    this.$axios.get('parametre/categories/articles').then((result) => {
-      this.loading = true
-      this.categories = result.data.categories
+    this.loading = true
+    this.getAll().then(() => {
       this.loading = false
     })
   },
   methods: {
-    pushCategorie(categorie) {
-      this.categories.push(categorie)
-    },
-    categorieEdited(categorie) {
-      const index = this.categories.findIndex(
-        (element) => element.id === categorie.id
-      )
-      this.categories.splice(index, 1, categorie)
-    },
-    categorieDeleted(categorie) {
-      this.categories = this.categories.filter(
-        (element) => element.id !== categorie.id
-      )
-    },
+    ...mapActions('parametre/categorie-article', ['getAll']),
   },
 }
 </script>

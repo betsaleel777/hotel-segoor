@@ -66,7 +66,7 @@
                   v-model="chambre.categorie"
                   :errors="errors.categorie.exist"
                   :error-messages="errors.categorie.message"
-                  :items="categoriesLocales"
+                  :items="categories"
                   item-value="id"
                   item-text="nom"
                   dense
@@ -80,7 +80,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col cols="12" sm="3" md="2">
-                <create-categorie-form @new-categorie="pushCategorie" />
+                <create-categorie-form />
               </v-col>
             </v-row>
           </v-container>
@@ -96,6 +96,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import CreateCategorieForm from './CreateCategorieForm.vue'
 import {
   errorsInitialise,
@@ -128,16 +129,14 @@ export default {
         montant: { exist: false, message: null },
         nom: { exist: false, message: null },
       },
-      categoriesLocales: [],
     }
   },
   mounted() {
     this.chambre = this.item
-  },
-  beforeUpdate() {
-    this.categoriesLocales = this.categories
+    this.chambre.montant = this.item.prix_vente
   },
   methods: {
+    ...mapActions('parametre/chambre', ['modifier']),
     reinitialise() {
       this.chambre = this.item
       this.errors = {
@@ -147,19 +146,10 @@ export default {
       }
       this.dialogue = false
     },
-    pushCategorie(categorie) {
-      this.categoriesLocales.push(categorie)
-    },
     save() {
-      this.$axios
-        .put('gestion-chambre/chambres/' + this.item.id, {
-          ...this.chambre,
-        })
+      this.modifier({ id: this.item.id, ...this.chambre })
         .then((result) => {
-          const { message, chambre } = result.data
-          this.dialogue = false
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.$emit('edited-chambre', chambre)
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
         })
         .catch((err) => {

@@ -1,26 +1,37 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500px">
-    <template #activator="{ on }">
-      <v-btn elevation="1" icon fab dark x-small color="error" v-on="on">
-        <v-icon small> mdi-delete </v-icon>
-      </v-btn>
+  <v-dialog v-model="dialogue" max-width="500px">
+    <template #activator="{ on: dialog }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            color="error"
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small> mdi-delete </v-icon>
+          </v-btn>
+        </template>
+        <span>supprimer</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="justify-center error--text headline"
         ><div>Confirmer suppression</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
-        Voulez vous supprimer la réception <b>{{ item.code.toUpperCase() }}</b
+        Voulez vous supprimer l'hébergement du client
+        <b>{{ item.client_linked.nom.toUpperCase() }}</b
         ><br />
-        pour le client: <b>{{ item.client.nom }}</b> ?<br />
-        si une réservation existe elle sera aussi supprimée.
+        pour la chambre: <b>{{ item.chambre_linked.nom }}</b> ?<br />
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-4" text @click="closeDelete">Cancel</v-btn>
-        <v-btn color="blue darken-4" text @click="deleteItemConfirm(item.id)"
-          >OK</v-btn
-        >
+        <v-btn color="error" text @click="dialogue = false">Fermer</v-btn>
+        <v-btn color="primary" text @click="deleteItemConfirm">OK</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
@@ -28,6 +39,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -37,20 +49,16 @@ export default {
   },
   data: () => {
     return {
-      dialog: false,
+      dialogue: false,
     }
   },
   methods: {
-    deleteItemConfirm(id) {
-      this.$axios.delete('reception/attributions/' + id).then((result) => {
-        const { message, attribution } = result.data
-        this.$notifier.show({ text: message, variant: 'success' })
-        this.closeDelete()
-        this.$emit('deleted-attribution', attribution)
+    ...mapActions('reception/attribution', ['supprimer']),
+    deleteItemConfirm() {
+      this.supprimer(this.item.id).then((result) => {
+        this.$notifier.show({ text: result.message, variant: 'success' })
+        this.dialogue = false
       })
-    },
-    closeDelete() {
-      this.dialog = false
     },
   },
 }

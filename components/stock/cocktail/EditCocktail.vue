@@ -52,8 +52,15 @@
                   label="Montant"
                   placeholder="prix de vente du cocktail"
                   type="number"
+                  min="0"
                   required
-                ></v-text-field>
+                >
+                  <template #label>
+                    prix de vente du cocktail<span class="red--text"
+                      ><strong> *</strong></span
+                    >
+                  </template>
+                </v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-textarea
@@ -68,21 +75,25 @@
                 <h3 class="text-center">Composants du coktail</h3>
               </v-col>
             </v-row>
-            <article-edit-form :item="item.id" />
+            <article-edit-form
+              :key="update"
+              :ingredients="ingredients"
+              @update-list="listeUpdate"
+            />
           </v-container>
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="primary" text @click="save"> Créer </v-btn>
+        <v-btn color="primary" text @click="save"> Modifier </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import ArticleEditForm from './ArticleEditForm.vue'
 import {
   errorsInitialise,
@@ -99,55 +110,52 @@ export default {
     },
   },
   data: () => {
-    const defaultForm = Object.freeze({
-      nom: null,
-      montant: null,
-      description: null,
-    })
     return {
       dialogue: false,
-      cocktail: Object.assign({}, defaultForm),
+      ingredients: [],
+      update: false,
+      cocktail: {
+        nom: null,
+        montant: null,
+        description: null,
+      },
       errors: {
         nom: { exist: false, message: null },
         montant: { exist: false, message: null },
       },
     }
   },
-  computed: {
-    ...mapGetters('cocktail', ['editListes']),
-  },
   mounted() {
     this.initialisation()
+    this.cocktail = Object.assign({}, this.item)
   },
   methods: {
-    ...mapActions('cocktail', ['addEdit']),
-    initialisation() {
-      const { tournees, ...cocktail } = this.item
-      const tourneesInitiales = tournees.map((tournee) => {
-        const { pivot, ...reste } = tournee
-        return { ...reste, quantite: pivot.quantite }
-      })
-      this.addEdit({ id: this.item.id, content: tourneesInitiales })
-      this.cocktail = Object.assign({}, cocktail)
-    },
+    ...mapActions('cocktail', ['modifier']),
     reinitialise() {
       this.initialisation()
+      this.cocktail = Object.assign({}, this.item)
       errorsInitialise(this.errors)
       this.dialogue = false
     },
+    initialisation() {
+      this.ingredients = this.item.tournees.map((tournee) => {
+        return {
+          quantite: tournee.pivot.quantite,
+          id: tournee.pivot.tournee,
+          titre: tournee.titre,
+        }
+      })
+      this.update = !this.update
+    },
     save() {
-      this.$axios
-        .put('bar/cocktails/' + this.item.id, {
-          ...this.cocktail,
-          ingredients: this.editListes.filter(
-            (element) => element.id === this.item.id
-          )[0].content,
-        })
+      this.modifier({
+        id: this.item.id,
+        ...this.cocktail,
+        ingredients: this.ingredients,
+      })
         .then((result) => {
-          const { message, cocktail } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
-          this.$emit('edited-cocktail', cocktail)
         })
         .catch((err) => {
           const { data } = err.response
@@ -156,6 +164,9 @@ export default {
             errorsWriting(data, this.errors)
           }
         })
+    },
+    listeUpdate(element) {
+      this.ingredients.push(...element)
     },
   },
 }

@@ -31,8 +31,10 @@
               v-can="'accès factures réception'"
               class="ml-2"
               color="indigo"
+              nuxt
+              to="/reception/facture"
             >
-              <v-icon color="white" left>mdi-cash-multiple</v-icon>Paiements
+              <v-icon color="white" left>mdi-file-document</v-icon>Factures
             </v-btn>
           </v-toolbar>
           <FullCalendar ref="calendrier" :options="calendarOptions" />
@@ -68,6 +70,7 @@
       v-if="Object.keys(details)"
       v-model="dialog1"
       :details="details"
+      @refresh="refresh"
     />
     <details-reservation
       v-if="Object.keys(details)"
@@ -125,7 +128,7 @@ export default {
           center: 'title',
           right: 'resourceTimelineMonth',
         },
-        height: 450,
+        height: 680,
         resourceAreaHeaderContent: 'CHAMBRES',
         editable: true,
         selectable: true,
@@ -169,14 +172,22 @@ export default {
                   event.client_linked.contact
                 }`,
                 start: moment(event.entree).format('YYYY-MM-DD').toString(),
-                end: moment(event.sortie).format('YYYY-MM-DD').toString(),
+                end:
+                  event.status === 'libérée'
+                    ? moment(event.date_liberation)
+                        .format('YYYY-MM-DD')
+                        .toString()
+                    : moment(event.sortie).format('YYYY-MM-DD').toString(),
                 backgroundColor: colorize(),
-                // eventBorderColor:
+                eventBorderColor: colorize(),
                 // eventTextColor:
                 extendedProps: {
                   status: event.status,
                 },
                 overlap: false,
+                resourceEditable: false,
+                startEditable: false,
+                editable: true,
               }
             })
             successCallback(events)

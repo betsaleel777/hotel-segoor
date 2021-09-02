@@ -38,30 +38,33 @@ export default {
   },
   methods: {
     attribuate() {
-      const postData = {
-        entree: this.item.entree,
-        sortie: this.item.sortie,
-        accompagnants: this.item.accompagnants,
-        destination: this.item.destination,
-        reservation: this.item.id,
-        remise: this.item.remise,
-        chambre: this.item.chambre,
-        client: this.item.client,
-        prix: this.item.chambre_linked.prix_vente,
-        user: this.user.id,
-      }
-      this.$axios
-        .post('reception/attributions/new', postData)
-        .then((result) => {
-          const { message } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.dialog = false
-          this.$emit('reservation-converted')
+      if (this.$moment().isSame(this.$moment(this.item.entree, 'days'))) {
+        const postData = {
+          entree: this.item.entree,
+          sortie: this.item.sortie,
+          accompagnants: this.item.accompagnants,
+          destination: this.item.destination,
+          reservation: this.item.id,
+          remise: this.item.remise,
+          chambre: this.item.chambre,
+          client: this.item.client,
+          prix: this.item.chambre_linked.prix_vente,
+        }
+        this.$axios
+          .post('reception/attributions/new', postData)
+          .then((result) => {
+            const { message } = result.data
+            this.$notifier.show({ text: message, variant: 'success' })
+            this.dialog = false
+            this.$emit('reservation-converted')
+          })
+      } else {
+        this.$notifier.show({
+          text: "Impossible d'attribuer à cette date",
+          variant: 'error',
         })
+      }
     },
-    // closeDelete() {
-    //   this.dialog = false
-    // },
   },
 }
 </script>

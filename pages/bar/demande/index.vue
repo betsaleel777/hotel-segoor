@@ -45,7 +45,12 @@
                   </v-chip>
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <show-demande :item="item" />
+                  <show-demande-stock :item="item" />
+                  <reception-demande
+                    v-if="item.status === 'livrée'"
+                    :item="item"
+                    @confirmed="onConfirmed"
+                  />
                 </template>
               </v-data-table>
             </v-col>
@@ -67,13 +72,15 @@
 /* eslint-disable camelcase */
 import SideGestionBar from '~/components/bar/SideGestionBar.vue'
 import CreateDemande from '~/components/restaurant/demande/CreateDemande.vue'
-import ShowDemande from '~/components/restaurant/demande/ShowDemande.vue'
+import ReceptionDemande from '~/components/stock/demande/ReceptionDemande.vue'
+import ShowDemandeStock from '~/components/stock/demande/ShowDemandeStock.vue'
 
 export default {
   components: {
     CreateDemande,
-    ShowDemande,
     SideGestionBar,
+    ReceptionDemande,
+    ShowDemandeStock,
   },
   data() {
     return {
@@ -123,15 +130,18 @@ export default {
         return 'blue'
       } else if (status === 'rejettée') {
         return 'red'
-      } else if (status === 'acceptée') {
-        return 'green'
       } else if (status === 'livrée') {
+        return 'green'
+      } else {
         return 'pink'
       }
     },
     pushDemande(demande) {
       demande.created_at = this.$moment(demande.created_at).format('ll')
       this.demandes.push(demande)
+    },
+    onConfirmed(sortie) {
+      // edit demande status to confirmed
     },
   },
 }

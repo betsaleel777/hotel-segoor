@@ -26,7 +26,6 @@
                       v-can="'creation plat'"
                       :floating="false"
                       :categories="categories"
-                      @new-plat="pushPlat"
                     />
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -49,24 +48,15 @@
                     v-can="'modification plat'"
                     :categories="categories"
                     :item="item"
-                    @edited-plat="platEdited"
                   />
-                  <delete-plat
-                    v-can="'suppression plat'"
-                    :item="item"
-                    @deleted-plat="platDeleted"
-                  />
+                  <delete-plat v-can="'suppression plat'" :item="item" />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-plat
-            v-can="'creation plat'"
-            :categories="categories"
-            @new-plat="pushPlat"
-          />
+          <create-plat v-can="'creation plat'" :categories="categories" />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -74,7 +64,7 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
+import { mapActions, mapGetters } from 'vuex'
 import CreatePlat from '~/components/stock/plat/CreatePlat.vue'
 import DeletePlat from '~/components/stock/plat/DeletePlat.vue'
 import EditPlat from '~/components/stock/plat/EditPlat.vue'
@@ -89,8 +79,6 @@ export default {
   data() {
     return {
       search: '',
-      plats: [],
-      categories: [],
       headers: [
         { text: 'Nom', value: 'nom' },
         { text: 'Categorie', value: 'categorieNom', sortable: false },
@@ -100,51 +88,19 @@ export default {
       ],
     }
   },
-  async fetch() {
-    let calebasse = await this.$axios.get('/restaurant/plats')
-    const plats = calebasse.data.plats.map((plat) => {
-      const imageData = plat.image ? plat.image : []
-      const ingredients = plat.produits.map((ingredient) => {
-        return {
-          id: ingredient.id,
-          ingredient: ingredient.nom,
-          type: ingredient.type,
-          quantite: ingredient.pivot.quantite,
-          commentaire: ingredient.commentaire ? ingredient.commentaire : '',
-          mesure: ingredient.mesure,
-        }
-      })
-      return {
-        id: plat.id,
-        code: plat.code,
-        nom: plat.nom,
-        categorie: plat.categorie,
-        categorieNom: plat.categorie_linked.nom,
-        image: imageData,
-        description: plat.description,
-        achat: plat.prix[0].achat,
-        vente: plat.prix[0].vente,
-        ingredients,
-      }
-    })
-    calebasse = await this.$axios.get('restaurant/categories')
-    const categories = calebasse.data.categories.map((categorie) => {
-      return { id: categorie.id, nom: categorie.nom }
-    })
-    this.categories = categories
-    this.plats = plats
+  fetch() {
+    this.getPlats()
+    this.getCategories()
+  },
+  computed: {
+    ...mapGetters('stock/plat', ['plats']),
+    ...mapGetters('parametre/categorie-plat', ['categories']),
   },
   methods: {
-    pushPlat(plat) {
-      this.plats.push(plat)
-    },
-    platEdited(plat) {
-      const index = this.plats.findIndex((element) => element.id === plat.id)
-      this.plats.splice(index, 1, plat)
-    },
-    platDeleted(plat) {
-      this.plats = this.plats.filter((element) => element.id !== plat.id)
-    },
+    ...mapActions({
+      getPlats: 'stock/plat/getAll',
+      getCategories: 'parametre/categorie-plat/getAll',
+    }),
   },
 }
 </script>

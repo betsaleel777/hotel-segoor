@@ -73,7 +73,7 @@
                   v-model="plat.categorie"
                   :errors="errors.categorie.exist"
                   :error-messages="errors.categorie.message"
-                  :items="categoriesLocales"
+                  :items="categories"
                   item-value="id"
                   item-text="nom"
                   dense
@@ -87,7 +87,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col cols="1">
-                <create-categorie @new-categorie="pushCategorie" />
+                <create-categorie />
               </v-col>
               <v-col cols="12">
                 <v-textarea
@@ -163,6 +163,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import CreateCategorie from './CreateCategorie.vue'
 import IngredientList from './IngredientList'
 import {
@@ -185,17 +186,16 @@ export default {
     },
   },
   data: () => {
-    const defaultForm = Object.freeze({
-      categorie: null,
-      achat: null,
-      vente: null,
-      nom: null,
-      image: [],
-      description: '',
-    })
     return {
       dialog: false,
-      plat: Object.assign({}, defaultForm),
+      plat: {
+        categorie: null,
+        achat: null,
+        vente: null,
+        nom: null,
+        image: [],
+        description: '',
+      },
       ingredients: [],
       errors: {
         categorie: { exist: false, message: null },
@@ -205,21 +205,15 @@ export default {
         image: { exist: false, message: null },
         nom: { exist: false, message: null },
       },
-      categoriesLocales: [],
     }
   },
-  beforeUpdate() {
-    this.categoriesLocales = this.categories
-  },
   methods: {
+    ...mapActions('stock/plat', ['ajouter']),
     reinitialise() {
       this.$refs.form.reset()
       this.ingredients.splice(0)
       errorsInitialise(this.errors)
       this.dialog = false
-    },
-    pushCategorie(categorie) {
-      this.categoriesLocales.push(categorie)
     },
     price() {
       this.$axios
@@ -233,17 +227,10 @@ export default {
     save() {
       const ingredients = this.ingredients
       if (ingredients.length > 0) {
-        this.$axios
-          .post('restaurant/plats/new', {
-            ...this.plat,
-            ingredients,
-            user: this.user.id,
-          })
+        this.ajouter({ ...this.plat, ingredients })
           .then((result) => {
-            const { message, plat } = result.data
-            this.$notifier.show({ text: message, variant: 'success' })
+            this.$notifier.show({ text: result.message, variant: 'success' })
             this.reinitialise()
-            this.$emit('new-plat', plat)
           })
           .catch((err) => {
             const { data } = err.response

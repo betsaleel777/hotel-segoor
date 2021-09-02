@@ -25,10 +25,9 @@
                   <v-toolbar flat>
                     <create-tournee
                       v-can="'creation tournee'"
-                      :produits="produits"
+                      :produits="articles"
                       :categories="categories"
                       :floating="false"
-                      @new-tournee="pushTournee"
                     />
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -52,16 +51,11 @@
                 <template #[`item.actions`]="{ item }">
                   <edit-tournee
                     v-can="'modification tournee'"
-                    :produits="produits"
+                    :produits="articles"
                     :categories="categories"
                     :item="item"
-                    @edited-tournee="tourneeEdited"
                   />
-                  <delete-tournee
-                    v-can="'suppression tournee'"
-                    :item="item"
-                    @deleted-tournee="tourneeDeleted"
-                  />
+                  <delete-tournee v-can="'suppression tournee'" :item="item" />
                 </template>
               </v-data-table>
             </v-col>
@@ -71,8 +65,7 @@
           <create-tournee
             v-can="'creation tournee'"
             :categories="categories"
-            :produits="produits"
-            @new-tournee="pushTournee"
+            :produits="articles"
           />
         </v-card-actions>
       </v-card>
@@ -81,7 +74,7 @@
 </template>
 
 <script>
-/* eslint-disable camelcase */
+import { mapGetters, mapActions } from 'vuex'
 import CreateTournee from '~/components/stock/tournee/CreateTournee.vue'
 import DeleteTournee from '~/components/stock/tournee/DeleteTournee.vue'
 import EditTournee from '~/components/stock/tournee/EditTournee.vue'
@@ -97,9 +90,6 @@ export default {
   data() {
     return {
       search: '',
-      tournees: [],
-      produits: [],
-      categories: [],
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Titre', value: 'titre', sortable: false },
@@ -110,51 +100,22 @@ export default {
       ],
     }
   },
-  async fetch() {
-    let requete = await this.$axios.get('bar/tournees')
-    this.tournees = requete.data.tournees.map((tournee) => {
-      const {
-        prix_list,
-        produit_linked,
-        id,
-        titre,
-        code,
-        nombre,
-        contenance,
-      } = tournee
-      return {
-        id,
-        code,
-        titre,
-        nombre,
-        contenance,
-        produit: produit_linked.id,
-        montant: prix_list[0].montant,
-      }
-    })
-    requete = await this.$axios.get('stock/produits/tournees')
-    this.produits = requete.data.produits
-    requete = await this.$axios.get('stock/categories')
-    const categories = requete.data.categories.map((categorie) => {
-      return { id: categorie.id, nom: categorie.nom }
-    })
-    this.categories = categories
+  fetch() {
+    this.getTournees()
+    this.getArticleTournees()
+    this.getCategories()
+  },
+  computed: {
+    ...mapGetters('stock/tournee', ['tournees']),
+    ...mapGetters('parametre/categorie-article', ['categories']),
+    ...mapGetters('stock/article', ['articles']),
   },
   methods: {
-    pushTournee(tournee) {
-      this.tournees.push(tournee)
-    },
-    tourneeEdited(tournee) {
-      const index = this.tournees.findIndex(
-        (element) => element.id === tournee.id
-      )
-      this.tournees.splice(index, 1, tournee)
-    },
-    tourneeDeleted(tournee) {
-      this.tournees = this.tournees.filter(
-        (element) => element.id !== tournee.id
-      )
-    },
+    ...mapActions({
+      getTournees: 'stock/tournees/getAll',
+      getArticleTournees: 'stock/article/getArticlesTournee',
+      getCategories: 'parametre/categorie-article/getAll',
+    }),
   },
 }
 </script>

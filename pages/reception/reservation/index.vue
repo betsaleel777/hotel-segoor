@@ -23,7 +23,20 @@
               >
                 <template #[`top`]>
                   <v-toolbar flat>
-                    <v-btn dark color="primary" nuxt to="/reception">
+                    <create-reservation
+                      :hebergements="hebergements"
+                      :chambres="chambres"
+                      :clients="clients"
+                      :floating="false"
+                    />
+                    <v-btn
+                      text
+                      class="ml-2"
+                      dark
+                      color="primary"
+                      nuxt
+                      to="/reception"
+                    >
                       <v-icon left>mdi-arrow-left</v-icon>
                       RETOUR
                     </v-btn>
@@ -39,29 +52,45 @@
                 </template>
                 <template #[`item.status`]="{ item }">
                   <v-chip small outlined :color="getColor(item.status)" dark>
-                    {{ item.status }}
+                    <span v-if="item.status === 'terminée'">attribuée</span>
+                    <span v-else>{{ item.status }}</span>
                   </v-chip>
                 </template>
+                <template #[`item.entree`]="{ item }">
+                  {{ $moment(item.entree).format('ll') }}
+                </template>
+                <template #[`item.sortie`]="{ item }">
+                  {{ $moment(item.sortie).format('ll') }}
+                </template>
                 <template #[`item.actions`]="{ item }">
+                  <show-reservation
+                    v-if="item.status !== 'reservée'"
+                    :item="item"
+                  />
+                  <edit-reservation
+                    v-if="item.status === 'reservée'"
+                    :item="item"
+                    :hebergements="hebergements"
+                    :chambres="chambres"
+                    :clients="clients"
+                  />
                   <free-reservation
                     v-if="item.status === 'reservée'"
                     :item="item"
-                    @free-reservation="reservationFree"
                   />
-                  <delete-reservation
-                    :item="item"
-                    @deleted-reservation="reservationDeleted"
-                  />
+                  <delete-reservation :item="item" />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <!-- <create-reservation
+          <create-reservation
+            :hebergements="hebergements"
+            :chambres="chambres"
             :clients="clients"
-            @new-reservation="pushReservation"
-          /> -->
+            :floating="true"
+          />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -69,27 +98,29 @@
 </template>
 
 <script>
-/* eslint-disable camelcase */
-import moment from 'moment'
+import { mapActions, mapGetters } from 'vuex'
 import FreeReservation from '~/components/reception/reservation/FreeReservation'
 import DeleteReservation from '~/components/reception/reservation/DeleteReservation'
 import SideReception from '~/components/reception/SideReception'
-// import CreateReservation from '~/components/reception/reservation/CreateReservation.vue'
+import CreateReservation from '~/components/reception/reservation/CreateReservation.vue'
+import EditReservation from '~/components/reception/reservation/EditReservation.vue'
+import ShowReservation from '~/components/reception/reservation/ShowReservation.vue'
 
 export default {
   components: {
     SideReception,
     FreeReservation,
     DeleteReservation,
+    CreateReservation,
+    EditReservation,
+    ShowReservation,
   },
   data() {
     return {
       search: '',
-      chambres: [],
-      reservations: [],
       headers: [
-        { text: 'Client', value: 'client.nom', sortable: false },
-        { text: 'Chambre', value: 'chambre.nom', sortable: false },
+        { text: 'Client', value: 'client_linked.nom', sortable: false },
+        { text: 'Chambre', value: 'chambre_linked.nom', sortable: false },
         { text: 'Debut', value: 'entree' },
         { text: 'Fin', value: 'sortie' },
         { text: 'status', value: 'status' },
@@ -97,67 +128,33 @@ export default {
       ],
     }
   },
-  async fetch() {
-    moment.locale('fr')
-    // let calebasse = await $axios.get('reception/clients')
-    // const clients = calebasse.data.clients
-    let calebasse = await this.$axios.get('reception/reservations')
-    const reservations = calebasse.data.reservations.map((reservation) => {
-      const { chambre_linked, client_linked, ...rest } = reservation
-      return {
-        id: rest.id,
-        code: rest.code,
-        status: rest.status,
-        chambre: { id: chambre_linked.id, nom: chambre_linked.nom },
-        client: { id: client_linked.id, nom: client_linked.nom },
-        entree: moment(rest.entree).format('ll'),
-        sortie: moment(rest.sortie).format('ll'),
-      }
-    })
-    calebasse = await this.$axios.get('gestion-chambre/chambres/passage')
-    const chambres = calebasse.data.chambres.map((chambre) => {
-      return {
-        id: chambre.id,
-        nom: `libelle: ${chambre.nom} ---${chambre.prix_list[0].montant} FCFA`,
-      }
-    })
-    this.reservations = reservations
-    this.chambres = chambres
+  fetch() {
+    this.getReservations()
+    this.getClients()
+    this.getChambres()
+    this.getHebergements()
+  },
+  computed: {
+    ...mapGetters('reception/reservation', ['reservations']),
+    ...mapGetters('reception/client', ['clients']),
+    ...mapGetters('parametre/chambre', ['chambres']),
+    ...mapGetters('reception/reservation', ['hebergements']),
   },
   methods: {
+    ...mapActions({
+      getReservations: 'reception/reservation/getAll',
+      getClients: 'reception/client/getAll',
+      getChambres: 'parametre/chambre/getAll',
+      getHebergements: 'reception/reservation/getHebergements',
+    }),
     getColor(status) {
       if (status === 'reservée') {
         return 'blue'
+      } else if (status === 'terminée') {
+        return 'black'
       } else {
         return 'pink'
       }
-    },
-    // pushReservation(reservation) {
-    //   moment().locale('fr')
-    //   reservation.entree = moment(reservation.entree).format('ll')
-    //   reservation.sortie = moment(reservation.sortie).format('ll')
-    //   this.reservations.push(reservation)
-    // },
-    // reservationEdited(reservation) {
-    //   moment().locale('fr')
-    //   reservation.entree = moment(reservation.entree).format('ll')
-    //   reservation.sortie = moment(reservation.sortie).format('ll')
-    //   const index = this.reservations.findIndex(
-    //     (element) => element.id === reservation.id
-    //   )
-    //   this.reservations.splice(index, 1, reservation)
-    // },
-    reservationDeleted(reservation) {
-      this.reservations = this.reservations.filter(
-        (element) => element.id !== reservation.id
-      )
-    },
-    reservationFree(reservation) {
-      this.reservations.forEach((element) => {
-        if (element.id === reservation.id) {
-          element.status = 'annulée'
-        }
-      })
     },
   },
 }

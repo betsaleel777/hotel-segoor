@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -50,12 +51,11 @@ export default {
     }
   },
   methods: {
+    ...mapActions('stock/tournee', ['supprimer']),
     deleteItemConfirm() {
-      this.$axios.delete('bar/tournees/' + this.item.id).then((result) => {
-        const { message, tournee } = result.data
-        this.$notifier.show({ text: message, variant: 'success' })
+      this.supprimer(this.item.id).then((result) => {
+        this.$notifier.show({ text: result.message, variant: 'success' })
         this.dialogue = false
-        this.$emit('deleted-tournee', tournee)
       })
     },
   },

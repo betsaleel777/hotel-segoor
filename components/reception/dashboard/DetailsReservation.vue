@@ -117,10 +117,11 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click.stop="dialog = false">Fermer</v-btn>
+        <annuler-reservation :item="details" @aborted="refresh" />
         <attribute-reservation
           v-if="attribuable"
           :item="details"
-          @reservation-converted="onConvert"
+          @reservation-converted="refresh"
         />
         <paiement-reservation
           v-can="'accès paiements réception'"
@@ -135,12 +136,14 @@
 </template>
 
 <script>
+import AnnulerReservation from './AnnulerReservation.vue'
 import AttributeReservation from './AttributeReservation.vue'
 import PaiementReservation from './PaiementReservation.vue'
 export default {
   components: {
     PaiementReservation,
     AttributeReservation,
+    AnnulerReservation,
   },
   props: {
     details: {
@@ -236,7 +239,7 @@ export default {
       this.versements.push(versement)
       this.dialog = false
     },
-    onConvert() {
+    refresh() {
       this.$emit('refresh')
     },
   },

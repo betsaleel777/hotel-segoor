@@ -26,9 +26,6 @@ export default {
     },
     value: Boolean,
   },
-  data: () => ({
-    versements: [],
-  }),
   computed: {
     dialog: {
       get() {
@@ -46,7 +43,7 @@ export default {
     },
     edit() {
       let url = 'reception/attributions/' + this.item.id
-      if (this.item.backgroundColor === 'blue') {
+      if (this.item.backgroundColor === '#1E88E5') {
         url = 'reception/reservations/' + this.item.id
       }
       this.$axios

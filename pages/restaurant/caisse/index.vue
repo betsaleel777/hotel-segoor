@@ -25,7 +25,7 @@
                   <v-toolbar flat>
                     <create-encaissement
                       v-can="'creation facture restau'"
-                      :produits="produits"
+                      :produits="allProducts"
                       :attributions="attributions"
                       :floating="false"
                       @new-encaissement="pushEncaissement"
@@ -45,13 +45,16 @@
                     {{ item.status }}
                   </v-chip>
                 </template>
+                <template #[`item.montant`]="{ item }">
+                  {{ item.montant }} FCFA
+                </template>
                 <template #[`item.actions`]="{ item }">
                   <show-encaissement :item="item" />
                   <completer-encaissement
                     v-if="item.status === 'impayé'"
                     v-can="'modification facture restau'"
                     :item="item"
-                    :produits="produits"
+                    :produits="allProducts"
                     @completed-encaissement="encaissementCompleted"
                   />
                   <v-btn
@@ -73,7 +76,7 @@
         <v-card-actions>
           <create-encaissement
             v-can="'creation facture restau'"
-            :produits="produits"
+            :produits="allProducts"
             :attributions="attributions"
             @new-encaissement="pushEncaissement"
           />
@@ -84,6 +87,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
 import CreateEncaissement from '~/components/restaurant/caisse/CreateEncaissement.vue'
 import ShowEncaissement from '~/components/restaurant/caisse/ShowEncaissement.vue'
@@ -99,75 +103,58 @@ export default {
   data() {
     return {
       search: '',
-      encaissements: [],
-      produits: [],
-      attributions: [],
+      allProducts: [],
       headers: [
-        { text: 'Code', value: 'code', sortable: false },
-        { text: 'Statut', value: 'status', sortable: false },
-        { text: 'Date', value: 'created_at' },
-        { text: 'Table', value: 'zone', sortable: false },
-        { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'Code', value: 'code', align: 'left', sortable: false },
+        { text: 'Statut', value: 'status', align: 'center', sortable: false },
+        { text: 'Date', value: 'created_at', align: 'center' },
+        { text: 'Table', value: 'zone', align: 'center', sortable: false },
+        { text: 'Montant', value: 'montant', align: 'center' },
+        { text: 'Actions', value: 'actions', align: 'right', sortable: false },
       ],
     }
   },
   async fetch() {
     let departement = null
-    let requete = await this.$axios.get(
+    const requete = await this.$axios.get(
       'parametre/departements/' + 'restaurant'
     )
     departement = requete.data.departement.id
     // recuperation de la liste des produits boissons en stock pour le départements en cours
-    requete = await this.$axios.get(
-      'stock/demandes/inventaire/buvable/' + departement
-    )
-    this.produits = requete.data.inventaire
+    this.getProduits(departement)
     // recupération des plats créer
-    requete = await this.$axios.get('restaurant/plats')
-    this.produits.push(...requete.data.plats)
-    this.produits = this.produits.map((produit) => {
-      if (produit.prix) {
-        return {
-          ...produit,
-          genre: 'plats',
-          prix_vente: produit.prix[0].vente,
-          valeur: 0,
-        }
-      } else {
-        return { ...produit, genre: 'boissons', valeur: 0 }
-      }
-    })
+    this.getPlats()
+    this.getTournees()
+    this.getCocktails()
+    this.allProducts.push(...this.produits)
+    this.allProducts.push(...this.plats)
+    this.allProducts.push(...this.tournees)
+    this.allProducts.push(...this.cocktails)
     // recuperation des attributions de chambre
-    requete = await this.$axios.get('reception/attributions')
-    const donneesFiltrees = requete.data.attributions.filter(
-      (attribution) => attribution.status === 'occupée'
-    )
-    this.attributions = donneesFiltrees.map((attribution) => {
-      return {
-        id: attribution.id,
-        nom: `Chambre ${attribution.chambre_linked.nom} ${attribution.client_linked.nom} ${attribution.client_linked.contact}`,
-        prix: attribution.chambre_linked.prix_list[0].montant,
-        remise: attribution.remise,
-      }
-    })
+    this.getAttributions()
     // récuperation de la liste des enregistrements au niveau de la caisse
-    requete = await this.$axios.get(
-      'caisses/encaissements/departement/' + departement
-    )
-    this.encaissements = requete.data.encaissements.map((encaissement) => {
-      return {
-        id: encaissement.id,
-        code: encaissement.code,
-        created_at: this.$moment(encaissement.created_at).format('ll'),
-        status: encaissement.status,
-        attribution_linked: encaissement.attribution,
-        produits: encaissement.produits,
-        plats: encaissement.plats,
-        zone: encaissement.zone,
-      }
-    })
+    this.getEncaissements(departement)
+    // console.log(this.allProducts)
+  },
+  computed: {
+    ...mapGetters({
+      produits: 'stock/article/articles',
+      encaissements: 'caisse/encaissement/encaissements',
+      attributions: 'reception/attribution/attributions',
+      plats: 'stock/plat/plats',
+      tournees: 'stock/tournee/tournees',
+      cocktails: 'stock/cocktail/cocktails',
+    }),
   },
   methods: {
+    ...mapActions({
+      getProduits: 'stock/article/getArticlesDepartement',
+      getEncaissements: 'caisse/encaissement/getEncaissementsDepartement',
+      getAttributions: 'reception/attribution/getEnCours',
+      getPlats: 'stock/plat/getPlats',
+      getTournees: 'stock/tournee/getTournees',
+      getCocktails: 'stock/cocktail/getCocktails',
+    }),
     getColor(status) {
       if (status === 'soldée') {
         return 'green'

@@ -29,9 +29,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="dialogue = false">Fermer</v-btn>
-        <v-btn color="primary" text @click="deleteItemConfirm(item.id)"
-          >OK</v-btn
-        >
+        <v-btn color="primary" text @click="deleteItemConfirm">OK</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
@@ -39,6 +37,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -52,12 +51,11 @@ export default {
     }
   },
   methods: {
-    deleteItemConfirm(id) {
-      this.$axios.delete('/restaurant/plats/' + id).then((result) => {
-        const { message, plat } = result.data
-        this.$notifier.show({ text: message, variant: 'success' })
+    ...mapActions('stock/plat', ['supprimer']),
+    deleteItemConfirm() {
+      this.supprimer(this.item.id).then((result) => {
+        this.$notifier.show({ text: result.message, variant: 'success' })
         this.dialogue = false
-        this.$emit('deleted-plat', plat)
       })
     },
   },

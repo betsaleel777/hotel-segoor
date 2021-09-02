@@ -26,7 +26,6 @@
           <template #default>
             <thead>
               <tr>
-                <th class="text-left">Réference</th>
                 <th class="text-left">Description</th>
                 <th class="text-left">Quantité</th>
                 <th class="text-left">Disponible</th>
@@ -35,17 +34,15 @@
             </thead>
             <tbody>
               <tr v-for="(article, index) in articles" :key="index" dense>
-                <td>{{ article.code }}</td>
                 <td style="width: 30%">{{ article.nom }}</td>
-                <td>{{ article.quantite + article.mesure }}</td>
-                <td>{{ article.disponible + article.mesure }}</td>
+                <td>{{ article.quantite }}</td>
+                <td>{{ article.disponible }}</td>
                 <td>
                   <v-text-field
                     v-model="reponses[index].valeur"
                     dense
                     type="number"
                     :error="quantiteCheck(index, article.disponible)"
-                    :suffix="article.mesure"
                   >
                   </v-text-field>
                 </td>
@@ -102,7 +99,7 @@ export default {
     )
     this.articles = calebasse.data.articles
     this.reponses = calebasse.data.articles.map((article) => {
-      return { ...article, valeur: article.quantite, error: false }
+      return { ...article, valeur: 0, error: false }
     })
   },
   methods: {

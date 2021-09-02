@@ -340,6 +340,7 @@ export default {
     },
     onFree() {
       this.dialog = false
+      this.$emit('refresh')
     },
   },
 }

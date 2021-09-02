@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import {
   errorsWriting,
   errorsInitialise,
@@ -64,21 +65,16 @@ export default {
     errors: { nom: { exist: false, message: null } },
   }),
   methods: {
+    ...mapActions('parametre/categorie-plat', ['ajouter']),
     reinitialise() {
       this.dialog = false
       errorsInitialise(this.errors)
       this.$refs.form.reset()
     },
     save() {
-      this.$axios
-        .post('restaurant/categories/new', {
-          nom: this.nom,
-          user: this.user.id,
-        })
+      this.ajouter({ nom: this.nom })
         .then((result) => {
-          const { message, categorie } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.$emit('new-categorie', categorie)
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
         })
         .catch((err) => {

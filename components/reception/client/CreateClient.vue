@@ -90,7 +90,7 @@
                   v-model="client.mere"
                   dense
                   outlined
-                  label="Nom complet du mère"
+                  label="Nom complet de la mère"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -137,13 +137,11 @@
                 </v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-text-field
-                  v-model="client.contact"
-                  dense
-                  outlined
-                  label="Téléphone"
-                  required
-                >
+                <v-text-field v-model="client.contact" dense outlined required>
+                  <template #label>
+                    Téléphone
+                    <span class="red--text"><strong> *</strong></span>
+                  </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
@@ -264,6 +262,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import formPiece from './FormPiece'
 import {
   errorsInitialise,
@@ -286,18 +285,18 @@ export default {
   data: () => ({
     dialog: false,
     client: {
-      nom: '',
-      prenom: '',
-      pere: '',
-      mere: '',
-      naissance: '',
-      pays: '',
-      departement: '',
-      jeune_fille: '',
-      domicile: '',
-      email: '',
-      contact: '',
-      profession: '',
+      nom: null,
+      prenom: null,
+      pere: null,
+      mere: null,
+      naissance: null,
+      pays: null,
+      departement: null,
+      jeune_fille: null,
+      domicile: null,
+      email: null,
+      contact: null,
+      profession: null,
     },
     errors: {
       nom: { exist: false, message: null },
@@ -307,22 +306,16 @@ export default {
     },
   }),
   methods: {
+    ...mapActions('reception/client', ['ajouter']),
     reinitialise() {
       this.dialog = false
       errorsInitialise(this.errors)
       this.$refs.form.reset()
     },
     save() {
-      this.$axios
-        .post('reception/clients/new', {
-          ...this.client,
-          ...this.piece,
-          user: this.user.id,
-        })
+      this.ajouter({ ...this.client, ...this.piece })
         .then((result) => {
-          const { message, client } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.$emit('new-client', client)
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
         })
         .catch((err) => {

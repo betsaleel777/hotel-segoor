@@ -39,6 +39,7 @@
                   item-text="nom"
                   dense
                   outlined
+                  clearable
                   label="Clients en chambre"
                   required
                 ></v-autocomplete>

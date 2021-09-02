@@ -23,9 +23,12 @@
       </v-toolbar>
     </template>
     <template #[`item.actions`]="{ item }">
-      <edit-role :item="item" />
-      <assign-permissions :role-item="item" />
-      <delete-role :item="item" />
+      <edit-role v-if="item.name !== 'Super Admin'" :item="item" />
+      <assign-permissions
+        v-if="item.name !== 'Super Admin'"
+        :role-item="item"
+      />
+      <delete-role v-if="item.name !== 'Super Admin'" :item="item" />
     </template>
   </v-data-table>
 </template>

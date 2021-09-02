@@ -66,7 +66,7 @@
                   v-model="chambre.categorie"
                   :errors="errors.categorie.exist"
                   :error-messages="errors.categorie.message"
-                  :items="categoriesLocales"
+                  :items="categories"
                   item-value="id"
                   item-text="nom"
                   dense
@@ -80,7 +80,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col cols="12" sm="3" md="1">
-                <create-categorie-form @new-categorie="pushCategorie" />
+                <create-categorie-form />
               </v-col>
             </v-row>
           </v-container>
@@ -96,6 +96,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import CreateCategorieForm from './CreateCategorieForm.vue'
 import {
   errorsInitialise,
@@ -115,44 +116,31 @@ export default {
     },
   },
   data: () => {
-    const defaultForm = Object.freeze({
-      categorie: null,
-      montant: null,
-      nom: null,
-    })
     return {
       dialog: false,
-      chambre: Object.assign({}, defaultForm),
+      chambre: {
+        categorie: null,
+        montant: null,
+        nom: null,
+      },
       errors: {
         categorie: { exist: false, message: null },
         montant: { exist: false, message: null },
         nom: { exist: false, message: null },
       },
-      categoriesLocales: [],
     }
   },
-  beforeUpdate() {
-    this.categoriesLocales = this.categories
-  },
   methods: {
+    ...mapActions('parametre/chambre', ['ajouter']),
     reinitialise() {
       this.$refs.form.reset()
       errorsInitialise(this.errors)
       this.dialog = false
     },
-    pushCategorie(categorie) {
-      this.categoriesLocales.push(categorie)
-    },
     save() {
-      this.$axios
-        .post('gestion-chambre/chambres/new', {
-          ...this.chambre,
-          user: this.user.id,
-        })
+      this.ajouter(this.chambre)
         .then((result) => {
-          const { message, chambre } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.$emit('new-chambre', chambre)
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
         })
         .catch((err) => {

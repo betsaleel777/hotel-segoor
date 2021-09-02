@@ -152,7 +152,7 @@
                   v-model="produit.categorie"
                   :errors="errors.categorie.exist"
                   :error-messages="errors.categorie.message"
-                  :items="categoriesLocales"
+                  :items="categories"
                   return-object
                   item-value="id"
                   item-text="nom"
@@ -168,7 +168,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col cols="1">
-                <create-categorie @new-categorie="pushCategorie" />
+                <create-categorie />
               </v-col>
               <v-col cols="12">
                 <v-text-field
@@ -206,6 +206,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import CreateCategorie from './CreateCategorie'
 import {
   errorsInitialise,
@@ -229,23 +230,22 @@ export default {
     },
   },
   data: () => {
-    const defaultForm = Object.freeze({
-      mode: '',
-      type: '',
-      image: [],
-      nom: '',
-      mesure: '',
-      montant: 0,
-      pour_plat: false,
-      pour_tournee: false,
-      description: '',
-      etagere: '',
-      categorie: null,
-    })
     return {
       dialogue: false,
       mesurable: false,
-      produit: Object.assign({}, defaultForm),
+      produit: {
+        mode: '',
+        type: '',
+        image: [],
+        nom: '',
+        mesure: '',
+        montant: 0,
+        pour_plat: false,
+        pour_tournee: false,
+        description: '',
+        etagere: '',
+        categorie: null,
+      },
       priceDisabled: false,
       errors: {
         mode: { exist: false, message: null },
@@ -256,11 +256,7 @@ export default {
         mesure: { exist: false, message: null },
         categorie: { exist: false, message: null },
       },
-      categoriesLocales: [],
     }
-  },
-  beforeUpdate() {
-    this.categoriesLocales = this.categories
   },
   mounted() {
     this.produit = Object.assign({}, this.item)
@@ -269,6 +265,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('stock/article', ['modifier']),
     reinitialise() {
       this.produit = Object.assign({}, this.item)
       errorsInitialise(this.errors)
@@ -282,20 +279,14 @@ export default {
         this.produit.mesure = ''
       }
     },
-    pushCategorie(categorie) {
-      this.categoriesLocales.push(categorie)
-    },
     save() {
       this.produit.categorie = this.produit.categorie
         ? this.produit.categorie.id
         : null
-      this.$axios
-        .put('stock/produits/' + this.item.id, { ...this.produit })
+      this.modifier({ id: this.item.id, ...this.produit })
         .then((result) => {
-          const { message, produit } = result.data
           this.dialogue = false
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.$emit('edited-produit', produit)
+          this.$notifier.show({ text: result.message, variant: 'success' })
         })
         .catch((err) => {
           const { data } = err.response

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogue" max-width="500px">
+  <v-dialog v-model="dialogue" max-width="450px">
     <template #activator="{ on: dialog }">
       <v-tooltip top>
         <template #activator="{ on: tooltip }">
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -48,15 +49,12 @@ export default {
     dialogue: false,
   }),
   methods: {
+    ...mapActions('parametre/categorie-chambre', ['supprimer']),
     deleteItemConfirm() {
-      this.$axios
-        .delete('parametre/categories/chambres/' + this.item.id)
-        .then((result) => {
-          const { message, categorie } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.dialogue = false
-          this.$emit('deleted-categorie', categorie)
-        })
+      this.supprimer(this.item.id).then((result) => {
+        this.$notifier.show({ text: result.message, variant: 'success' })
+        this.dialogue = false
+      })
     },
   },
 }

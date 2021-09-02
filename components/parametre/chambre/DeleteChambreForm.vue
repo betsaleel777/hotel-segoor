@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -44,21 +45,16 @@ export default {
       required: true,
     },
   },
-  data: () => {
-    return {
-      dialogue: false,
-    }
-  },
+  data: () => ({
+    dialogue: false,
+  }),
   methods: {
+    ...mapActions('parametre/chambre', ['supprimer']),
     deleteItemConfirm() {
-      this.$axios
-        .delete('gestion-chambre/chambres/' + this.item.id)
-        .then((result) => {
-          const { message, chambre } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.dialogue = false
-          this.$emit('deleted-chambre', chambre)
-        })
+      this.supprimer(this.item.id).then((result) => {
+        this.$notifier.show({ text: result.message, variant: 'success' })
+        this.dialogue = false
+      })
     },
   },
 }

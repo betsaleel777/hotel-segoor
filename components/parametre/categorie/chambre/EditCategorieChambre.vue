@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogue" persistent max-width="600px">
+  <v-dialog v-model="dialogue" persistent max-width="450px">
     <template #activator="{ on: dialog, attrs }">
       <v-tooltip top>
         <template #activator="{ on: tooltip }">
@@ -31,7 +31,7 @@
         <v-form ref="form">
           <v-container>
             <v-row>
-              <v-col cols="8">
+              <v-col cols="12">
                 <v-text-field
                   v-model="categorie.nom"
                   :errors="errors.nom.exist"
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import {
   errorsInitialise,
   errorsWriting,
@@ -85,26 +86,21 @@ export default {
     }
   },
   mounted() {
-    this.categorie = Object.assign({}, this.item)
+    this.categorie = this.item
   },
   methods: {
+    ...mapActions('parametre/categorie-chambre', ['modifier']),
     reinitialise() {
-      this.categorie = Object.assign({}, this.item)
+      this.categorie = this.item
       this.errors = {
         nom: { exist: false, message: null },
       }
       this.dialogue = false
     },
     save() {
-      this.$axios
-        .put('parametre/categories/chambres/' + this.item.id, {
-          ...this.categorie,
-        })
+      this.modifier({ id: this.item.id, ...this.categorie })
         .then((result) => {
-          const { message, categorie } = result.data
-          this.dialogue = false
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.$emit('edited-categorie', categorie)
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
         })
         .catch((err) => {

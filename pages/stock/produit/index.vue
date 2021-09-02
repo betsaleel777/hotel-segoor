@@ -17,7 +17,7 @@
                 :loading="$fetchState.pending"
                 loading-text="En chargement ..."
                 :headers="headers"
-                :items="produits"
+                :items="articles"
                 :search="search"
                 :items-per-page="10"
                 ><template #[`top`]>
@@ -25,7 +25,6 @@
                     <create-produit
                       :floating="false"
                       :categories="categories"
-                      @new-produit="pushProduit"
                     />
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -42,20 +41,15 @@
                     v-can="'modification article'"
                     :categories="categories"
                     :item="item"
-                    @edited-produit="produitEdited"
                   />
-                  <delete-produit
-                    v-can="'suppression article'"
-                    :item="item"
-                    @deleted-produit="produitDeleted"
-                  />
+                  <delete-produit v-can="'suppression article'" :item="item" />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-produit :categories="categories" @new-produit="pushProduit" />
+          <create-produit :categories="categories" />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -63,6 +57,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import CreateProduit from '~/components/stock/produit/CreateProduit.vue'
 import DeleteProduit from '~/components/stock/produit/DeleteProduit.vue'
 import EditProduit from '~/components/stock/produit/EditProduit.vue'
@@ -77,8 +72,6 @@ export default {
   data() {
     return {
       search: '',
-      produits: [],
-      categories: [],
       headers: [
         { text: 'Description', value: 'nom' },
         { text: 'Famille', value: 'categorie.nom' },
@@ -86,52 +79,19 @@ export default {
       ],
     }
   },
-  async fetch() {
-    let calebasse = await this.$axios.get('stock/produits')
-    const produits = calebasse.data.produits.map((produit) => {
-      const imageData = produit.image ? produit.image : []
-      const mesureData = produit.mesure ? produit.mesure : ''
-      return {
-        id: produit.id,
-        code: produit.code,
-        mesure: mesureData,
-        nom: produit.nom,
-        image: imageData,
-        montant: produit.prix_vente,
-        pour_plat: produit.pour_plat,
-        pour_tournee: produit.pour_tournee,
-        mode: produit.mode,
-        type: produit.type,
-        etagere: produit.etagere ? produit.etagere : '',
-        description: produit.description ? produit.description : '',
-        categorie: {
-          id: produit.categorie_linked.id,
-          nom: produit.categorie_linked.nom,
-        },
-      }
-    })
-    calebasse = await this.$axios.get('stock/categories')
-    const categories = calebasse.data.categories.map((categorie) => {
-      return { id: categorie.id, nom: categorie.nom }
-    })
-    this.produits = produits
-    this.categories = categories
+  fetch() {
+    this.getArticles()
+    this.getCategories()
+  },
+  computed: {
+    ...mapGetters('stock/article', ['articles']),
+    ...mapGetters('parametre/categorie-article', ['categories']),
   },
   methods: {
-    pushProduit(produit) {
-      this.produits.push(produit)
-    },
-    produitEdited(produit) {
-      const index = this.produits.findIndex(
-        (element) => element.id === produit.id
-      )
-      this.produits.splice(index, 1, produit)
-    },
-    produitDeleted(produit) {
-      this.produits = this.produits.filter(
-        (element) => element.id !== produit.id
-      )
-    },
+    ...mapActions({
+      getArticles: 'stock/article/getAll',
+      getCategories: 'parametre/categorie-article/getAll',
+    }),
   },
 }
 </script>

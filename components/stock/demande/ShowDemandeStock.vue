@@ -33,8 +33,8 @@
             <thead>
               <tr>
                 <th class="text-left">Description</th>
-                <th class="text-left">Quantité demandées</th>
-                <th class="text-left">Quantité livrées</th>
+                <th class="text-left">Quantités demandées</th>
+                <th class="text-left">Quantités livrées</th>
               </tr>
             </thead>
             <tbody>
@@ -49,12 +49,32 @@
               </tr>
             </tbody>
           </template>
+          <template v-else-if="item.status === 'confirmée'" #default>
+            <thead>
+              <tr>
+                <th class="text-left">Description</th>
+                <th class="text-left">Quantités demandées</th>
+                <th class="text-left">Quantités livrées</th>
+                <th class="text-left">Quantités reçues</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(article, index) in articles" :key="index" dense>
+                <td style="width: 30%">
+                  {{ article.nom.toUpperCase() }}
+                </td>
+                <td>{{ article.pivot.demandees + article.mesure }}</td>
+                <td>{{ article.pivot.quantite + article.mesure }}</td>
+                <td>{{ article.pivot.recues + article.mesure }}</td>
+              </tr>
+            </tbody>
+          </template>
           <template v-else #default>
             <thead>
               <tr>
                 <th class="text-left">Description</th>
-                <th class="text-left">Quantité demandées</th>
-                <th class="text-left">Quantité livrées</th>
+                <th class="text-left">Quantités demandées</th>
+                <th class="text-left">Quantités livrées</th>
               </tr>
             </thead>
             <tbody>
@@ -94,7 +114,8 @@ export default {
   }),
   mounted() {
     this.articles = this.item.produits
-    if (this.item.status === 'livrée') this.articles = this.item.sortie.produits
+    if (this.item.status !== 'en cours')
+      this.articles = this.item.sortie.produits
   },
   methods: {
     closeShow() {

@@ -23,7 +23,20 @@
               >
                 <template #[`top`]>
                   <v-toolbar flat>
-                    <v-btn dark color="primary" nuxt to="/reception">
+                    <create-reception
+                      :hebergements="hebergements"
+                      :chambres="chambres"
+                      :clients="clients"
+                      :floating="false"
+                    />
+                    <v-btn
+                      text
+                      class="ml-2"
+                      dark
+                      color="primary"
+                      nuxt
+                      to="/reception"
+                    >
                       <v-icon left>mdi-arrow-left</v-icon>
                       RETOUR
                     </v-btn>
@@ -42,132 +55,95 @@
                     {{ item.status }}
                   </v-chip>
                 </template>
+                <template #[`item.entree`]="{ item }">
+                  {{ $moment(item.entree).format('ll') }}
+                </template>
+                <template #[`item.sortie`]="{ item }">
+                  {{ $moment(item.sortie).format('ll') }}
+                </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-attribution-form
+                    :item="item"
+                    :hebergements="hebergements"
+                    :chambres="chambres"
                     :clients="clients"
-                    :item="item"
-                    @edited-attribution="attributionEdited"
                   />
-                  <!-- <delete-attribution-form
-                    :item="item"
-                    @deleted-attribution="attributionDeleted"
-                  />-->
                   <free-attribution
                     v-if="item.status !== 'libérée'"
                     :item="item"
-                    @free-attribution="attributionFree"
                   />
+                  <delete-attribution-form :item="item" />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions> </v-card-actions>
+        <v-card-actions>
+          <create-reception
+            :hebergements="hebergements"
+            :chambres="chambres"
+            :clients="clients"
+            :floating="true"
+          />
+        </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import FreeAttribution from '~/components/reception/hall/FreeReception'
 import SideReception from '~/components/reception/SideReception.vue'
 import DeleteAttributionForm from '~/components/reception/hall/DeleteReception'
 import EditAttributionForm from '~/components/reception/hall/EditReception'
-// import { checkReservationDate } from '~/components/helper/checkUtils'
+import CreateReception from '~/components/reception/hall/CreateReception.vue'
 export default {
   components: {
     SideReception,
-    // eslint-disable-next-line vue/no-unused-components
     DeleteAttributionForm,
     EditAttributionForm,
     FreeAttribution,
+    CreateReception,
   },
   data() {
     return {
       search: '',
-      clients: [],
-      attributions: [],
-      // reservations: [],
-      chambres: [],
       headers: [
-        { text: 'Client', value: 'client.nom', sortable: false },
-        { text: 'Chambre', value: 'chambre.nom', sortable: false },
-        { text: 'Debut', value: 'entreeDisplay' },
-        { text: 'Fin', value: 'sortieDisplay' },
+        { text: 'Client', value: 'client_linked.nom', sortable: false },
+        { text: 'Chambre', value: 'chambre_linked.nom', sortable: false },
+        { text: 'Entrée', value: 'entree' },
+        { text: 'Sortie', value: 'sortie' },
         { text: 'status', value: 'status' },
-        // { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
   },
-  async fetch() {
-    let requete = await this.$axios.get('reception/clients')
-    const clients = requete.data.clients
-    requete = await this.$axios.get('reception/attributions')
-    const attributions = requete.data.attributions.map((attribution) => {
-      return {
-        id: attribution.id,
-        code: attribution.code,
-        status: attribution.status,
-        chambre: {
-          id: attribution.chambre_linked.id,
-          nom: attribution.chambre_linked.nom,
-        },
-        client: {
-          id: attribution.client_linked.id,
-          nom: attribution.client_linked.nom,
-        },
-        entreeDisplay: this.$moment(attribution.entree).format('ll'),
-        sortieDisplay: this.$moment(attribution.sortie).format('ll'),
-        entree: attribution.entree,
-        sortie: attribution.sortie,
-      }
-    })
-    // requete = await this.$axios.get('reception/reservations/reserved')
-    // console.log(requete.data.reservations)
-    // let reservations = requete.data.reservations.map((reservation) => {
-    //   const { id, code, entree, sortie } = reservation
-    //   return { id, nom: code, entree, sortie }
-    // })
-    // reservations = checkReservationDate(reservations)
-    requete = await this.$axios.get('gestion-chambre/chambres/passage')
-    const chambres = requete.data.chambres
-    this.clients = clients
-    this.attributions = attributions
-    // this.reservations = reservations
-    this.chambres = chambres
+  fetch() {
+    this.getHebergements()
+    this.getClients()
+    this.getChambres()
+    this.getAttributions()
+  },
+  computed: {
+    ...mapGetters('reception/attribution', ['attributions']),
+    ...mapGetters('reception/client', ['clients']),
+    ...mapGetters('parametre/chambre', ['chambres']),
+    ...mapGetters('reception/reservation', ['hebergements']),
   },
   methods: {
+    ...mapActions({
+      getAttributions: 'reception/attribution/getAll',
+      getClients: 'reception/client/getAll',
+      getChambres: 'parametre/chambre/getAll',
+      getHebergements: 'reception/reservation/getHebergements',
+    }),
     getColor(status) {
       if (status === 'libérée') {
         return 'green'
       } else {
         return 'red'
       }
-    },
-    pushAttribution(attribution) {
-      attribution.entreeDisplay = this.$moment(attribution.entree).format('ll')
-      attribution.sortieDisplay = this.$moment(attribution.sortie).format('ll')
-      this.attributions.push(attribution)
-    },
-    attributionEdited(attribution) {
-      attribution.entreeDisplay = this.$moment(attribution.entree).format('ll')
-      attribution.sortieDisplay = this.$moment(attribution.sortie).format('ll')
-      const index = this.attributions.findIndex(
-        (element) => element.id === attribution.id
-      )
-      this.attributions.splice(index, 1, attribution)
-    },
-    attributionDeleted(attribution) {
-      this.attributions = this.attributions.filter(
-        (element) => element.id !== attribution.id
-      )
-    },
-    attributionFree(attribution) {
-      this.attributions.forEach((element) => {
-        if (element.id === attribution.id) {
-          element.status = 'libérée'
-        }
-      })
     },
   },
 }

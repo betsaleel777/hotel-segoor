@@ -11,6 +11,7 @@
             x-small
             color="primary"
             v-bind="attrs"
+            :disabled="true"
             v-on="{ ...tooltip, ...dialog }"
           >
             <v-icon small> mdi-pencil </v-icon>

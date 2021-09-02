@@ -43,6 +43,12 @@ export default {
         to: '/reception/clientelle',
         permission: 'acces clientelle',
       },
+      {
+        icon: 'mdi-file-document',
+        text: 'Factures de reception',
+        to: '/reception/facture',
+        permission: 'acces facture reception',
+      },
     ],
   }),
 }

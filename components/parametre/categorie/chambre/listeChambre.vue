@@ -1,6 +1,6 @@
 <template>
   <v-data-table
-    no-data-text="Aucune Categories de Plats"
+    no-data-text="Aucune Categories"
     :loading="loading"
     loading-text="En chargement ..."
     :headers="headers"
@@ -11,7 +11,7 @@
   >
     <template #[`top`]>
       <v-toolbar flat>
-        <create-categorie-chambre-parametre @new-categorie="pushCategorie" />
+        <create-categorie-chambre-parametre />
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -23,19 +23,14 @@
       </v-toolbar>
     </template>
     <template #[`item.actions`]="{ item }">
-      <edit-categorie-chambre
-        :item="item"
-        @edited-categorie="categorieEdited"
-      />
-      <delete-categorie-chambre
-        :item="item"
-        @deleted-categorie="categorieDeleted"
-      />
+      <edit-categorie-chambre :item="item" />
+      <delete-categorie-chambre :item="item" />
     </template>
   </v-data-table>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import CreateCategorieChambreParametre from './CreateCategorieChambreParametre.vue'
 import DeleteCategorieChambre from './DeleteCategorieChambre.vue'
 import EditCategorieChambre from './EditCategorieChambre.vue'
@@ -48,7 +43,6 @@ export default {
   data: () => ({
     search: '',
     loading: null,
-    categories: [],
     headers: [
       { text: 'Nom', value: 'nom' },
       {
@@ -60,37 +54,19 @@ export default {
       },
     ],
   }),
+  computed: {
+    ...mapGetters('parametre/categorie-chambre', ['categories']),
+  },
   mounted() {
-    this.$axios.get('parametre/categories/chambres').then((result) => {
-      this.loading = true
-      this.categories = result.data.categories
+    this.loading = true
+    this.getAll().then(() => {
       this.loading = false
     })
   },
   methods: {
-    pushCategorie(categorie) {
-      this.categories.push(categorie)
-    },
-    categorieEdited(categorie) {
-      const index = this.categories.findIndex(
-        (element) => element.id === categorie.id
-      )
-      this.categories.splice(index, 1, categorie)
-    },
-    categorieDeleted(categorie) {
-      this.categories = this.categories.filter(
-        (element) => element.id !== categorie.id
-      )
-    },
+    ...mapActions('parametre/categorie-chambre', ['getAll']),
   },
 }
 </script>
 
-<style>
-/* .v-data-table > .v-data-table__wrapper > table > thead > tr > th {
-  font-size: 22px !important;
-}
-.v-data-table > .v-data-table__wrapper > table > tbody > tr > td {
-  font-size: 19px !important;
-} */
-</style>
+<style></style>

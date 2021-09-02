@@ -28,10 +28,7 @@
               >
                 <template #[`top`]>
                   <v-toolbar flat>
-                    <create-client
-                      :floating-button="false"
-                      @new-client="pushClient"
-                    />
+                    <create-client :floating-button="false" />
                     <v-spacer></v-spacer>
                     <v-text-field
                       v-model="search"
@@ -48,15 +45,15 @@
                   </v-chip>
                 </template> -->
                 <template #[`item.actions`]="{ item }">
-                  <edit-client :item="item" @edited-client="clientEdited" />
-                  <delete-client :item="item" @deleted-client="clientDeleted" />
+                  <edit-client :item="item" />
+                  <delete-client :item="item" />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <create-client :floating-button="true" @new-client="pushClient" />
+          <create-client :floating-button="true" />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -65,6 +62,7 @@
 
 <script>
 /* eslint-disable camelcase */
+import { mapActions, mapGetters } from 'vuex'
 import SideReception from '~/components/reception/SideReceptionPrincipale.vue'
 import EditClient from '~/components/reception/client/EditClient.vue'
 import DeleteClient from '~/components/reception/client/DeleteClient.vue'
@@ -80,7 +78,6 @@ export default {
   data() {
     return {
       search: '',
-      clients: [],
       headers: [
         { text: 'Prenom', value: 'prenom' },
         { text: 'Contact', value: 'contact', sortable: false },
@@ -91,41 +88,14 @@ export default {
       ],
     }
   },
-  async fetch() {
-    const calebasse = await this.$axios.get('reception/clients')
-    const clients = calebasse.data.clients.map((client) => {
-      const { pieces, ...rest } = client
-      return {
-        id: rest.id,
-        code: rest.code,
-        nom: rest.nom,
-        prenom: rest.prenom,
-        pere: rest.pere,
-        mere: rest.mere,
-        profession: rest.profession,
-        email: rest.email,
-        pays: rest.pays,
-        domicile: rest.domicile,
-        contact: rest.contact,
-        naissance: rest.naissance,
-        piece: pieces[0],
-      }
-    })
-    this.clients = clients
+  fetch() {
+    this.getAll()
+  },
+  computed: {
+    ...mapGetters('reception/client', ['clients']),
   },
   methods: {
-    pushClient(client) {
-      this.clients.push(client)
-    },
-    clientEdited(client) {
-      const index = this.clients.findIndex(
-        (element) => element.id === client.id
-      )
-      this.clients.splice(index, 1, client)
-    },
-    clientDeleted(client) {
-      this.clients = this.clients.filter((element) => element.id !== client.id)
-    },
+    ...mapActions('reception/client', ['getAll']),
   },
 }
 </script>

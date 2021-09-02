@@ -149,7 +149,7 @@
                   v-model="produit.categorie"
                   :errors="errors.categorie.exist"
                   :error-messages="errors.categorie.message"
-                  :items="categoriesLocales"
+                  :items="categories"
                   return-object
                   item-value="id"
                   item-text="nom"
@@ -164,7 +164,7 @@
                 </v-autocomplete>
               </v-col>
               <v-col cols="1">
-                <create-categorie @new-categorie="pushCategorie" />
+                <create-categorie />
               </v-col>
               <v-col cols="12">
                 <v-text-field
@@ -202,6 +202,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import CreateCategorie from './CreateCategorie'
 import {
   errorsInitialise,
@@ -250,13 +251,10 @@ export default {
         mesure: { exist: false, message: null },
         categorie: { exist: false, message: null },
       },
-      categoriesLocales: [],
     }
   },
-  beforeUpdate() {
-    this.categoriesLocales = this.categories
-  },
   methods: {
+    ...mapActions('stock/article', ['ajouter']),
     reinitialise() {
       this.produit = {
         mode: '',
@@ -282,29 +280,14 @@ export default {
         this.produit.mesure = ''
       }
     },
-    pushCategorie(categorie) {
-      this.categoriesLocales.push(categorie)
-    },
     save() {
       this.produit.categorie = this.produit.categorie
         ? this.produit.categorie.id
         : null
-      this.$axios
-        .post(
-          'stock/produits/new',
-          { ...this.produit, user: this.user.id }
-          // {
-          //   headers: {
-          //     'Content-Type': 'multipart/form-data',
-          //   },
-          // }
-        )
+      this.ajouter(this.produit)
         .then((result) => {
-          const { message, produit } = result.data
-          // copier l'image upload
-          this.$notifier.show({ text: message, variant: 'success' })
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
-          this.$emit('new-produit', produit)
         })
         .catch((err) => {
           const { data } = err.response
