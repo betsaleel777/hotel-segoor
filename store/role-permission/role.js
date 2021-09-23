@@ -19,6 +19,10 @@ export const actions = {
     })
     commit('ALL_ROLES', roles)
   },
+  async getRole({ commit }, payload) {
+    const requete = await this.$axios.get('parametre/roles/' + payload.id)
+    return requete.data.role
+  },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
       'parametre/roles/' + payload.id,
@@ -37,11 +41,15 @@ export const actions = {
     dispatch('getAll')
     return { message: requete.data.message }
   },
+  async assigner({ dispatch }, payload) {
+    const requete = await this.$axios.post('parametre/roles/assign', payload)
+    dispatch('getAll')
+    return { message: requete.data.message }
+  },
 }
 
 export const mutations = {
   ALL_ROLES(state, roles) {
-    state.roles.splice(0, state.roles.length)
-    state.roles.push(...roles)
+    state.roles = roles
   },
 }

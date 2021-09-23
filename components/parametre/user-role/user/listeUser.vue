@@ -11,7 +11,7 @@
   >
     <template #[`top`]>
       <v-toolbar flat>
-        <create-user />
+        <create-user :roles="roles" />
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -29,14 +29,13 @@
       <v-chip v-else outlined color="error">{{ item.status }}</v-chip>
     </template>
     <template #[`item.actions`]="{ item }">
-      <edit-user :item="item" />
+      <edit-user :item="item" :roles="roles" />
       <delete-user :item="item" />
     </template>
   </v-data-table>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
 import CreateUser from './CreateUser.vue'
 import DeleteUser from './DeleteUser.vue'
 import EditUser from './EditUser.vue'
@@ -45,6 +44,16 @@ export default {
     DeleteUser,
     EditUser,
     CreateUser,
+  },
+  props: {
+    roles: {
+      type: Array,
+      required: true,
+    },
+    users: {
+      type: Array,
+      required: true,
+    },
   },
   data: () => ({
     search: '',
@@ -62,26 +71,7 @@ export default {
       },
     ],
   }),
-  computed: {
-    ...mapGetters('user', ['users']),
-  },
-  mounted() {
-    this.loading = true
-    this.getAll().then(() => {
-      this.loading = false
-    })
-  },
-  methods: {
-    ...mapActions('user', ['getAll']),
-  },
 }
 </script>
 
-<style>
-/* .v-data-table > .v-data-table__wrapper > table > thead > tr > th {
-  font-size: 22px !important;
-}
-.v-data-table > .v-data-table__wrapper > table > tbody > tr > td {
-  font-size: 19px !important;
-} */
-</style>
+<style></style>

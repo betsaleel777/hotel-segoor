@@ -39,7 +39,7 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col cols="5">
+              <v-col cols="6">
                 <v-autocomplete
                   v-model="reservation.client"
                   :error="errors.client.exist"
@@ -49,15 +49,17 @@
                   item-text="fullname"
                   dense
                   outlined
+                  clearable
+                  :disabled="newClient"
+                  :append-outer-icon="'mdi-plus-thick'"
+                  @click:append-outer="openClient = true"
                 >
                   <template #label>
                     Client<span class="red--text"><strong> *</strong></span>
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="1">
-                <create-client />
-              </v-col>
+              <create-client v-model="openClient" @new-client="pushClient" />
               <v-col cols="12">
                 <v-text-field
                   v-model="reservation.destination"
@@ -146,7 +148,7 @@
 import Moment from 'moment'
 import { extendMoment } from 'moment-range'
 import { mapActions } from 'vuex'
-import CreateClient from '../client/CreateClient.vue'
+import CreateClient from '~/components/reception/client/CreateClientDialog.vue'
 import {
   errorsInitialise,
   errorsWriting,
@@ -179,6 +181,8 @@ export default {
       dialog: false,
       chambresLocales: [],
       messageChambre: '',
+      openClient: false,
+      newClient: false,
       reservation: {
         entree: null,
         sortie: null,
@@ -201,14 +205,17 @@ export default {
     reinitialise() {
       errorsInitialise(this.errors)
       this.$refs.form.reset()
+      this.newClient = false
       this.dialog = false
     },
     save() {
-      if (
-        this.$moment(this.reservation.entree).isBefore(
-          this.moment(this.reservation.sortie)
-        )
-      ) {
+      const entree = this.$moment(this.reservation.entree)
+      const sortie = this.$moment(this.reservation.sortie)
+      const validation =
+        entree.isBefore(sortie, 'days') &&
+        (this.$moment().isSame(entree, 'days') ||
+          this.$moment().isBefore(entree, 'days'))
+      if (validation) {
         this.ajouter(this.reservation)
           .then((result) => {
             this.$notifier.show({ text: result.message, variant: 'success' })
@@ -223,7 +230,8 @@ export default {
           })
       } else {
         this.$notifier.show({
-          text: "Date d'entrée et de sortie incohérentes.",
+          text: "Date d'entrée ou de sortie incohérentes.",
+          variant: 'warning',
         })
       }
     },
@@ -260,6 +268,10 @@ export default {
       this.chambresLocales = this.chambres.filter(
         (chambre) => !chambresUtilisees.includes(chambre.id)
       )
+    },
+    pushClient(id) {
+      this.newClient = true
+      this.reservation.client = id
     },
   },
 }

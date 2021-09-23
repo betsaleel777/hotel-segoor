@@ -91,7 +91,7 @@
                   </template>
                 </v-text-field>
               </v-col>
-              <v-col cols="8">
+              <v-col cols="12">
                 <v-autocomplete
                   v-model="utilisateur.roles"
                   :errors="errors.roles.exist"
@@ -111,9 +111,6 @@
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="4">
-                <create-role />
-              </v-col>
             </v-row>
           </v-container>
         </v-form>
@@ -130,17 +127,19 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import zxcvbn from 'zxcvbn'
-import CreateRole from '~/components/parametre/user-role/role/CreateRole.vue'
 import {
   errorsWriting,
   errorsInitialise,
 } from '~/components/helper/errorsHandle'
 
 export default {
-  components: {
-    CreateRole,
+  props: {
+    roles: {
+      type: Array,
+      required: true,
+    },
   },
   data: () => ({
     dialog: false,
@@ -197,7 +196,6 @@ export default {
           }
       }
     },
-    ...mapGetters('role-permission/role', ['roles']),
   },
   watch: {
     'utilisateur.password_confirmation'(password) {
@@ -206,14 +204,8 @@ export default {
       }
     },
   },
-  mounted() {
-    this.getRoles()
-  },
   methods: {
-    ...mapActions({
-      ajouter: 'user/ajouter',
-      getRoles: 'role-permission/role/getAll',
-    }),
+    ...mapActions({ ajouter: 'user/ajouter' }),
     reinitialise() {
       this.dialog = false
       errorsInitialise(this.errors)

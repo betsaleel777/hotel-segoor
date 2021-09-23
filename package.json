@@ -18,6 +18,7 @@
     "@nuxtjs/auth-next": "5.0.0-1624817847.21691f1",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/proxy": "^2.1.0",
+    "collect.js": "^4.28.6",
     "core-js": "^3.9.1",
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",

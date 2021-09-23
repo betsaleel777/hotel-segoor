@@ -37,7 +37,7 @@
                   outlined
                   label="Accompagnants"
                   min="0"
-                  disabled
+                  readonly
                 >
                 </v-text-field>
               </v-col>
@@ -51,7 +51,7 @@
                   item-text="prenom"
                   dense
                   outlined
-                  disabled
+                  readonly
                 >
                   <template #label>
                     Client<span class="red--text"><strong> *</strong></span>
@@ -64,7 +64,7 @@
                   dense
                   outlined
                   label="Destination"
-                  disabled
+                  readonly
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -75,7 +75,7 @@
                   type="date"
                   dense
                   color="indigo"
-                  disabled
+                  readonly
                 >
                   <template #label>
                     Entrée<span class="red--text"><strong> *</strong></span>
@@ -90,7 +90,7 @@
                   type="date"
                   dense
                   color="indigo"
-                  disabled
+                  readonly
                 >
                   <template #label>
                     Sortie <span class="red--text"><strong> *</strong></span>
@@ -108,7 +108,7 @@
                   dense
                   outlined
                   label="Chambre"
-                  disabled
+                  readonly
                 >
                 </v-autocomplete>
               </v-col>

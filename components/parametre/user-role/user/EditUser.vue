@@ -156,7 +156,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import zxcvbn from 'zxcvbn'
 import CreateRole from '~/components/parametre/user-role/role/CreateRole.vue'
 import {
@@ -171,6 +171,10 @@ export default {
   props: {
     item: {
       type: Object,
+      required: true,
+    },
+    roles: {
+      type: Array,
       required: true,
     },
   },
@@ -204,7 +208,6 @@ export default {
     },
   }),
   computed: {
-    ...mapGetters('role-permission/role', ['roles']),
     score() {
       const result = zxcvbn(this.utilisateur.password)
       switch (result.score) {
@@ -244,14 +247,10 @@ export default {
   //   },
   // },
   mounted() {
-    this.getRoles()
     this.utilisateur = { ...this.item, password: '', password_confirmation: '' }
   },
   methods: {
-    ...mapActions({
-      modifier: 'user/modifier',
-      getRoles: 'role-permission/role/getAll',
-    }),
+    ...mapActions({ modifier: 'user/modifier' }),
     reinitialise() {
       this.dialogue = false
       errorsInitialise(this.errors)

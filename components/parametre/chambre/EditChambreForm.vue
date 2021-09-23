@@ -132,7 +132,7 @@ export default {
     }
   },
   mounted() {
-    this.chambre = this.item
+    this.chambre = Object.assign({}, this.item)
     this.chambre.montant = this.item.prix_vente
   },
   methods: {

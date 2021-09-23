@@ -1,14 +1,28 @@
 <template>
-  <v-dialog v-model="dialog" max-width="650px">
-    <template #activator="{ on }">
-      <v-btn :disabled="total >= montantApayer" color="primary" text v-on="on"
-        >Paiement
-      </v-btn>
+  <v-dialog v-model="dialogue" max-width="650px">
+    <template #activator="{ on: dialog, attrs }">
+      <v-tooltip top>
+        <template #activator="{ on: tooltip }">
+          <v-btn
+            v-bind="attrs"
+            color="success"
+            elevation="1"
+            icon
+            fab
+            dark
+            x-small
+            v-on="{ ...tooltip, ...dialog }"
+          >
+            <v-icon small>mdi-cash</v-icon>
+          </v-btn>
+        </template>
+        <span>paiement</span>
+      </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline grey lighten-2"
         ><div>
-          Paiement pour la réservation {{ reservation.chambre_linked.nom }}
+          Paiement pour l'hébergement chambre {{ reception.chambre_linked.nom }}
         </div>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="close">
@@ -16,7 +30,7 @@
         </v-btn>
       </v-card-title>
       <v-card-text justify="center" align="center">
-        <v-form ref="form">
+        <v-form ref="form" v-model="valid">
           <v-container>
             <h4 class="pink--text mb-5">
               le montant qui reste à payer est: {{ reste }} FCFA
@@ -27,7 +41,7 @@
                   v-model="versement.mobile_money"
                   :disabled="activateWay.mobile"
                   dense
-                  :items="mobileWays"
+                  :items="moyens"
                   item-text="nom"
                   item-value="id"
                   label="Mobile money"
@@ -101,6 +115,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import {
   errorsInitialise,
   errorsWriting,
@@ -113,23 +128,24 @@ const checkEncaissable = function (montant, monnaie, reste) {
 }
 export default {
   props: {
-    reservation: {
+    reception: {
       type: Object,
       required: true,
     },
-    total: {
-      type: Number,
+    moyens: {
+      type: Array,
       required: true,
     },
   },
   data: () => {
     return {
-      dialog: false,
+      dialogue: false,
       encaissable: true,
+      valid: false,
       versement: {
-        montant: null,
-        cheque: null,
+        montant: 0,
         monnaie: 0,
+        cheque: null,
         espece: null,
         mobile_money: null,
       },
@@ -137,37 +153,103 @@ export default {
         montant: { exist: false, message: null },
         monnaie: { exist: false, message: null },
       },
-      versements: [],
-      mobileWays: [],
       activateWay: {
         cheque: false,
         espece: false,
         mobile: false,
       },
+      waysPayementRules: [(v) => !!v || 'le moyen de paiement est requis'],
+      montantRules: [(v) => !!v || 'le montant perçu est requis'],
     }
   },
   computed: {
-    montantApayer() {
-      if (this.reservation) {
-        return (
-          this.reservation.prix *
-          this.$moment(this.reservation.sortie).diff(
-            this.reservation.entree,
-            'days'
-          )
-        )
+    versements() {
+      let result = null
+      if (this.reception.encaissement) {
+        result = this.reception.encaissement.versements
       } else {
-        return null
+        result = []
       }
+      return result
+    },
+    consommations() {
+      let resultat = []
+      if (this.reception.consommation) {
+        const compare = (a, b) => {
+          if (this.$moment(a.jour).diff(b.jour) < 0) {
+            return -1
+          }
+          if (this.$moment(a.jour).diff(b.jour) < 0) {
+            return 1
+          }
+          return 0
+        }
+        const {
+          cocktails,
+          plats,
+          produits,
+          tournees,
+        } = this.reception.consommation
+        const consommations = [...cocktails, ...plats, ...produits, ...tournees]
+        resultat = consommations.map((item) => {
+          return {
+            jour: item.pivot.created_at,
+            code: item.code,
+            nom: item.nom ?? item.titre,
+            quantite: item.pivot.quantite,
+            prix: item.pivot.prix_vente,
+          }
+        })
+        resultat = resultat.sort(compare)
+      }
+      return resultat
+    },
+    totalVerse() {
+      let resultat = 0
+      this.versements.forEach((versement) => {
+        resultat += versement.montant - versement.monnaie
+      })
+      return resultat
+    },
+    totalConsomme() {
+      let resultat = 0
+      if (this.consommations.length > 0) {
+        this.consommations.forEach((item) => {
+          resultat += item.prix * item.quantite
+        })
+      }
+      return resultat
+    },
+    nuiteeAvecRemise() {
+      return Math.round(this.reception.prix * (1 - this.reception.remise / 100))
+    },
+    montantApayer() {
+      if (this.reception) {
+        return this.nuiteeAvecRemise * this.quantiteNuitee
+      } else {
+        return 0
+      }
+    },
+    quantiteNuitee() {
+      return this.$moment(this.reception.sortie).diff(
+        this.reception.entree,
+        'days'
+      )
+    },
+    remise() {
+      return Math.round(
+        ((this.reception.prix * this.reception.remise) / 100) *
+          this.quantiteNuitee
+      )
     },
     dejaVerse() {
       return (
-        this.total +
+        this.totalVerse +
         (Number(this.versement.montant) - Number(this.versement.monnaie))
       )
     },
     reste() {
-      return this.montantApayer - Number(this.total)
+      return this.montantApayer - Number(this.totalVerse) + this.totalConsomme
     },
   },
   watch: {
@@ -186,56 +268,35 @@ export default {
       )
     },
   },
-  mounted() {
-    this.$axios.get('caisses/mobilesMoney').then((result) => {
-      this.mobileWays = result.data.mobiles
-    })
-  },
   methods: {
-    validate() {
-      const wayPayementChoice =
-        Boolean(this.versement.cheque) ||
-        Boolean(this.versement.mobile_money) ||
-        Boolean(this.versement.espece)
-      const monnaieCheck =
-        Number(this.versement.montant) > Number(this.versement.monnaie)
-      let montantCheck = false
-      if (monnaieCheck) {
-        montantCheck = this.montantApayer >= this.dejaVerse
-      }
-      return (
-        Number(this.versement.montant) !== 0 &&
-        wayPayementChoice &&
-        monnaieCheck &&
-        montantCheck
-      )
-    },
+    ...mapActions('facture-reception', ['encaisser']),
     createVersement() {
-      if (!this.validate()) {
+      const payementChoice =
+        Boolean(this.versement.mobile_money) ||
+        Boolean(this.versement.espece) ||
+        Boolean(this.versement.monnaie)
+      if (!this.$refs.form.validate() && payementChoice) {
         this.$notifier.show({
           text: 'Certaines valeurs soumises sont incorrectes',
           variant: 'error',
         })
       } else {
-        this.$axios
-          .post('reception/encaissements/new', {
-            mode: 'reserve',
-            montant: this.versement.montant,
-            reservation: this.reservation.id,
-            dejaVerse: this.dejaVerse,
-            montantApayer: this.montantApayer,
-            monnaie: this.versement.monnaie,
-            mobile_money: this.versement.mobile_money,
-            espece: this.versement.espece,
-            cheque: this.versement.cheque,
-          })
+        this.encaisser({
+          mode: 'reception',
+          montant: this.versement.montant,
+          attribution: this.reception.id,
+          dejaVerse: this.dejaVerse,
+          montantApayer: this.montantApayer + this.totalConsomme,
+          monnaie: this.versement.monnaie,
+          mobile_money: this.versement.mobile_money,
+          espece: this.versement.espece,
+        })
           .then((result) => {
-            const { message, versement, status } = result.data
-            this.$notifier.show({ text: message, variant: 'success' })
+            this.$notifier.show({
+              text: result.message,
+              variant: 'success',
+            })
             this.close()
-            status === 'soldée'
-              ? this.$emit('paid', versement)
-              : this.$emit('new-versement', versement)
           })
           .catch((err) => {
             const { data } = err.response
@@ -245,9 +306,10 @@ export default {
       }
     },
     close() {
-      this.dialog = false
+      this.dialogue = false
       this.$refs.form.reset()
       this.versement.monnaie = 0
+      this.versement.montant = 0
       this.activateWay = { cheque: false, espece: false, mobile: false }
       errorsInitialise(this.errors)
     },

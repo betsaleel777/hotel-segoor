@@ -27,11 +27,16 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
 import EditPermission from './EditPermission.vue'
 export default {
   components: {
     EditPermission,
+  },
+  props: {
+    permissions: {
+      type: Array,
+      required: true,
+    },
   },
   data: () => ({
     search: '',
@@ -47,18 +52,6 @@ export default {
       },
     ],
   }),
-  computed: {
-    ...mapGetters('role-permission/permission', ['permissions']),
-  },
-  mounted() {
-    this.loading = true
-    this.getAll().then(() => {
-      this.loading = false
-    })
-  },
-  methods: {
-    ...mapActions('role-permission/permission', ['getAll']),
-  },
 }
 </script>
 

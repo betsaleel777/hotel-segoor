@@ -42,6 +42,9 @@
                     {{ item.status }}
                   </v-chip>
                 </template>
+                <template #[`item.prix_vente`]="{ item }">
+                  {{ item.prix_vente }} FCFA
+                </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-chambre-form :categories="categories" :item="item" />
                   <delete-chambre-form :item="item" />
@@ -79,7 +82,7 @@ export default {
         { text: 'Nom', value: 'nom', sortable: false },
         { text: 'Standing', value: 'standing', sortable: false },
         { text: 'Status', value: 'status', sortable: false },
-        { text: 'Montant', value: 'montant' },
+        { text: 'Montant', value: 'prix_vente' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }

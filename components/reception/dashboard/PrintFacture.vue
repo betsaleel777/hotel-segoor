@@ -65,9 +65,10 @@
                     <tr>
                       <th class="text-center">Chambre</th>
                       <th class="text-center">Quantité</th>
-                      <th class="text-right">Nuitée</th>
-                      <th class="text-right">Remise</th>
-                      <th class="text-right">Montant</th>
+                      <th class="text-center">Nuitée</th>
+                      <th class="text-center">Total sans Remise</th>
+                      <th class="text-center">Remise</th>
+                      <th class="text-center">Total avec Remise</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -79,12 +80,17 @@
                         {{ quantiteNuitee + ' ' }}
                         jours
                       </td>
-                      <td class="text-right">{{ nuiteeAvecRemise }} FCFA</td>
-                      <td class="text-right">
-                        ({{ item.remise }}%), {{ remise }}FCFA
+                      <td class="text-center">
+                        {{ item.prix | formater }} FCFA
                       </td>
-                      <td class="text-right">
-                        <b>{{ montant }} FCFA</b>
+                      <td class="text-center">
+                        {{ (item.prix * quantiteNuitee) | formater }} FCFA
+                      </td>
+                      <td class="text-center">
+                        {{ remise | formater }}x{{ quantiteNuitee }} FCFA
+                      </td>
+                      <td class="text-center">
+                        <b>{{ montantAvecRemise | formater }} FCFA</b>
                       </td>
                     </tr>
                   </tbody>
@@ -116,9 +122,14 @@
                       </td>
                       <td class="text-left">{{ consommation.nom }}</td>
                       <td class="text-center">{{ consommation.quantite }}</td>
-                      <td class="text-right">{{ consommation.prix }} FCFA</td>
                       <td class="text-right">
-                        {{ consommation.quantite * consommation.prix }} FCFA
+                        {{ consommation.prix | formater }} FCFA
+                      </td>
+                      <td class="text-right">
+                        {{
+                          (consommation.quantite * consommation.prix) | formater
+                        }}
+                        FCFA
                       </td>
                     </tr>
                   </tbody>
@@ -126,7 +137,7 @@
                     <tr>
                       <td class="text-right" colspan="4"><b>Total</b></td>
                       <td class="text-right">
-                        <b>{{ totalConsomme }} FCFA</b>
+                        <b>{{ totalConsomme | formater }} FCFA</b>
                       </td>
                     </tr>
                   </tfoot>
@@ -137,7 +148,7 @@
               <div class="text-right">
                 <h3 class="pink--text darken-3">
                   Montant total à payer:
-                  {{ totalConsomme + montant }}
+                  {{ (totalConsomme + montantAvecRemise) | formater }} FCFA
                 </h3>
               </div>
             </v-col>
@@ -159,7 +170,8 @@
         <v-btn color="success" text @click="print"> Imprimer </v-btn>
         <v-btn
           :disabled="
-            totalConsomme + montant !== total || item.status === 'libérée'
+            totalConsomme + montantAvecRemise !== total ||
+            item.status === 'libérée'
           "
           color="primary"
           text
@@ -178,6 +190,11 @@ import VueHtmlToPaper from 'vue-html-to-paper'
 
 Vue.use(VueHtmlToPaper)
 export default {
+  filters: {
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)}`
+    },
+  },
   props: {
     item: {
       type: Object,
@@ -233,12 +250,12 @@ export default {
       return nature + ' ' + client.pieces[0].numero_piece
     },
     nuiteeAvecRemise() {
-      return this.item.prix * (1 - this.item.remise / 100)
+      return Math.round(this.item.prix * (1 - this.item.remise / 100))
     },
     quantiteNuitee() {
       return this.$moment(this.item.sortie).diff(this.item.entree, 'days')
     },
-    montant() {
+    montantAvecRemise() {
       if (this.item) {
         return this.nuiteeAvecRemise * this.quantiteNuitee
       } else {
@@ -246,15 +263,11 @@ export default {
       }
     },
     remise() {
-      return ((this.item.prix * this.item.remise) / 100) * this.quantiteNuitee
+      return Math.round((this.item.prix * this.item.remise) / 100)
     },
-    // montant() {
-    //   return (
-    //     this.item.prix *
-    //     (1 - this.item.remise / 100) *
-    //     this.$moment(this.item.sortie).diff(this.item.entree, 'days')
-    //   )
-    // },
+    remiseTotal() {
+      return this.remise * this.quantiteNuitee
+    },
     totalConsomme() {
       let total = 0
       if (this.consommations.length > 0) {

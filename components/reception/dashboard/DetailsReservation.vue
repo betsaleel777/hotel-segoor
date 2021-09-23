@@ -66,7 +66,7 @@
               <div class="text-center">
                 <h2 class="primary--text">Paiements du Client</h2>
               </div>
-              <v-container v-if="versements.length === 0">
+              <v-container v-if="!paiementExist">
                 <v-alert outlined type="info" prominent border="right">
                   Aucun paiement n'as déjà été effectué
                 </v-alert>
@@ -156,6 +156,7 @@ export default {
   },
   data: () => ({
     attribuable: true,
+    paiementExist: false,
   }),
   computed: {
     versements() {
@@ -168,7 +169,6 @@ export default {
       return result
     },
     getStatusColor() {
-      // console.log(this.details)
       if (this.status === 'impayée') {
         return 'red--text'
       } else if (this.status === 'en cours') {
@@ -222,6 +222,9 @@ export default {
       },
     },
   },
+  mounted() {
+    this.paiementExist = this.versements.length > 0
+  },
   methods: {
     moyenDePaiement(item) {
       if (item.mobile) {
@@ -234,12 +237,14 @@ export default {
     },
     pushVersement(versement) {
       this.versements.push(versement)
+      this.paiementExist = true
     },
     onPaid(versement) {
       this.versements.push(versement)
       this.dialog = false
     },
     refresh() {
+      this.dialog = false
       this.$emit('refresh')
     },
   },

@@ -17,18 +17,12 @@ export const actions = {
       }
     })
     commit('ALL_PERMISSIONS', permissions)
-    return false
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
       'parametre/permissions/' + payload.id,
       payload
     )
-    dispatch('getAll')
-    return { message: requete.data.message }
-  },
-  async assigner({ dispatch }, payload) {
-    const requete = await this.$axios.post('parametre/roles/assign/', payload)
     dispatch('getAll')
     return { message: requete.data.message }
   },

@@ -1,24 +1,5 @@
 <template>
-  <v-dialog v-model="dialogue" persistent max-width="600px">
-    <template #activator="{ on: dialog, attrs }">
-      <v-tooltip top>
-        <template #activator="{ on: tooltip }">
-          <v-btn
-            elevation="1"
-            icon
-            fab
-            dark
-            x-small
-            color="primary"
-            v-bind="attrs"
-            v-on="{ ...tooltip, ...dialog }"
-          >
-            <v-icon small> mdi-pencil </v-icon>
-          </v-btn>
-        </template>
-        <span>modifier</span>
-      </v-tooltip>
-    </template>
+  <v-dialog v-model="dialog" persistent max-width="600px">
     <v-card>
       <v-card-title class="grey lighten-2">
         <span class="headline primary--text">Modifier le client</span>
@@ -39,7 +20,6 @@
                   dense
                   outlined
                   label="Nom"
-                  required
                 >
                   <template #label>
                     Nom<span class="red--text"><strong> *</strong></span>
@@ -54,7 +34,6 @@
                   dense
                   outlined
                   label="Prenom"
-                  required
                 >
                   <template #label>
                     Prenom<span class="red--text"><strong> *</strong></span>
@@ -67,7 +46,6 @@
                   dense
                   outlined
                   label="Nom de jeune fille"
-                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
@@ -87,11 +65,7 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-text-field
-                  v-model="client.pays"
-                  label="Pays d'origine"
-                  required
-                >
+                <v-text-field v-model="client.pays" label="Pays d'origine">
                 </v-text-field>
               </v-col>
               <v-col cols="6">
@@ -101,13 +75,7 @@
                   :error-messages="errors.naissance.message"
                   label="Date de Naissance"
                   type="date"
-                  required
                 >
-                  <template #label>
-                    Date de Naissance<span class="red--text"
-                      ><strong> *</strong></span
-                    >
-                  </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
@@ -116,7 +84,6 @@
                   dense
                   outlined
                   label="Domicilier à "
-                  required
                 >
                 </v-text-field>
               </v-col>
@@ -126,7 +93,6 @@
                   dense
                   outlined
                   label="Département"
-                  required
                 >
                 </v-text-field>
               </v-col>
@@ -138,7 +104,6 @@
                   dense
                   outlined
                   label="Téléphone"
-                  required
                 >
                   <template #label>
                     Téléphone <span class="red--text"><strong> *</strong></span>
@@ -151,7 +116,6 @@
                   dense
                   outlined
                   label="Email"
-                  required
                 >
                 </v-text-field>
               </v-col>
@@ -161,7 +125,6 @@
                   dense
                   outlined
                   label="Profession"
-                  required
                 >
                 </v-text-field>
               </v-col>
@@ -178,18 +141,12 @@
                   :error-messages="errors.nature.message"
                   row
                 >
-                  <v-radio label="CNI" color="primary" value="cni">
-                    <template #label>
-                      CNI<span class="red--text"><strong> *</strong></span>
-                    </template>
-                  </v-radio>
-                  <v-radio label="Passeport" color="primary" value="passeport">
-                    <template #label>
-                      Passeport<span class="red--text"
-                        ><strong> *</strong></span
-                      >
-                    </template>
-                  </v-radio>
+                  <v-radio label="CNI" color="primary" value="cni"></v-radio>
+                  <v-radio
+                    label="Passeport"
+                    color="primary"
+                    value="passeport"
+                  ></v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="12">
@@ -201,9 +158,6 @@
                   outlined
                   label="Numéro"
                 >
-                  <template #label>
-                    Numéro <span class="red--text"><strong> *</strong></span>
-                  </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
@@ -211,7 +165,6 @@
                   v-model="piece.delivre_le"
                   label="Délivré le"
                   type="date"
-                  required
                 >
                 </v-text-field>
               </v-col>
@@ -220,7 +173,6 @@
                   v-model="piece.expire_le"
                   label="Expire le"
                   type="date"
-                  required
                 >
                 </v-text-field>
               </v-col>
@@ -245,7 +197,6 @@
                   v-model="piece.entree_pays"
                   label="Date d'entrée dans le pays"
                   type="date"
-                  required
                 >
                 </v-text-field>
               </v-col>
@@ -277,9 +228,9 @@ export default {
       type: Object,
       required: true,
     },
+    value: Boolean,
   },
   data: () => ({
-    dialogue: false,
     client: {
       nom: null,
       prenom: null,
@@ -301,30 +252,39 @@ export default {
       contact: { exist: false, message: null },
     },
   }),
+  computed: {
+    dialog: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit('input', value)
+      },
+    },
+  },
   mounted() {
-    const { piece, ...rest } = this.item
-    this.client = rest
-    this.piece = piece
+    this.client = Object.assign({}, this.item)
+    if (this.item.piece) this.piece = Object.assign({}, this.item.piece)
   },
   methods: {
     ...mapActions('reception/client', ['modifier']),
     reinitialise() {
-      const { piece, ...rest } = this.item
-      this.client = rest
-      this.piece = piece
+      this.client = Object.assign({}, this.item)
+      if (this.item.piece) this.piece = Object.assign({}, this.item.piece)
       errorsInitialise(this.errors)
-      this.dialogue = false
+      this.dialog = false
     },
     save() {
       this.modifier({
         ...this.client,
         ...this.piece,
-        piece: this.piece,
+        piece: this.client.piece,
         id: this.item.id,
       })
         .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
-          this.reinitialise()
+          this.$emit('edited', result.id)
+          this.dialog = false
         })
         .catch((err) => {
           const { data } = err.response

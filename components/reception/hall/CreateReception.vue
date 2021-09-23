@@ -52,7 +52,7 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col cols="5">
+              <v-col cols="6">
                 <v-autocomplete
                   v-model="attribution.client"
                   :error="errors.client.exist"
@@ -60,18 +60,19 @@
                   :items="clients"
                   item-value="id"
                   item-text="fullname"
-                  :disabled="modifier"
+                  :disabled="modifier || newClient"
                   dense
                   outlined
+                  clearable
+                  :append-outer-icon="!modifier ? 'mdi-plus-thick' : null"
+                  @click:append-outer="openClient = true"
                 >
                   <template #label>
                     Client<span class="red--text"><strong> *</strong></span>
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="1">
-                <create-client v-if="!modifier" />
-              </v-col>
+              <create-client v-model="openClient" @new-client="pushClient" />
               <v-col cols="12">
                 <v-text-field
                   v-model="attribution.destination"
@@ -150,14 +151,13 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="attribution.remise"
+                  v-model="montant"
                   type="number"
                   min="0"
-                  max="100"
-                  suffix="%"
+                  suffix="FCFA"
                   dense
                   outlined
-                  label="Remise"
+                  label="Montant de la remise"
                 >
                 </v-text-field>
               </v-col>
@@ -179,9 +179,10 @@
 import Moment from 'moment'
 import { extendMoment } from 'moment-range'
 import { mapActions } from 'vuex'
-import CreateClient from '../client/CreateClient.vue'
+import CreateClient from '~/components/reception/client/CreateClientDialog.vue'
 import {
   errorsInitialise,
+  // eslint-disable-next-line no-unused-vars
   errorsWriting,
 } from '~/components/helper/errorsHandle'
 const moment = extendMoment(Moment)
@@ -210,10 +211,13 @@ export default {
     return {
       dialog: false,
       chambresLocales: [],
+      openClient: false,
+      newClient: false,
       reservation: null,
       messageChambre: '',
       reservations: [],
       modifier: false,
+      montant: 0,
       attribution: {
         entree: null,
         sortie: null,
@@ -275,6 +279,9 @@ export default {
         chambre: null,
         reservation: null,
       }
+      this.reservation = null
+      this.newClient = false
+      this.modifier = false
       this.dialog = false
     },
     save() {
@@ -292,7 +299,9 @@ export default {
             variant: 'warning',
           })
         } else {
-          this.attribution.reservation = this.reservation.id
+          if (this.reservation)
+            this.attribution.reservation = this.reservation.id
+          this.remiseCalcul()
           this.ajouter(this.attribution)
             .then((result) => {
               this.$notifier.show({ text: result.message, variant: 'success' })
@@ -361,6 +370,18 @@ export default {
       this.reservation = null
       this.modifier = false
       this.chambresLocales = []
+    },
+    remiseCalcul() {
+      if (this.chambresLocales.length > 0) {
+        const chambre = this.chambresLocales.find(
+          (chambre) => chambre.id === this.attribution.chambre
+        )
+        this.attribution.remise = (this.montant / chambre.prix_vente) * 100
+      }
+    },
+    pushClient(id) {
+      this.newClient = true
+      this.attribution.client = id
     },
   },
 }

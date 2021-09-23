@@ -27,6 +27,7 @@
       <assign-permissions
         v-if="item.name !== 'Super Admin'"
         :role-item="item"
+        :permissions="permissions"
       />
       <delete-role v-if="item.name !== 'Super Admin'" :item="item" />
     </template>
@@ -34,7 +35,6 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
 import AssignPermissions from './AssignPermissions.vue'
 import CreateRole from './CreateRole.vue'
 import DeleteRole from './DeleteRole.vue'
@@ -45,6 +45,16 @@ export default {
     EditRole,
     CreateRole,
     AssignPermissions,
+  },
+  props: {
+    roles: {
+      type: Array,
+      required: true,
+    },
+    permissions: {
+      type: Array,
+      required: true,
+    },
   },
   data: () => ({
     search: '',
@@ -60,18 +70,6 @@ export default {
       },
     ],
   }),
-  computed: {
-    ...mapGetters('role-permission/role', ['roles']),
-  },
-  mounted() {
-    this.loading = true
-    this.getAll().then(() => {
-      this.loading = false
-    })
-  },
-  methods: {
-    ...mapActions('role-permission/role', ['getAll']),
-  },
 }
 </script>
 

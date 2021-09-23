@@ -1,14 +1,9 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
-    <template #activator="{ on, attrs }">
-      <v-btn v-bind="attrs" color="green darken-1" text v-on="on">
-        attribuer
-      </v-btn>
-    </template>
     <v-card>
       <v-card-title class="grey lighten-2">
         <span class="headline primary--text"
-          >Attribuer la chambre {{ infos.title }}</span
+          >Reserver chambre {{ infos.title }}</span
         >
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
@@ -21,7 +16,7 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                  v-model="attribution.accompagnants"
+                  v-model="reservation.accompagnants"
                   type="number"
                   dense
                   outlined
@@ -30,30 +25,30 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col cols="5">
+              <v-col cols="6">
                 <v-autocomplete
-                  v-model="attribution.client"
+                  v-model="reservation.client"
                   :error="errors.client.exist"
                   :error-messages="errors.client.message"
-                  :items="clientsLocales"
+                  :items="clients"
                   item-value="id"
-                  item-text="nom"
+                  item-text="fullname"
                   dense
                   outlined
-                  label="Client"
-                  required
+                  clearable
+                  :disabled="newClient"
+                  :append-outer-icon="'mdi-plus-thick'"
+                  @click:append-outer="openClient = true"
                 >
                   <template #label>
                     Client <span class="red--text"><strong>* </strong></span>
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="1">
-                <create-client @new-client="pushClient" />
-              </v-col>
+              <create-client v-model="openClient" @new-client="pushClient" />
               <v-col cols="12">
                 <v-text-field
-                  v-model="attribution.destination"
+                  v-model="reservation.destination"
                   dense
                   outlined
                   label="Destination"
@@ -61,7 +56,7 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="attribution.entree"
+                  v-model="reservation.entree"
                   :error="errors.entree.exist"
                   :error-messages="errors.entree.message"
                   label="Entrée"
@@ -69,13 +64,13 @@
                   required
                 >
                   <template #label>
-                    Entrée <span class="red--text"><strong>* </strong></span>
+                    Entrée<span class="red--text"><strong>* </strong></span>
                   </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="attribution.sortie"
+                  v-model="reservation.sortie"
                   :error="errors.sortie.exist"
                   :error-messages="errors.sortie.message"
                   label="Sortie"
@@ -85,19 +80,6 @@
                   <template #label>
                     Sortie <span class="red--text"><strong>* </strong></span>
                   </template>
-                </v-text-field>
-              </v-col>
-              <v-col v-can="'accès remise hébergement'" cols="12">
-                <v-text-field
-                  v-model="attribution.remise"
-                  type="number"
-                  min="0"
-                  max="100"
-                  suffix="%"
-                  dense
-                  outlined
-                  label="Remise"
-                >
                 </v-text-field>
               </v-col>
             </v-row>
@@ -124,7 +106,8 @@
 </template>
 
 <script>
-import CreateClient from '../client/CreateClient.vue'
+import { mapActions, mapGetters } from 'vuex'
+import CreateClient from '~/components/reception/client/CreateClientDialog.vue'
 import {
   errorsInitialise,
   errorsWriting,
@@ -133,28 +116,25 @@ import {
 export default {
   components: { CreateClient },
   props: {
-    clients: {
-      type: Array,
-      required: true,
-    },
     infos: {
       type: Object,
       required: true,
     },
+    value: Boolean,
   },
   data: () => {
     return {
-      dialog: false,
       message: '',
       possible: true,
-      attribution: {
+      openClient: false,
+      newClient: false,
+      reservation: {
         entree: '',
         sortie: '',
         status: null,
         accompagnants: null,
         client: null,
         chambre: null,
-        remise: 0,
       },
       errors: {
         entree: { exist: false, message: null },
@@ -163,48 +143,52 @@ export default {
         client: { exist: false, message: null },
         chambre: { exist: false, message: null },
       },
-      clientsLocales: [],
     }
   },
-  beforeUpdate() {
-    this.clientsLocales = this.clients
-    this.attribution.chambre = this.infos.id
-    this.attribution.entree = this.infos.entree
-    this.attribution.sortie = this.infos.sortie
+  computed: {
+    ...mapGetters('reception/client', ['clients']),
+    dialog: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit('input', value)
+      },
+    },
+  },
+  mounted() {
+    this.getAll()
+    this.reservation.chambre = this.infos.id
+    this.reservation.entree = this.infos.entree
+    this.reservation.sortie = this.infos.sortie
     const { possible, message } = this.checkDate()
     this.possible = possible
     this.message = message
   },
   methods: {
-    allowDates(val) {
-      return Date.parse(val) > Date.now() - 8.64e7
-    },
+    ...mapActions('reception/client', ['getAll']),
     reinitialise() {
       errorsInitialise(this.errors)
-      this.attribution = {
+      this.reservation = {
         entree: '',
         sortie: '',
         status: null,
         accompagnants: null,
         client: null,
         chambre: null,
-        remise: 0,
       }
+      this.newClient = false
       this.dialog = false
-    },
-    pushClient(client) {
-      this.clientsLocales.push(client)
     },
     save() {
       this.$axios
-        .post('reception/attributions/new', {
-          ...this.attribution,
-          user: this.user.id,
+        .post('reception/reservations/new', {
+          ...this.reservation,
         })
         .then((result) => {
           this.$notifier.show({ text: result.data.message, variant: 'success' })
-          this.dialog = false
-          this.$emit('new-reception')
+          this.reinitialise()
+          this.$emit('new-reservation')
         })
         .catch((err) => {
           const { data } = err.response
@@ -217,15 +201,16 @@ export default {
     checkDate() {
       let message = ''
       let possible = true
-      const now = this.$moment().format('DD-MM-YYYY').toString()
-      const start = this.$moment(this.attribution.entree)
-        .format('DD-MM-YYYY')
-        .toString()
-      if (now !== start) {
-        message += `Aucune Attribution de chambre pour des dates antérieures ou ultérieures à aujourd'hui: ${now} n'est possible.`
+      const start = this.$moment(this.reservation.entree)
+      if (this.$moment().isAfter(start, 'days')) {
+        message += `Aucune Réservation n'est possible pour cette date.`
         possible = false
       }
       return { possible, message }
+    },
+    pushClient(id) {
+      this.newClient = true
+      this.reservation.client = id
     },
   },
 }

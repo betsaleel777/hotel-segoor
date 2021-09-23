@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogue" persistent max-width="600px">
+  <v-dialog v-model="dialogue" persistent max-width="650px">
     <template #activator="{ on: dialog, attrs }">
       <v-tooltip top>
         <template #activator="{ on: tooltip }">
@@ -21,7 +21,9 @@
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">Assigner un rôle</span>
+        <span class="headline primary--text"
+          >Assigner des permissions au role {{ roleItem.name }}</span
+        >
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -72,16 +74,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import {
-  errorsWriting,
-  errorsInitialise,
-} from '~/components/helper/errorsHandle'
-
+import { mapActions } from 'vuex'
 export default {
   props: {
     roleItem: {
       type: Object,
+      required: true,
+    },
+    permissions: {
+      type: Array,
       required: true,
     },
   },
@@ -98,43 +99,34 @@ export default {
       name: { exist: false, message: null },
     },
   }),
-  computed: {
-    ...mapGetters('role-permission/permission', ['permissions']),
-  },
   mounted() {
-    this.loading = true
-    this.getAll().then(() => {
-      this.loading = false
-    })
     this.initialisationPermissions()
   },
   methods: {
-    ...mapActions('role-permission/permission', ['assigner', 'getAll']),
+    ...mapActions({
+      assigner: 'role-permission/role/assigner',
+      getRole: 'role-permission/role/getRole',
+    }),
     reinitialise() {
-      this.dialogue = false
-      errorsInitialise(this.errors)
       this.initialisationPermissions()
+      this.dialogue = false
     },
     save() {
       this.assigner({
         id: this.roleItem.id,
         permissions: this.permissionsSelected,
-        user: this.user.id,
-      })
-        .then((result) => {
-          this.$notifier.show({
-            text: result.message,
-            variant: 'success',
+      }).then((result) => {
+        this.$notifier.show({
+          text: result.message,
+          variant: 'success',
+        })
+        this.getRole({ id: this.roleItem.id }).then((role) => {
+          this.permissionsSelected = role.permissions.map((permission) => {
+            return permission.id
           })
-          this.reinitialise()
           this.dialogue = false
         })
-        .catch((err) => {
-          if (err.response.data) {
-            errorsInitialise(this.errors)
-            errorsWriting(err.response.data, this.errors)
-          }
-        })
+      })
     },
     addPermission(id) {
       const index = this.permissionsSelected.findIndex(

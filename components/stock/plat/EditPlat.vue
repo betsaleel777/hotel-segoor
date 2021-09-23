@@ -153,8 +153,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="blue darken-1" text @click="save"> modifier</v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Modifier</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -166,7 +166,6 @@ import CreateCategorie from './CreateCategorie.vue'
 import IngredientList from './IngredientList'
 import {
   errorsInitialise,
-  // eslint-disable-next-line no-unused-vars
   errorsWriting,
 } from '~/components/helper/errorsHandle'
 import imagePreviewMixin from '~/components/mixins/ImagePreviewMixin'
@@ -207,14 +206,14 @@ export default {
     }
   },
   mounted() {
-    this.plat = this.item
-    this.ingredients = this.item.ingredients
+    this.plat = Object.assign({}, this.item)
+    this.ingredients = Object.assign([], this.item.ingredients)
   },
   methods: {
     ...mapActions('stock/plat', ['modifier']),
     reinitialise() {
-      this.plat = this.item
-      this.ingredients = this.item.ingredients
+      this.plat = Object.assign({}, this.item)
+      this.ingredients = Object.assign([], this.item.ingredients)
       errorsInitialise(this.errors)
       this.dialog = false
     },

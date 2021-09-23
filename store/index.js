@@ -19,21 +19,6 @@ export const state = () => ({
         permission: 'accès gestion réception',
       },
       sousModules: [
-        // {
-        //   icon: 'mdi-home',
-        //   text: 'Hall de Réception',
-        //   to: '/reception/hall',
-        // },
-        // {
-        //   icon: 'mdi-shield-home',
-        //   text: 'Réservation',
-        //   to: '/reception/reservation',
-        // },
-        // {
-        //   icon: 'mdi-cash-register',
-        //   text: 'Caisse',
-        //   to: '/reception/caisse',
-        // },
         {
           icon: 'mdi-account-group',
           text: 'Gestion de la Clientelle',

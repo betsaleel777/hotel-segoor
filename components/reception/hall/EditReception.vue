@@ -50,15 +50,17 @@
                   item-text="fullname"
                   dense
                   outlined
+                  clearable
+                  :disabled="newClient"
+                  :append-outer-icon="'mdi-plus-thick'"
+                  @click:append-outer="openClient = true"
                 >
                   <template #label>
                     Client<span class="red--text"><strong> *</strong></span>
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="1">
-                <create-client />
-              </v-col>
+              <create-client v-model="openClient" @new-client="pushClient" />
               <v-col cols="12">
                 <v-text-field
                   v-model="attribution.destination"
@@ -135,14 +137,14 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="attribution.remise"
+                  v-model="montant"
                   type="number"
                   min="0"
                   max="100"
-                  suffix="%"
+                  suffix="FCFA"
                   dense
                   outlined
-                  label="Remise"
+                  label="Montant de la remise"
                 >
                 </v-text-field>
               </v-col>
@@ -163,7 +165,7 @@
 import Moment from 'moment'
 import { extendMoment } from 'moment-range'
 import { mapActions } from 'vuex'
-import CreateClient from '../client/CreateClient.vue'
+import CreateClient from '~/components/reception/client/CreateClientDialog.vue'
 import {
   errorsInitialise,
   errorsWriting,
@@ -201,7 +203,10 @@ export default {
       reservation: null,
       messageChambre: '',
       reservations: [],
+      openClient: false,
+      newClient: false,
       rechercher: false,
+      montant: 0,
       attribution: {
         entree: null,
         sortie: null,
@@ -235,20 +240,12 @@ export default {
       }
       this.attribution = Object.assign({}, object)
       this.chambresLocales.push(rest.chambre_linked)
-    },
-    fieldComplete() {
-      this.attribution.client = this.reservation.client
-      this.attribution.accompagnants = this.reservation.accompagnants
-      this.attribution.entree = this.reservation.entree
-      this.attribution.sortie = this.reservation.sortie
-      this.attribution.destination = this.reservation.destination
-      this.attribution.chambre = this.reservation.chambre
-      this.chambresLocales.push(this.reservation.chambre_linked)
-      this.rechercher = true
+      this.montant = Math.round((rest.prix * rest.remise) / 100)
     },
     reinitialise() {
       errorsInitialise(this.errors)
       this.initialisation()
+      this.newClient = false
       this.dialogue = false
     },
     save() {
@@ -260,12 +257,8 @@ export default {
             text: "Date d'entrée et de sortie incohérente",
             variant: 'warning',
           })
-        } else if (!moment().isSame(entree, 'days')) {
-          this.$notifier.show({
-            text: "La date d'entée du client doit être celle d'aujourd'hui.",
-            variant: 'warning',
-          })
         } else {
+          this.remiseCalcul()
           this.modifier({ id: this.item.id, ...this.attribution })
             .then((result) => {
               this.$notifier.show({ text: result.message, variant: 'success' })
@@ -347,6 +340,13 @@ export default {
       this.chambresLocales = this.chambres.filter(
         (chambre) => !chambresUtilisees.includes(chambre.id)
       )
+    },
+    remiseCalcul() {
+      this.attribution.remise = (this.montant / this.item.prix) * 100
+    },
+    pushClient(id) {
+      this.newClient = true
+      this.attribution.client = id
     },
   },
 }

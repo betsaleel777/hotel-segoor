@@ -39,12 +39,13 @@
                     ></v-text-field>
                   </v-toolbar>
                 </template>
-                <!-- <template #[`item.status`]="{ item }">
+                <template #[`item.status`]="{ item }">
                   <v-chip small outlined :color="getColor(item.status)" dark>
                     {{ item.status }}
                   </v-chip>
-                </template> -->
+                </template>
                 <template #[`item.actions`]="{ item }">
+                  <show-client :item="item" />
                   <edit-client :item="item" />
                   <delete-client :item="item" />
                 </template>
@@ -64,9 +65,10 @@
 /* eslint-disable camelcase */
 import { mapActions, mapGetters } from 'vuex'
 import SideReception from '~/components/reception/SideReceptionPrincipale.vue'
-import EditClient from '~/components/reception/client/EditClient.vue'
+import EditClient from '~/components/reception/client/EditClientButton.vue'
 import DeleteClient from '~/components/reception/client/DeleteClient.vue'
-import CreateClient from '~/components/reception/client/CreateClient.vue'
+import CreateClient from '~/components/reception/client/CreateClientButton.vue'
+import ShowClient from '~/components/reception/client/ShowClient.vue'
 
 export default {
   components: {
@@ -74,15 +76,15 @@ export default {
     EditClient,
     DeleteClient,
     CreateClient,
+    ShowClient,
   },
   data() {
     return {
       search: '',
       headers: [
-        { text: 'Prenom', value: 'prenom' },
+        { text: 'Prenom', value: 'fullname' },
         { text: 'Contact', value: 'contact', sortable: false },
-        { text: 'Pays', value: 'pays', sortable: false },
-        { text: 'Domicile', value: 'domicile', sortable: false },
+        { text: 'Dossier client', value: 'status', sortable: false },
         { text: 'Né le', value: 'naissance' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
@@ -96,6 +98,9 @@ export default {
   },
   methods: {
     ...mapActions('reception/client', ['getAll']),
+    getColor(status) {
+      return status === 'complet' ? 'green' : 'red'
+    },
   },
 }
 </script>

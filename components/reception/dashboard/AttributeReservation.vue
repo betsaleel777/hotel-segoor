@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="500px">
     <template #activator="{ on }">
-      <v-btn color="green darken-1" text v-on="on"> attribuer </v-btn>
+      <v-btn color="success" text v-on="on"> attribuer </v-btn>
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline"
@@ -20,11 +20,22 @@
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
+    <edit-client
+      v-if="dialogClient"
+      v-model="dialogClient"
+      :item="item.client_linked"
+      @edited="onEdited"
+    />
   </v-dialog>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import EditClient from '~/components/reception/client/EditClientDialog.vue'
 export default {
+  components: {
+    EditClient,
+  },
   props: {
     item: {
       type: Object,
@@ -33,37 +44,50 @@ export default {
   },
   data: () => {
     return {
-      dialog: true,
+      dialog: false,
+      dialogClient: false,
     }
   },
   methods: {
+    ...mapActions('reception/client', ['getOne']),
     attribuate() {
-      if (this.$moment().isSame(this.$moment(this.item.entree, 'days'))) {
-        const postData = {
-          entree: this.item.entree,
-          sortie: this.item.sortie,
-          accompagnants: this.item.accompagnants,
-          destination: this.item.destination,
-          reservation: this.item.id,
-          remise: this.item.remise,
-          chambre: this.item.chambre,
-          client: this.item.client,
-          prix: this.item.chambre_linked.prix_vente,
-        }
-        this.$axios
-          .post('reception/attributions/new', postData)
-          .then((result) => {
-            const { message } = result.data
-            this.$notifier.show({ text: message, variant: 'success' })
-            this.dialog = false
-            this.$emit('reservation-converted')
+      if (this.$moment().isSame(this.$moment(this.item.entree), 'days')) {
+        if (this.item.client_linked.status === 'incomplet') {
+          this.$notifier.show({
+            text: `le dossier du client ${this.item.client_linked.nom} est imcomplet, veuillez completer les informations de la pièce d'identité`,
+            variant: 'info',
           })
+          this.dialogClient = true
+        } else {
+          const postData = {
+            entree: this.item.entree,
+            sortie: this.item.sortie,
+            accompagnants: this.item.accompagnants,
+            destination: this.item.destination,
+            reservation: this.item.id,
+            remise: this.item.remise,
+            chambre: this.item.chambre,
+            client: this.item.client,
+            prix: this.item.chambre_linked.prix_vente,
+          }
+          this.$axios
+            .post('reception/attributions/new', postData)
+            .then((result) => {
+              const { message } = result.data
+              this.$notifier.show({ text: message, variant: 'success' })
+              this.dialog = false
+              this.$emit('reservation-converted')
+            })
+        }
       } else {
         this.$notifier.show({
-          text: "Impossible d'attribuer à cette date",
+          text: `Impossible d'attribuer la chambre ${this.item.chambre_linked.nom} à cette date`,
           variant: 'error',
         })
       }
+    },
+    onEdited() {
+      this.$emit('reservation-converted')
     },
   },
 }

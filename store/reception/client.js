@@ -1,9 +1,13 @@
 export const state = () => ({
   clients: [],
+  client: {},
 })
 export const getters = {
   clients: (state) => {
     return state.clients
+  },
+  client: (state) => {
+    return state.client
   },
 }
 export const actions = {
@@ -26,7 +30,7 @@ export const actions = {
       payload
     )
     dispatch('getAll')
-    return { message: requete.data.message }
+    return { message: requete.data.message, id: requete.data.id }
   },
   async supprimer({ dispatch }, id) {
     const requete = await this.$axios.delete('reception/clients/' + id)
@@ -36,13 +40,20 @@ export const actions = {
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post('reception/clients/new', payload)
     dispatch('getAll')
-    return { message: requete.data.message }
+    return { message: requete.data.message, id: requete.data.id }
+  },
+  async getOne({ commit }, id) {
+    const requete = await this.$axios.get('reception/clients/', id)
+    commit('ONE_CLIENT', requete.data.client)
+    return requete.data.client
   },
 }
 
 export const mutations = {
   ALL_CLIENTS(state, clients) {
-    state.clients.splice(0, state.clients.length)
-    state.clients.push(...clients)
+    state.clients = clients
+  },
+  ONE_CLIENT(state, client) {
+    state.client = client
   },
 }

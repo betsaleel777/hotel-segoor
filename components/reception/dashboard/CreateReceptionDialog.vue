@@ -1,14 +1,9 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
-    <template #activator="{ on, attrs }">
-      <v-btn v-bind="attrs" color="green darken-1" text v-on="on">
-        reserver
-      </v-btn>
-    </template>
     <v-card>
       <v-card-title class="grey lighten-2">
         <span class="headline primary--text"
-          >Reserver chambre {{ infos.title }}</span
+          >Attribuer la chambre {{ infos.title }}</span
         >
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
@@ -21,38 +16,40 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                  v-model="reservation.accompagnants"
+                  v-model="attribution.accompagnants"
                   type="number"
                   dense
                   outlined
                   label="Accompagnants"
+                  min="0"
                 >
                 </v-text-field>
               </v-col>
-              <v-col cols="5">
+              <v-col cols="6">
                 <v-autocomplete
-                  v-model="reservation.client"
+                  v-model="attribution.client"
                   :error="errors.client.exist"
                   :error-messages="errors.client.message"
-                  :items="clientsLocales"
+                  :items="clients"
                   item-value="id"
-                  item-text="nom"
+                  item-text="fullname"
                   dense
                   outlined
                   label="Client"
-                  required
+                  clearable
+                  :disabled="newClient"
+                  :append-outer-icon="'mdi-plus-thick'"
+                  @click:append-outer="openClient = true"
                 >
                   <template #label>
                     Client <span class="red--text"><strong>* </strong></span>
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="1">
-                <create-client @new-client="pushClient" />
-              </v-col>
+              <create-client v-model="openClient" @new-client="pushClient" />
               <v-col cols="12">
                 <v-text-field
-                  v-model="reservation.destination"
+                  v-model="attribution.destination"
                   dense
                   outlined
                   label="Destination"
@@ -60,7 +57,7 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="reservation.entree"
+                  v-model="attribution.entree"
                   :error="errors.entree.exist"
                   :error-messages="errors.entree.message"
                   label="Entrée"
@@ -68,13 +65,13 @@
                   required
                 >
                   <template #label>
-                    Entrée<span class="red--text"><strong>* </strong></span>
+                    Entrée <span class="red--text"><strong>* </strong></span>
                   </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  v-model="reservation.sortie"
+                  v-model="attribution.sortie"
                   :error="errors.sortie.exist"
                   :error-messages="errors.sortie.message"
                   label="Sortie"
@@ -84,6 +81,18 @@
                   <template #label>
                     Sortie <span class="red--text"><strong>* </strong></span>
                   </template>
+                </v-text-field>
+              </v-col>
+              <v-col v-can="'accès remise hébergement'" cols="12">
+                <v-text-field
+                  v-model="montant"
+                  type="number"
+                  min="0"
+                  suffix="FCFA"
+                  dense
+                  outlined
+                  label="Montant de la Remise"
+                >
                 </v-text-field>
               </v-col>
             </v-row>
@@ -110,8 +119,9 @@
 </template>
 
 <script>
-import moment from 'moment'
-import CreateClient from '../client/CreateClient.vue'
+/* eslint-disable no-unused-vars */
+import { mapActions, mapGetters } from 'vuex'
+import CreateClient from '~/components/reception/client/CreateClientDialog.vue'
 import {
   errorsInitialise,
   errorsWriting,
@@ -120,27 +130,26 @@ import {
 export default {
   components: { CreateClient },
   props: {
-    clients: {
-      type: Array,
-      required: true,
-    },
     infos: {
       type: Object,
       required: true,
     },
+    value: Boolean,
   },
   data: () => {
     return {
-      dialog: false,
+      openClient: false,
+      newClient: false,
       message: '',
       possible: true,
-      reservation: {
+      montant: 0,
+      attribution: {
         entree: '',
         sortie: '',
-        status: null,
         accompagnants: null,
         client: null,
         chambre: null,
+        remise: 0,
       },
       errors: {
         entree: { exist: false, message: null },
@@ -149,48 +158,54 @@ export default {
         client: { exist: false, message: null },
         chambre: { exist: false, message: null },
       },
-      clientsLocales: [],
     }
   },
-  beforeUpdate() {
-    this.clientsLocales = this.clients
-    this.reservation.chambre = this.infos.id
-    this.reservation.entree = this.infos.entree
-    this.reservation.sortie = this.infos.sortie
+  computed: {
+    ...mapGetters('reception/client', ['clients']),
+    dialog: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit('input', value)
+      },
+    },
+  },
+  mounted() {
+    this.getAll()
+    this.attribution.chambre = this.infos.id
+    this.attribution.entree = this.infos.entree
+    this.attribution.sortie = this.infos.sortie
     const { possible, message } = this.checkDate()
     this.possible = possible
     this.message = message
   },
   methods: {
-    allowDates(val) {
-      return Date.parse(val) > Date.now() - 8.64e7
-    },
+    ...mapActions({
+      getAll: 'reception/client/getAll',
+      getOneChambre: 'parametre/chambre/getOne',
+      ajouter: 'reception/attribution/ajouter',
+    }),
     reinitialise() {
       errorsInitialise(this.errors)
-      this.reservation = {
+      this.attribution = {
         entree: '',
         sortie: '',
-        status: null,
         accompagnants: null,
         client: null,
         chambre: null,
+        remise: 0,
       }
+      this.newClient = false
       this.dialog = false
     },
-    pushClient(client) {
-      client.nom = client.nom + ' ' + client.prenom
-      this.clientsLocales.push(client)
-    },
-    save() {
-      this.$axios
-        .post('reception/reservations/new', {
-          ...this.reservation,
-          user: this.user.id,
-        })
+    async save() {
+      await this.remiseCalcul()
+      this.ajouter(this.attribution)
         .then((result) => {
-          this.$notifier.show({ text: result.data.message, variant: 'success' })
-          this.dialog = false
-          this.$emit('new-reservation')
+          this.$notifier.show({ text: result.message, variant: 'success' })
+          this.reinitialise()
+          this.$emit('new-reception')
         })
         .catch((err) => {
           const { data } = err.response
@@ -203,12 +218,22 @@ export default {
     checkDate() {
       let message = ''
       let possible = true
-      const start = moment(this.reservation.entree)
-      if (moment().isAfter(start)) {
-        message += `Aucune Réservation n'est possible pour cette date.`
+      const now = this.$moment()
+      if (!now.isSame(this.$moment(this.attribution.entree), 'days')) {
+        message += `Aucune Attribution de chambre pour des dates antérieures ou ultérieures à aujourd'hui: ${now.format(
+          'DD-MM-YYYY'
+        )} n'est possible.`
         possible = false
       }
       return { possible, message }
+    },
+    async remiseCalcul() {
+      const requete = await this.getOneChambre(this.attribution.chambre)
+      this.attribution.remise = (this.montant / requete.prix_vente) * 100
+    },
+    pushClient(id) {
+      this.newClient = true
+      this.attribution.client = id
     },
   },
 }

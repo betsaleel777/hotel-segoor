@@ -22,9 +22,20 @@
                   <v-row>
                     <v-col cols="2"></v-col>
                     <v-col cols="8">
-                      <liste-user v-if="item === 'Utilisateurs'" />
-                      <liste-role v-if="item === 'Rôles'" />
-                      <liste-permission v-if="item === 'Permissions'" />
+                      <liste-user
+                        v-if="item === 'Utilisateurs'"
+                        :roles="roles"
+                        :users="users"
+                      />
+                      <liste-role
+                        v-if="item === 'Rôles'"
+                        :roles="roles"
+                        :permissions="permissions"
+                      />
+                      <liste-permission
+                        v-if="item === 'Permissions'"
+                        :permissions="permissions"
+                      />
                     </v-col>
                     <v-col cols="2"></v-col>
                   </v-row>
@@ -40,10 +51,11 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import ListeUser from '~/components/parametre/user-role/user/listeUser.vue'
 import SideParametre from '~/components/parametre/SideParametre.vue'
 import ListeRole from '~/components/parametre/user-role/role/listeRole.vue'
-import ListePermission from '~/components/parametre/user-role/permission.vue/listePermission.vue'
+import ListePermission from '~/components/parametre/user-role/permission/listePermission.vue'
 
 export default {
   components: {
@@ -56,6 +68,23 @@ export default {
     tab: null,
     items: ['Utilisateurs', 'Rôles', 'Permissions'],
   }),
+  computed: {
+    ...mapGetters('user', ['users']),
+    ...mapGetters('role-permission/role', ['roles']),
+    ...mapGetters('role-permission/permission', ['permissions']),
+  },
+  mounted() {
+    this.getUsers()
+    this.getRoles()
+    this.getPermissions()
+  },
+  methods: {
+    ...mapActions({
+      getUsers: 'user/getAll',
+      getRoles: 'role-permission/role/getAll',
+      getPermissions: 'role-permission/permission/getAll',
+    }),
+  },
 }
 </script>
 

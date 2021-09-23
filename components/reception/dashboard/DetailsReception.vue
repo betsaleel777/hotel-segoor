@@ -40,9 +40,10 @@
                       <tr>
                         <th class="text-center">Chambre</th>
                         <th class="text-center">Quantité</th>
-                        <th class="text-right">Nuitée</th>
-                        <th class="text-right">Remise</th>
-                        <th class="text-right">Montant</th>
+                        <th class="text-center">Nuitée</th>
+                        <th class="text-center">Total sans Remise</th>
+                        <th class="text-center">Remise</th>
+                        <th class="text-center">Total avec Remise</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -54,12 +55,18 @@
                           {{ quantiteNuitee + ' ' }}
                           jours
                         </td>
-                        <td class="text-right">{{ nuiteeAvecRemise }} FCFA</td>
-                        <td class="text-right">
-                          ({{ details.remise }}%), {{ remise }}FCFA
+                        <td class="text-center">
+                          {{ details.prix | formater }} FCFA
                         </td>
-                        <td class="text-right">
-                          <b>{{ montant }} FCFA</b>
+                        <td class="text-center">
+                          {{ (details.prix * quantiteNuitee) | formater }} FCFA
+                        </td>
+                        <td class="text-center">
+                          {{ remise | formater }}x{{ quantiteNuitee }}
+                          FCFA
+                        </td>
+                        <td class="text-center">
+                          <b>{{ montantAvecRemise | formater }} FCFA</b>
                         </td>
                       </tr>
                     </tbody>
@@ -93,9 +100,11 @@
                         </td>
                         <td class="text-left">{{ item.nom }}</td>
                         <td class="text-center">{{ item.quantite }}</td>
-                        <td class="text-right">{{ item.prix }} FCFA</td>
                         <td class="text-right">
-                          {{ item.quantite * item.prix }} FCFA
+                          {{ item.prix | formater }} FCFA
+                        </td>
+                        <td class="text-right">
+                          {{ (item.quantite * item.prix) | formater }} FCFA
                         </td>
                       </tr>
                     </tbody>
@@ -105,7 +114,7 @@
                           <b>Total de consommation</b>
                         </td>
                         <td class="text-right">
-                          <b>{{ total }} FCFA</b>
+                          <b>{{ total | formater }} FCFA</b>
                         </td>
                       </tr>
                       <tr>
@@ -113,7 +122,12 @@
                           <b>Frais d'hôtel</b>
                         </td>
                         <td class="text-right">
-                          <b>{{ total + montant }} FCFA</b>
+                          <b
+                            >{{
+                              (total + montantAvecRemise) | formater
+                            }}
+                            FCFA</b
+                          >
                         </td>
                       </tr>
                     </tfoot>
@@ -123,7 +137,7 @@
               <div class="text-center">
                 <h2 class="primary--text">Paiements</h2>
               </div>
-              <v-container v-if="versements.length === 0">
+              <v-container v-if="!paiementExist">
                 <v-alert outlined type="info" prominent border="right">
                   Aucun paiement n'as déjà été effectué
                 </v-alert>
@@ -146,10 +160,17 @@
                           {{ $moment(item.created_at).format('llll') }}
                         </td>
                         <td class="text-center">{{ moyenDePaiement(item) }}</td>
-                        <td class="text-right">{{ item.montant }} FCFA</td>
-                        <td class="text-right">{{ item.monnaie }} FCFA</td>
                         <td class="text-right">
-                          {{ Number(item.montant) - Number(item.monnaie) }}
+                          {{ item.montant | formater }} FCFA
+                        </td>
+                        <td class="text-right">
+                          {{ item.monnaie | formater }} FCFA
+                        </td>
+                        <td class="text-right">
+                          {{
+                            (Number(item.montant) - Number(item.monnaie))
+                              | formater
+                          }}
                           FCFA
                         </td>
                       </tr>
@@ -160,7 +181,7 @@
                           <b>Total versé</b>
                         </td>
                         <td class="text-right">
-                          <b>{{ totalVerse }} FCFA</b>
+                          <b>{{ totalVerse | formater }} FCFA</b>
                         </td>
                       </tr>
                     </tfoot>
@@ -172,7 +193,7 @@
               <div class="text-right">
                 <h3 class="pink--text darken-3">
                   Montant total à payer:
-                  {{ reste }} FCFA
+                  {{ reste | formater }} FCFA
                 </h3>
               </div>
             </v-col>
@@ -183,6 +204,7 @@
         <v-spacer></v-spacer>
         <v-btn color="error" text @click.stop="dialog = false">Fermer</v-btn>
         <paiement-reception
+          v-if="details.status !== 'libérée'"
           v-can="'accès paiements réception'"
           :reception="details"
           :total="totalVerse"
@@ -204,6 +226,11 @@ export default {
     PrintFacture,
     PaiementReception,
   },
+  filters: {
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)}`
+    },
+  },
   props: {
     details: {
       type: Object,
@@ -213,6 +240,9 @@ export default {
     },
     value: Boolean,
   },
+  data: () => ({
+    paiementExist: false,
+  }),
   computed: {
     versements() {
       let result = null
@@ -272,12 +302,12 @@ export default {
       }
     },
     nuiteeAvecRemise() {
-      return this.details.prix * (1 - this.details.remise / 100)
+      return Math.round(this.details.prix * (1 - this.details.remise / 100))
     },
     quantiteNuitee() {
       return this.$moment(this.details.sortie).diff(this.details.entree, 'days')
     },
-    montant() {
+    montantAvecRemise() {
       if (this.details) {
         return this.nuiteeAvecRemise * this.quantiteNuitee
       } else {
@@ -285,9 +315,10 @@ export default {
       }
     },
     remise() {
-      return (
-        ((this.details.prix * this.details.remise) / 100) * this.quantiteNuitee
-      )
+      return Math.round((this.details.prix * this.details.remise) / 100)
+    },
+    remiseTotal() {
+      return this.remise * this.quantiteNuitee
     },
     totalVerse() {
       let resultat = 0
@@ -306,7 +337,7 @@ export default {
       return resultat
     },
     montantApayer() {
-      return this.total + this.montant
+      return this.total + this.montantAvecRemise
     },
     reste() {
       return this.montantApayer - this.totalVerse
@@ -320,6 +351,9 @@ export default {
       },
     },
   },
+  mounted() {
+    this.paiementExist = this.versements.length > 0
+  },
   methods: {
     moyenDePaiement(item) {
       if (item.mobile) {
@@ -332,7 +366,7 @@ export default {
     },
     pushVersement(versement) {
       this.versements.push(versement)
-      this.dialog = false
+      this.paiementExist = true
     },
     onPaid(versement) {
       this.versements.push(versement)

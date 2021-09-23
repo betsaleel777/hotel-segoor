@@ -3,10 +3,14 @@
 export const state = () => ({
   attributions: [],
   hebergements: [],
+  attribution: {},
 })
 export const getters = {
   attributions: (state) => {
     return state.attributions
+  },
+  attribution: (state) => {
+    return state.attribution
   },
   hebergements: (state) => {
     return state.hebergements
@@ -24,7 +28,7 @@ export const actions = {
     commit('ALL_HEBERGEMENTS', hebergements)
   },
   async getEnCours({ commit }) {
-    const requete = await this.$axios.get('reception/attributions')
+    const requete = await this.$axios.get('reception/attributions/busy')
     const filtrees = requete.data.attributions.filter(
       (attribution) => attribution.status === 'occupée'
     )
@@ -37,6 +41,11 @@ export const actions = {
       }
     })
     commit('ALL_ATTRIBUTIONS', attributions)
+  },
+  async getUniq({ commit }, id) {
+    const requete = await this.$axios.get('reception/attributions/' + id)
+    const attribution = requete.data.attribution
+    commit('ONE_ATTRIBUTION', attribution)
   },
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post(
@@ -69,6 +78,9 @@ export const actions = {
 export const mutations = {
   ALL_ATTRIBUTIONS(state, attributions) {
     state.attributions = attributions
+  },
+  ONE_ATTRIBUTION(state, attribution) {
+    state.attribution = attribution
   },
   ALL_HEBERGEMENTS(state, hebergements) {
     state.hebergements = hebergements

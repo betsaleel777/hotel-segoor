@@ -155,7 +155,7 @@ export default {
   },
   computed: {
     nuiteeAvecRemise() {
-      return this.reception.prix * (1 - this.reception.remise / 100)
+      return Math.round(this.reception.prix * (1 - this.reception.remise / 100))
     },
     montantApayer() {
       if (this.reception) {
@@ -171,9 +171,9 @@ export default {
       )
     },
     remise() {
-      return (
+      return Math.round(
         ((this.reception.prix * this.reception.remise) / 100) *
-        this.quantiteNuitee
+          this.quantiteNuitee
       )
     },
     dejaVerse() {

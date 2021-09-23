@@ -112,7 +112,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      getTournees: 'stock/tournees/getAll',
+      getTournees: 'stock/tournee/getAll',
       getArticleTournees: 'stock/article/getArticlesTournee',
       getCategories: 'parametre/categorie-article/getAll',
     }),

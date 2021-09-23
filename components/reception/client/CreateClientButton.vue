@@ -1,36 +1,16 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
-    <template v-if="floatingButton" #activator="{ on, attrs }">
-      <v-btn
-        v-bind="attrs"
-        color="primary"
-        dark
-        absolute
-        bottom
-        right
-        fab
-        v-on="on"
-      >
-        <v-icon>mdi-plus</v-icon>
+    <template v-if="raise" #activator="{ on, attrs }">
+      <v-btn v-bind="attrs" dark color="primary" v-on="on">
+        <v-icon left>mdi-plus-thick</v-icon>
+        AJOUTER
       </v-btn>
-    </template>
-    <template v-else #activator="{ on, attrs }">
-      <v-btn
-        dark
-        color="primary"
-        elevation="4"
-        fab
-        small
-        v-bind="attrs"
-        v-on="on"
-        ><v-icon dark>mdi-plus</v-icon></v-btn
-      >
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
         <span class="headline primary--text">Créer client</span>
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="reinitialise">
+        <v-btn color="error" icon @click.stop="reinitialise">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -110,10 +90,6 @@
                   type="date"
                   required
                 >
-                  <template #label>
-                    Date de Naissance
-                    <span class="red--text"><strong>* </strong></span>
-                  </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
@@ -137,7 +113,14 @@
                 </v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-text-field v-model="client.contact" dense outlined required>
+                <v-text-field
+                  v-model="client.contact"
+                  :error="errors.contact.exist"
+                  :error-messages="errors.contact.message"
+                  dense
+                  outlined
+                  required
+                >
                   <template #label>
                     Téléphone
                     <span class="red--text"><strong> *</strong></span>
@@ -177,18 +160,12 @@
                   :error-messages="errors.nature.message"
                   row
                 >
-                  <v-radio label="CNI" color="primary" value="cni">
-                    <template #label>
-                      CNI
-                      <span class="red--text"><strong> *</strong></span>
-                    </template>
-                  </v-radio>
-                  <v-radio label="Passeport" color="primary" value="passeport">
-                    <template #label>
-                      Passeport
-                      <span class="red--text"><strong> *</strong></span>
-                    </template>
-                  </v-radio>
+                  <v-radio label="CNI" color="primary" value="cni"> </v-radio>
+                  <v-radio
+                    label="Passeport"
+                    color="primary"
+                    value="passeport"
+                  ></v-radio>
                 </v-radio-group>
               </v-col>
               <v-col cols="12">
@@ -200,9 +177,6 @@
                   outlined
                   label="Numéro"
                 >
-                  <template #label>
-                    Numéro <span class="red--text"><strong>* </strong></span>
-                  </template>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
@@ -271,15 +245,10 @@ import {
 
 export default {
   mixins: [formPiece],
-  /* eslint-disable camelcase */
   props: {
-    floatingButton: {
-      type: Boolean,
-      default: false,
-    },
     raise: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   data: () => ({

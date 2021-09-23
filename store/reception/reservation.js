@@ -1,8 +1,8 @@
-/* eslint-disable camelcase */
-// import moment from 'moment'
+import moment from 'moment'
 export const state = () => ({
   reservations: [],
   hebergements: [],
+  eventsSource: [],
 })
 export const getters = {
   reservations: (state) => {
@@ -11,12 +11,57 @@ export const getters = {
   hebergements: (state) => {
     return state.hebergements
   },
+  eventsSource: (state) => {
+    return state.eventsSource
+  },
 }
 export const actions = {
   async getAll({ commit }) {
     const requete = await this.$axios.get('reception/reservations')
     const reservations = requete.data.reservations
     commit('ALL_RESERVATIONS', reservations)
+  },
+  async getCalendarEvents({ commit }) {
+    const requete = await this.$axios.get('reception/reservations/events')
+    const events = requete.data.events.map((event) => {
+      const colorize = () => {
+        if (event.status === 'occupée') {
+          return '#E53935'
+        } else if (event.status === 'libérée') {
+          return '#66BB6A'
+        } else if (event.status === 'annulée') {
+          return '#FFCA28'
+        } else {
+          return '#1E88E5'
+        }
+      }
+      return {
+        id: event.id,
+        resourceId: event.chambre,
+        title: `${event.client_linked.nom.toUpperCase()} ${event.client_linked.prenom.toUpperCase()} ${
+          event.client_linked.contact
+        }`,
+        start: moment(event.entree).format('YYYY-MM-DD').toString(),
+        end:
+          event.status === 'libérée'
+            ? moment(event.date_liberation).format('YYYY-MM-DD').toString()
+            : moment(event.sortie).format('YYYY-MM-DD').toString(),
+        backgroundColor: colorize(),
+        eventBorderColor: colorize(),
+        // eventTextColor:
+        extendedProps: {
+          status: event.status,
+        },
+      }
+    })
+    const eventsSource = {
+      events,
+      overlap: false,
+      resourceEditable: false,
+      startEditable: false,
+      editable: true,
+    }
+    commit('ALL_EVENTS', eventsSource)
   },
   async getReserved({ commit }) {
     const requete = await this.$axios.get('reception/reservations/reserved')
@@ -62,5 +107,8 @@ export const mutations = {
   },
   ALL_HEBERGEMENTS(state, hebergements) {
     state.hebergements = hebergements
+  },
+  ALL_EVENTS(state, eventsSource) {
+    state.eventsSource = eventsSource
   },
 }
