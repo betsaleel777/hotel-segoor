@@ -98,7 +98,7 @@ export default {
           ressourceTimelineTwoMonth: {
             type: 'resourceTimelineMonth',
             duration: { month: 2 },
-            buttonText: 'sur 2 mois',
+            buttonText: 'Sur deux mois',
           },
         },
         height: 600,
@@ -114,7 +114,6 @@ export default {
         select: this.handleSelect,
         eventClick: this.handleEventClick,
         eventResize: this.handleResize,
-        eventDidMount: this.eventRender,
         resources(fetchInfo, successCallback, failureCallback) {
           $axios.get('gestion-chambre/chambres').then((result) => {
             const chambres = result.data.chambres.map((chambre) => {

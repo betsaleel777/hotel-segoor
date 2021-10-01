@@ -54,13 +54,12 @@ export default {
       }
       if (this.item.backgroundColor === '#1E88E5') {
         this.editReservation(putData).then((result) => {
-          const { message } = result.data
-          this.$notifier.show({ text: message, variant: 'sucess' })
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.close()
         })
       } else {
         this.editAttribution(putData).then((result) => {
-          this.$notifier.show({ text: result.message, variant: 'sucess' })
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.close()
         })
       }
