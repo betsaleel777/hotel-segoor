@@ -49,7 +49,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions('reception/client', ['getOne']),
+    ...mapActions({
+      getOne: 'reception/client/getOne',
+      attribuer: 'reception/attribution/attribuer',
+      getReserved: 'reception/reservation/getReserved',
+    }),
     attribuate() {
       if (this.$moment().isSame(this.$moment(this.item.entree), 'days')) {
         if (this.item.client_linked.status === 'incomplet') {
@@ -70,14 +74,13 @@ export default {
             client: this.item.client,
             prix: this.item.chambre_linked.prix_vente,
           }
-          this.$axios
-            .post('reception/attributions/new', postData)
-            .then((result) => {
-              const { message } = result.data
-              this.$notifier.show({ text: message, variant: 'success' })
+          this.attribuer(postData).then((result) => {
+            this.getReserved().then(() => {
+              this.$notifier.show({ text: result.message, variant: 'success' })
               this.dialog = false
               this.$emit('reservation-converted')
             })
+          })
         }
       } else {
         this.$notifier.show({

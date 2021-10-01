@@ -366,10 +366,12 @@ export default {
     },
     pushVersement(versement) {
       this.versements.push(versement)
+      this.$root.$emit('new-payement')
       this.paiementExist = true
     },
     onPaid(versement) {
       this.versements.push(versement)
+      this.$root.$emit('new-payement')
       this.dialog = false
     },
     onFree() {

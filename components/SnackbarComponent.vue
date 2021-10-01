@@ -11,13 +11,15 @@
       {{ text }}
       <template #action="{ attrs }">
         <v-btn
-          color="blue darken-4"
+          :color="variantUse"
           dark
           text
+          fab
           v-bind="attrs"
+          small
           @click="show = false"
         >
-          Fermer
+          <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </template>
     </v-snackbar>

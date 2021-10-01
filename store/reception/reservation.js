@@ -78,7 +78,7 @@ export const actions = {
       'reception/reservations/new',
       payload
     )
-    dispatch('getAll')
+    dispatch('getReserved')
     return { message: requete.data.message }
   },
   async modifier({ dispatch }, payload) {
@@ -86,17 +86,17 @@ export const actions = {
       'reception/reservations/' + payload.id,
       payload
     )
-    dispatch('getAll')
+    dispatch('getReserved')
     return { message: requete.data.message }
   },
   async supprimer({ dispatch }, id) {
     const requete = await this.$axios.delete('reception/reservations/' + id)
-    dispatch('getAll')
+    dispatch('getReserved')
     return { message: requete.data.message }
   },
   async annuler({ dispatch }, id) {
     const requete = await this.$axios.put('reception/reservations/abort/' + id)
-    dispatch('getAll')
+    dispatch('getReserved')
     return { message: requete.data.message }
   },
 }

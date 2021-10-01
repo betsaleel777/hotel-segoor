@@ -305,6 +305,7 @@ export default {
           this.ajouter(this.attribution)
             .then((result) => {
               this.$notifier.show({ text: result.message, variant: 'success' })
+              this.$root.$emit('update-calendar')
               this.reinitialise()
             })
             .catch((err) => {

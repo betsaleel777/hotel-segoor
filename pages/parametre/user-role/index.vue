@@ -20,8 +20,8 @@
               <v-tabs-items v-model="tab">
                 <v-tab-item v-for="item in items" :key="item">
                   <v-row>
-                    <v-col cols="2"></v-col>
-                    <v-col cols="8">
+                    <v-col cols="1"></v-col>
+                    <v-col cols="10">
                       <liste-user
                         v-if="item === 'Utilisateurs'"
                         :roles="roles"
@@ -37,7 +37,7 @@
                         :permissions="permissions"
                       />
                     </v-col>
-                    <v-col cols="2"></v-col>
+                    <v-col cols="1"></v-col>
                   </v-row>
                 </v-tab-item>
               </v-tabs-items>

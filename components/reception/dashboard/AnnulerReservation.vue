@@ -8,13 +8,13 @@
         ><div>Confirmer annulation</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
-        Voulez vous annuler la reservation <b>{{ item.code.toUpperCase() }}</b
-        ><br />
-        pour le client: <b>{{ item.client.nom }}</b> ?
+        Voulez vous annuler la reservation pour la chambre
+        <b>{{ item.chambre_linked.nom | upper }}</b
+        >, concernant le client: <b>{{ item.client_linked.nom | upper }}</b> ?
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="dialogue = false">Fermer</v-btn>
+        <v-btn color="error" text @click="dialog = false">Fermer</v-btn>
         <v-btn color="primary" text @click="freeItemConfirm">OK</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
@@ -25,6 +25,12 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
+  filters: {
+    upper(value) {
+      if (!value) return ''
+      return value.toUpperCase()
+    },
+  },
   props: {
     item: {
       type: Object,

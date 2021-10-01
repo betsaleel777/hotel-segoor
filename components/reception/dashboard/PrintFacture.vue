@@ -5,7 +5,9 @@
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">Facture {{ item.code }}</span>
+        <span class="headline primary--text"
+          >Facture {{ item.chambre_linked.nom }}</span
+        >
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="dialog = false">
           <v-icon>mdi-close</v-icon>

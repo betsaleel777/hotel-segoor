@@ -47,7 +47,7 @@ export default {
       { text: 'Réservations', icon: 'mdi-shield-home' },
       { text: 'Hébergements', icon: 'mdi-bed' },
       { text: 'Clientelle', icon: 'mdi-account-group' },
-      { text: 'Factures', icon: 'mdi-file' },
+      { text: 'Factures', icon: 'mdi-file-outline' },
     ],
   }),
 }

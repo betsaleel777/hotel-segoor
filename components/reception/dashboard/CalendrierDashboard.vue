@@ -34,18 +34,18 @@
       </v-card>
     </v-dialog>
     <details-reception
-      v-if="Object.keys(details)"
+      v-if="dialog1"
       v-model="dialog1"
       :details="details"
       @refresh="refresh"
     />
     <details-reservation
-      v-if="Object.keys(details)"
+      v-if="dialog2"
       v-model="dialog2"
       :details="details"
       @refresh="refresh"
     />
-    <edit-event v-model="dialog3" :item="event" @edit-closed="refresh" />
+    <edit-event v-model="dialog3" :item="event" @edit-closed="onEditEvent" />
   </v-row>
 </template>
 
@@ -88,11 +88,18 @@ export default {
         locale: frLocale,
         plugins: [interactionPlugin, resourceTimelinePlugin],
         initialView: 'resourceTimelineMonth',
-        resourceAreaWidth: '15%',
+        resourceAreaWidth: '20%',
         headerToolbar: {
           left: 'today prev,next',
           center: 'title',
-          right: 'resourceTimelineMonth',
+          right: 'resourceTimelineMonth,ressourceTimelineTwoMonth',
+        },
+        views: {
+          ressourceTimelineTwoMonth: {
+            type: 'resourceTimelineMonth',
+            duration: { month: 2 },
+            buttonText: 'sur 2 mois',
+          },
         },
         height: 600,
         resourceAreaHeaderContent: 'CHAMBRES',
@@ -165,6 +172,9 @@ export default {
   mounted() {
     const calendar = this.$refs.calendrier.getApi()
     this.events = calendar.getEvents()
+    this.$root.$on('update-calendar', () => {
+      calendar.refetchEvents()
+    })
   },
   methods: {
     handleSelect(info) {
@@ -176,17 +186,9 @@ export default {
       this.event = info.event
       const start = moment(info.event.start)
       const validation = moment().isAfter(start, 'days')
-      const status = info.event.extendedProps.status
-      if (status === 'libérée' || status === 'occupée') {
+      if (validation) {
         this.$notifier.show({
-          text: 'Cette fonctionalité est en cours de dévéloppement',
-          variant: 'info',
-        })
-        this.refresh()
-      } else if (validation) {
-        this.$notifier.show({
-          text:
-            "Aucune modification n'est permise pour cette date de réservation",
+          text: "Aucune modification n'est permise pour cette date.",
           variant: 'warning',
         })
         this.refresh()
@@ -219,7 +221,7 @@ export default {
         this.$axios
           .get('reception/attributions/' + info.event.id)
           .then((result) => {
-            this.details = result.data.reservation
+            this.details = result.data.attribution
             if (this.details.client_linked.pieces.length > 0)
               this.details.client_linked.piece = this.details.client_linked.pieces[0]
             else this.details.client_linked.piece = objectPiece
@@ -243,6 +245,10 @@ export default {
     newCalendarEvent() {
       this.refresh()
       this.dialog = false
+    },
+    onEditEvent() {
+      this.refresh()
+      this.dialog3 = false
     },
   },
 }

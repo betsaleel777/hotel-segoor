@@ -27,6 +27,16 @@
                       :categories="categories"
                       :floating="false"
                     />
+                    <v-btn
+                      class="ml-2"
+                      :disabled="chambres.length === 0"
+                      dark
+                      color="primary"
+                      @click="print"
+                    >
+                      <v-icon left>mdi-printer</v-icon>
+                      IMPRIMER
+                    </v-btn>
                     <v-spacer></v-spacer>
                     <v-text-field
                       v-model="search"
@@ -43,7 +53,7 @@
                   </v-chip>
                 </template>
                 <template #[`item.prix_vente`]="{ item }">
-                  {{ item.prix_vente }} FCFA
+                  {{ item.prix_vente | formater }}
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-chambre-form :categories="categories" :item="item" />
@@ -62,6 +72,7 @@
 </template>
 
 <script>
+import printjs from 'print-js'
 import { mapGetters, mapActions } from 'vuex'
 import CreateChambreForm from '~/components/parametre/chambre/CreateChambreForm.vue'
 import EditChambreForm from '~/components/parametre/chambre/EditChambreForm.vue'
@@ -74,6 +85,11 @@ export default {
     DeleteChambreForm,
     CreateChambreForm,
     SideParametre,
+  },
+  filters: {
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)} FCFA`
+    },
   },
   data() {
     return {
@@ -108,6 +124,31 @@ export default {
       } else {
         return 'orange'
       }
+    },
+    print() {
+      const chambres = this.chambres.map((chambre) => {
+        return {
+          nom: chambre.nom,
+          standing: chambre.standing,
+          prix_vente: this.$options.filters.formater(chambre.prix_vente),
+        }
+      })
+      printjs({
+        printable: chambres,
+        properties: [
+          { field: 'nom', displayName: 'Nom' },
+          { field: 'standing', displayName: 'Standing' },
+          { field: 'prix_vente', displayName: 'Montant' },
+        ],
+        type: 'json',
+        header: `<center><h3>Liste des Chambres</h3>${this.$moment().format(
+          'll'
+        )}</center><br>`,
+        css: [
+          'https://cdnjs.cloudflare.com/ajax/libs/vuetify/3.0.0-alpha.11/vuetify.min.css',
+        ],
+        style: 'td {text-align: center }',
+      })
     },
   },
 }

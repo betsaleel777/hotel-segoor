@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -37,22 +38,32 @@ export default {
     },
   },
   methods: {
+    ...mapActions({
+      editReservation: 'reception/reservation/modifier',
+      editAttribution: 'reception/attribution/modifierCalendrier',
+    }),
     close() {
       this.dialog = false
       this.$emit('edit-closed')
     },
     edit() {
-      let url = 'reception/attributions/' + this.item.id
-      if (this.item.backgroundColor === '#1E88E5') {
-        url = 'reception/reservations/' + this.item.id
+      const putData = {
+        id: this.item.id,
+        entree: this.item.startStr,
+        sortie: this.item.endStr,
       }
-      this.$axios
-        .put(url, { entree: this.item.startStr, sortie: this.item.endStr })
-        .then((result) => {
+      if (this.item.backgroundColor === '#1E88E5') {
+        this.editReservation(putData).then((result) => {
           const { message } = result.data
           this.$notifier.show({ text: message, variant: 'sucess' })
           this.close()
         })
+      } else {
+        this.editAttribution(putData).then((result) => {
+          this.$notifier.show({ text: result.message, variant: 'sucess' })
+          this.close()
+        })
+      }
     },
   },
 }

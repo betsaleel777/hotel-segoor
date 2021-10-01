@@ -26,6 +26,16 @@
                       :floating="false"
                       :categories="categories"
                     />
+                    <v-btn
+                      class="ml-2"
+                      :disabled="articles.length === 0"
+                      dark
+                      color="primary"
+                      @click="print"
+                    >
+                      <v-icon left>mdi-printer</v-icon>
+                      IMPRIMER
+                    </v-btn>
                     <v-spacer></v-spacer>
                     <v-text-field
                       v-model="search"
@@ -57,6 +67,7 @@
 </template>
 
 <script>
+import printjs from 'print-js'
 import { mapActions, mapGetters } from 'vuex'
 import CreateProduit from '~/components/stock/produit/CreateProduit.vue'
 import DeleteProduit from '~/components/stock/produit/DeleteProduit.vue'
@@ -92,6 +103,23 @@ export default {
       getArticles: 'stock/article/getAll',
       getCategories: 'parametre/categorie-article/getAll',
     }),
+    print() {
+      printjs({
+        printable: this.articles,
+        properties: [
+          { field: 'nom', displayName: 'Description' },
+          { field: 'categorie.nom', displayName: 'Catégorie' },
+        ],
+        type: 'json',
+        header: `<center><h3>Liste des Articles</h3>${this.$moment().format(
+          'll'
+        )}</center><br>`,
+        css: [
+          'https://cdnjs.cloudflare.com/ajax/libs/vuetify/3.0.0-alpha.11/vuetify.min.css',
+        ],
+        style: 'td {text-align: center }',
+      })
+    },
   },
 }
 </script>

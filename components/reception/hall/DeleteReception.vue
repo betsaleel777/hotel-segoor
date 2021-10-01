@@ -57,6 +57,7 @@ export default {
     deleteItemConfirm() {
       this.supprimer(this.item.id).then((result) => {
         this.$notifier.show({ text: result.message, variant: 'success' })
+        this.$root.$emit('update-calendar')
         this.dialogue = false
       })
     },

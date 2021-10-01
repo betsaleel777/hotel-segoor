@@ -29,6 +29,16 @@
                       :categories="categories"
                       :floating="false"
                     />
+                    <v-btn
+                      class="ml-2"
+                      :disabled="tournees.length === 0"
+                      dark
+                      color="primary"
+                      @click="print"
+                    >
+                      <v-icon left>mdi-printer</v-icon>
+                      IMPRIMER
+                    </v-btn>
                     <v-spacer></v-spacer>
                     <v-text-field
                       v-model="search"
@@ -74,6 +84,7 @@
 </template>
 
 <script>
+import printjs from 'print-js'
 import { mapGetters, mapActions } from 'vuex'
 import CreateTournee from '~/components/stock/tournee/CreateTournee.vue'
 import DeleteTournee from '~/components/stock/tournee/DeleteTournee.vue'
@@ -86,6 +97,11 @@ export default {
     DeleteTournee,
     EditTournee,
     SideStock,
+  },
+  filters: {
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)} FCFA`
+    },
   },
   data() {
     return {
@@ -116,6 +132,32 @@ export default {
       getArticleTournees: 'stock/article/getArticlesTournee',
       getCategories: 'parametre/categorie-article/getAll',
     }),
+    print() {
+      const tournees = this.tournees.map((tournee) => {
+        return {
+          titre: tournee.titre,
+          nombre: tournee.nombre,
+          contenance: tournee.contenance + ' cl',
+          montant: this.$options.filters.formater(tournee.montant),
+        }
+      })
+      printjs({
+        printable: tournees,
+        properties: [
+          { field: 'titre', displayName: 'Désignation' },
+          { field: 'nombre', displayName: 'Quantité tournée' },
+          { field: 'contenance', displayName: 'Contenance' },
+        ],
+        type: 'json',
+        header: `<center><h3>Liste des tournees</h3>${this.$moment().format(
+          'll'
+        )}</center><br>`,
+        css: [
+          'https://cdnjs.cloudflare.com/ajax/libs/vuetify/3.0.0-alpha.11/vuetify.min.css',
+        ],
+        style: 'td {text-align: center }',
+      })
+    },
   },
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     no-data-text="Aucune reception"
-    :loading="$fetchState.pending"
+    :loading="loading"
     loading-text="En chargement ..."
     :headers="headers"
     :items="reservations"
@@ -16,6 +16,16 @@
           :clients="clients"
           :floating="false"
         />
+        <v-btn
+          class="ml-2"
+          :disabled="reservations.length === 0"
+          dark
+          color="primary"
+          @click="print"
+        >
+          <v-icon left>mdi-printer</v-icon>
+          IMPRIMER
+        </v-btn>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -25,6 +35,10 @@
           hide-details
         ></v-text-field>
       </v-toolbar>
+    </template>
+    <template #[`item.fullname`]="{ item }">
+      {{ item.client_linked.nom | upper }}
+      {{ item.client_linked.prenom | upper }}
     </template>
     <template #[`item.status`]="{ item }">
       <v-chip small outlined :color="getColor(item.status)" dark>
@@ -54,6 +68,7 @@
 </template>
 
 <script>
+import printjs from 'print-js'
 import { mapActions, mapGetters } from 'vuex'
 import FreeReservation from '~/components/reception/reservation/FreeReservation'
 import DeleteReservation from '~/components/reception/reservation/DeleteReservation'
@@ -69,11 +84,18 @@ export default {
     EditReservation,
     ShowReservation,
   },
+  filters: {
+    upper(value) {
+      if (!value) return ''
+      return value.toUpperCase()
+    },
+  },
   data() {
     return {
       search: '',
+      loading: false,
       headers: [
-        { text: 'Client', value: 'client_linked.nom', sortable: false },
+        { text: 'Client', value: 'fullname', sortable: false },
         { text: 'Chambre', value: 'chambre_linked.nom', sortable: false },
         { text: 'Debut', value: 'entree' },
         { text: 'Fin', value: 'sortie' },
@@ -82,17 +104,19 @@ export default {
       ],
     }
   },
-  fetch() {
-    this.getReserved()
-    this.getClients()
-    this.getChambres()
-    this.getHebergements()
-  },
   computed: {
     ...mapGetters('reception/reservation', ['reservations']),
     ...mapGetters('reception/client', ['clients']),
     ...mapGetters('parametre/chambre', ['chambres']),
     ...mapGetters('reception/reservation', ['hebergements']),
+  },
+  async mounted() {
+    this.loading = true
+    await this.getReserved()
+    await this.getClients()
+    await this.getChambres()
+    await this.getHebergements()
+    this.loading = false
   },
   methods: {
     ...mapActions({
@@ -109,6 +133,31 @@ export default {
       } else {
         return 'pink'
       }
+    },
+    print() {
+      const reservations = this.reservations.map((reservation) => {
+        return {
+          clients:
+            reservation.client_linked.nom.toUpperCase() +
+            ' ' +
+            reservation.client_linked.prenom.toUpperCase(),
+          chambres: reservation.chambre_linked.nom,
+          entree: this.$moment(reservation.entree).format('ll'),
+          sortie: this.$moment(reservation.sortie).format('ll'),
+        }
+      })
+      printjs({
+        printable: reservations,
+        properties: ['clients', 'chambres', 'entree', 'sortie'],
+        type: 'json',
+        header: `<center><h3>Liste des reservations</h3>${this.$moment().format(
+          'll'
+        )}</center><br>`,
+        css: [
+          'https://cdnjs.cloudflare.com/ajax/libs/vuetify/3.0.0-alpha.11/vuetify.min.css',
+        ],
+        style: 'td {text-align: center;font-size: small } ',
+      })
     },
   },
 }

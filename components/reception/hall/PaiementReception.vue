@@ -30,7 +30,7 @@
         </v-btn>
       </v-card-title>
       <v-card-text justify="center" align="center">
-        <v-form ref="form" v-model="valid">
+        <v-form ref="form">
           <v-container>
             <h4 class="pink--text mb-5">
               le montant qui reste à payer est: {{ reste }} FCFA
@@ -55,7 +55,6 @@
                   :disabled="activateWay.cheque"
                   dense
                   label="Numéro du cheque"
-                  required
                   @change="setWay('cheque')"
                 ></v-text-field>
               </v-col>
@@ -79,7 +78,6 @@
                   label="Montant perçu"
                   type="number"
                   min="0"
-                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -92,7 +90,6 @@
                   label="Monnaie rendue"
                   type="number"
                   min="0"
-                  required
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -141,7 +138,6 @@ export default {
     return {
       dialogue: false,
       encaissable: true,
-      valid: false,
       versement: {
         montant: 0,
         monnaie: 0,
@@ -296,6 +292,7 @@ export default {
               text: result.message,
               variant: 'success',
             })
+            this.$emit('add-payed')
             this.close()
           })
           .catch((err) => {
@@ -310,6 +307,7 @@ export default {
       this.$refs.form.reset()
       this.versement.monnaie = 0
       this.versement.montant = 0
+      this.encaissable = true
       this.activateWay = { cheque: false, espece: false, mobile: false }
       errorsInitialise(this.errors)
     },

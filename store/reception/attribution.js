@@ -22,6 +22,11 @@ export const actions = {
     const attributions = requete.data.attributions
     commit('ALL_ATTRIBUTIONS', attributions)
   },
+  async getBusy({ commit }) {
+    const requete = await this.$axios.get('reception/attributions/busy')
+    const attributions = requete.data.attributions
+    commit('ALL_ATTRIBUTIONS', attributions)
+  },
   async getHebergements({ commit }) {
     const requete = await this.$axios.get('reception/attributions/used')
     const hebergements = requete.data.hebergements
@@ -52,7 +57,15 @@ export const actions = {
       'reception/attributions/new',
       payload
     )
-    dispatch('getAll')
+    dispatch('getBusy')
+    return { message: requete.data.message }
+  },
+  async attribuer({ dispatch }, payload) {
+    const requete = await this.$axios.post(
+      'reception/attributions/new',
+      payload
+    )
+    dispatch('getBusy')
     return { message: requete.data.message }
   },
   async modifier({ dispatch }, payload) {
@@ -60,17 +73,25 @@ export const actions = {
       'reception/attributions/' + payload.id,
       payload
     )
-    dispatch('getAll')
+    dispatch('getBusy')
+    return { message: requete.data.message }
+  },
+  async modifierCalendrier({ dispatch }, payload) {
+    const requete = await this.$axios.put(
+      'reception/attributions/event/' + payload.id,
+      payload
+    )
+    dispatch('getBusy')
     return { message: requete.data.message }
   },
   async supprimer({ dispatch }, id) {
     const requete = await this.$axios.delete('reception/attributions/' + id)
-    dispatch('getAll')
+    dispatch('getBusy')
     return { message: requete.data.message }
   },
   async liberer({ dispatch }, id) {
     const requete = await this.$axios.put('reception/attributions/free/' + id)
-    dispatch('getAll')
+    dispatch('getBusy')
     return { message: requete.data.message }
   },
 }

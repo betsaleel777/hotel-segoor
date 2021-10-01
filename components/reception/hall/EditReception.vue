@@ -40,7 +40,7 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col cols="5">
+              <v-col cols="6">
                 <v-autocomplete
                   v-model="attribution.client"
                   :error="errors.client.exist"
@@ -262,6 +262,7 @@ export default {
           this.modifier({ id: this.item.id, ...this.attribution })
             .then((result) => {
               this.$notifier.show({ text: result.message, variant: 'success' })
+              this.$root.$emit('update-calendar')
               this.dialogue = false
             })
             .catch((err) => {

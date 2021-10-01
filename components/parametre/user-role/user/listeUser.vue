@@ -12,6 +12,16 @@
     <template #[`top`]>
       <v-toolbar flat>
         <create-user :roles="roles" />
+        <v-btn
+          class="ml-2"
+          :disabled="users.length === 0"
+          dark
+          color="primary"
+          @click="print"
+        >
+          <v-icon left>mdi-printer</v-icon>
+          IMPRIMER
+        </v-btn>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -36,6 +46,7 @@
 </template>
 
 <script>
+import printjs from 'print-js'
 import CreateUser from './CreateUser.vue'
 import DeleteUser from './DeleteUser.vue'
 import EditUser from './EditUser.vue'
@@ -71,6 +82,25 @@ export default {
       },
     ],
   }),
+  methods: {
+    print() {
+      printjs({
+        printable: this.users,
+        properties: [
+          { field: 'name', displayName: 'Nom' },
+          { field: 'email', displayName: 'Adresse mail' },
+        ],
+        type: 'json',
+        header: `<center><h3>Liste des Utilisateurs</h3>${this.$moment().format(
+          'll'
+        )}</center><br>`,
+        css: [
+          'https://cdnjs.cloudflare.com/ajax/libs/vuetify/3.0.0-alpha.11/vuetify.min.css',
+        ],
+        style: 'td {text-align: center }',
+      })
+    },
+  },
 }
 </script>
 

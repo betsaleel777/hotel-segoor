@@ -101,6 +101,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import {
   errorsInitialise,
   errorsWriting,
@@ -208,6 +209,7 @@ export default {
     })
   },
   methods: {
+    ...mapActions('facture-reception', ['encaisser']),
     createVersement() {
       const payementChoice =
         Boolean(this.versement.mobile_money) ||
@@ -219,25 +221,26 @@ export default {
           variant: 'error',
         })
       } else {
-        this.$axios
-          .post('reception/encaissements/new', {
-            mode: 'reception',
-            montant: this.versement.montant,
-            attribution: this.reception.id,
-            dejaVerse: this.dejaVerse,
-            montantApayer: this.montantApayer + this.consommation,
-            monnaie: this.versement.monnaie,
-            mobile_money: this.versement.mobile_money,
-            espece: this.versement.espece,
-            cheque: this.versement.cheque,
-          })
+        this.encaisser({
+          mode: 'reception',
+          montant: this.versement.montant,
+          attribution: this.reception.id,
+          dejaVerse: this.dejaVerse,
+          montantApayer: this.montantApayer + this.consommation,
+          monnaie: this.versement.monnaie,
+          mobile_money: this.versement.mobile_money,
+          espece: this.versement.espece,
+          cheque: this.versement.cheque,
+        })
           .then((result) => {
-            const { message, versement, status } = result.data
-            this.$notifier.show({ text: message, variant: 'success' })
+            this.$notifier.show({
+              text: result.message,
+              variant: 'success',
+            })
             this.close()
-            status === 'soldée'
-              ? this.$emit('paid', versement)
-              : this.$emit('new-versement', versement)
+            result.status === 'soldée'
+              ? this.$emit('paid', result.versement)
+              : this.$emit('new-versement', result.versement)
           })
           .catch((err) => {
             const { data } = err.response
