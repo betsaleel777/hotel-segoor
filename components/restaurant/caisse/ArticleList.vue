@@ -18,12 +18,9 @@
             <td>{{ reponse.code }}</td>
             <td style="width: 30%">{{ reponse.nom }}</td>
             <td>{{ reponse.valeur }}</td>
-            <td>{{ reponse.prix_vente }}</td>
+            <td>{{ reponse.prix_vente | formater }}</td>
             <td class="text-right">
-              {{
-                String(Number(reponse.prix_vente) * Number(reponse.valeur)) +
-                ' FCFA'
-              }}
+              {{ (reponse.prix_vente * reponse.valeur) | formater }}
             </td>
             <td>
               <v-btn icon>
@@ -38,7 +35,7 @@
           <tr>
             <td colspan="4" class="text-left"><b>Total</b></td>
             <td class="text-right">
-              <b>{{ calculTotal }}</b>
+              <b>{{ calculTotal | formater }}</b>
             </td>
           </tr>
         </tfoot>
@@ -49,6 +46,11 @@
 
 <script>
 export default {
+  filters: {
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)} FCFA`
+    },
+  },
   props: {
     reponses: {
       type: Array,
@@ -61,7 +63,7 @@ export default {
       this.reponses.forEach((reponse) => {
         total += Number(reponse.valeur) * Number(reponse.prix_vente)
       })
-      return total + ' FCFA'
+      return total
     },
   },
   methods: {

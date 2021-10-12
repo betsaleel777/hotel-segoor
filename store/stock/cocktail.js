@@ -11,7 +11,6 @@ export const actions = {
     const requete = await this.$axios.get('bar/cocktails')
     const cocktails = requete.data.cocktails
     commit('ALL_COCKTAILS', cocktails)
-    return false
   },
   async getCocktails({ commit }) {
     const requete = await this.$axios.get('bar/cocktails')
@@ -19,7 +18,6 @@ export const actions = {
       return { ...cocktail, genre: 'cocktails', valeur: 0 }
     })
     commit('ALL_COCKTAILS', cocktails)
-    return false
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(

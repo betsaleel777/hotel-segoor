@@ -88,8 +88,9 @@ export default {
   mounted() {
     this.loading = true
     this.getSoldes().then(() => {
-      this.getSoldesCompact()
-      this.loading = false
+      this.getSoldesCompact().then(() => {
+        this.loading = false
+      })
     })
   },
   methods: {

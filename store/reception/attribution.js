@@ -3,11 +3,15 @@
 export const state = () => ({
   attributions: [],
   hebergements: [],
+  attributionsEnCours: [],
   attribution: {},
 })
 export const getters = {
   attributions: (state) => {
     return state.attributions
+  },
+  attributionsEnCours: (state) => {
+    return state.attributionsEnCours
   },
   attribution: (state) => {
     return state.attribution
@@ -40,12 +44,12 @@ export const actions = {
     const attributions = filtrees.map((attribution) => {
       return {
         id: attribution.id,
-        nom: `Chambre ${attribution.chambre_linked.nom} ${attribution.client_linked.nom} ${attribution.client_linked.contact}`,
-        prix: attribution.chambre_linked.prix_list[0].montant,
+        nom: `Chambre ${attribution.chambre_linked.nom} ${attribution.client_linked.nom} ${attribution.client_linked.prenom}`,
+        prix: attribution.prix,
         remise: attribution.remise,
       }
     })
-    commit('ALL_ATTRIBUTIONS', attributions)
+    commit('ATTRIBUTIONS_EN_COURS', attributions)
   },
   async getUniq({ commit }, id) {
     const requete = await this.$axios.get('reception/attributions/' + id)
@@ -99,6 +103,9 @@ export const actions = {
 export const mutations = {
   ALL_ATTRIBUTIONS(state, attributions) {
     state.attributions = attributions
+  },
+  ATTRIBUTIONS_EN_COURS(state, attributions) {
+    state.attributionsEnCours = attributions
   },
   ONE_ATTRIBUTION(state, attribution) {
     state.attribution = attribution

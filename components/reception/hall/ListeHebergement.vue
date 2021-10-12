@@ -53,10 +53,6 @@
       {{ $moment(item.sortie).format('ll') }}
     </template>
     <template #[`item.actions`]="{ item }">
-      <!-- <show-reception
-                    v-if="item.status !== 'libérée'"
-                    :item="item"
-                  /> -->
       <edit-attribution-form
         v-if="item.status !== 'libérée'"
         :item="item"

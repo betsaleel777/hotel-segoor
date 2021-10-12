@@ -12,6 +12,7 @@
             dark
             x-small
             v-on="{ ...tooltip, ...dialog }"
+            @click="getItem"
           >
             <v-icon small>mdi-eye</v-icon>
           </v-btn>
@@ -254,6 +255,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import formPiece from './FormPiece'
 export default {
   mixins: [formPiece],
@@ -291,7 +293,16 @@ export default {
     this.client = rest
     this.piece = piece
   },
-  methods: {},
+  methods: {
+    ...mapActions('reception/client', ['getOne']),
+    getItem() {
+      this.getOne(this.item.id).then((client) => {
+        const { piece, ...rest } = client
+        this.client = rest
+        this.piece = piece
+      })
+    },
+  },
 }
 </script>
 

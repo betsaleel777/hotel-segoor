@@ -11,6 +11,7 @@
         outlined
         label="Articles"
         required
+        clearable
         @change="articleSelected"
       ></v-autocomplete>
     </v-col>
@@ -83,37 +84,24 @@ export default {
       this.vente = 0
     },
     articleSelected() {
-      this.vente = this.article.prix_vente
+      this.vente = this.article ? this.article.prix_vente : 0
     },
     addArticle() {
       if (this.valeur === 0 || Object.keys(this.article).length === 0) {
         const message = 'Veuillez remplir correctement les champs'
         this.$notifier.show({ text: message, variant: 'error' })
-      } else if (this.checkQuantite()) {
-        this.article.valeur = this.valeur
+      } else {
+        const article = Object.assign({}, this.article)
+        article.valeur = this.valeur
         const index = this.reponses.findIndex(
           (element) => element.id === this.article.id
         )
         index === -1
-          ? this.reponses.push(this.article)
-          : this.reponses.splice(index, 1, this.article)
+          ? this.reponses.push(article)
+          : this.reponses.splice(index, 1, article)
         this.cle = !this.cle
         this.reinitialise()
         this.$emit('liste-update', this.reponses)
-      }
-    },
-    checkQuantite() {
-      if (this.article) {
-        if (this.valeur > parseInt(this.article.quantite)) {
-          const message =
-            'Stock insuffisant pour cette valeur du produit ' + this.article.nom
-          this.$notifier.show({ text: message, variant: 'warning' })
-          return false
-        } else {
-          return true
-        }
-      } else {
-        return true
       }
     },
     removeArticle(reponse) {

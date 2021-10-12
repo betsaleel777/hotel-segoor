@@ -9,10 +9,6 @@ export const getters = {
 }
 
 export const actions = {
-  async getProducts({ commit }) {
-    const requete = await this.$axios.get('stock/produits/plats')
-    commit('SET_PRODUCTS', requete.data.produits)
-  },
   async getAllProducts({ commit }) {
     const requete = await this.$axios.get('stock/produits')
     commit('SET_PRODUCTS', requete.data.produits)

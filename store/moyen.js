@@ -11,7 +11,6 @@ export const actions = {
     const requete = await this.$axios.get('caisses/mobilesMoney')
     const moyens = requete.data.mobiles
     commit('ALL_MOYENS', moyens)
-    return false
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -35,7 +34,6 @@ export const actions = {
 
 export const mutations = {
   ALL_MOYENS(state, moyens) {
-    state.moyens.splice(0, state.moyens.length)
-    state.moyens.push(...moyens)
+    state.moyens = moyens
   },
 }

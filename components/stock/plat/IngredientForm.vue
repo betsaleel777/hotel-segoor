@@ -101,10 +101,10 @@ export default {
     },
   },
   mounted() {
-    this.getProducts()
+    this.getPlatsProducts()
   },
   methods: {
-    ...mapActions('produit', ['getProducts']),
+    ...mapActions('produit', ['getPlatsProducts']),
     addItem() {
       let mesure = ''
       if (this.ingredient.mesure) mesure = this.ingredient.mesure

@@ -32,29 +32,28 @@ export const actions = {
       }
     })
     commit('ALL_ARTICLES', articles)
-    return false
   },
   async getArticlesStockes({ commit }) {
     const requete = await this.$axios.get('stock/produits/inventaire')
     const articles = requete.data.inventaire
     commit('ALL_ARTICLES', articles)
-    return false
   },
   async getArticlesTournee({ commit }) {
     const requete = await this.$axios.get('stock/produits/tournees')
     const articles = requete.data.produits
     commit('ALL_ARTICLES', articles)
-    return false
   },
   async getArticlesDepartement({ commit }, departement) {
     const requete = await this.$axios.get(
       'stock/demandes/inventaire/' + departement
     )
-    const articles = requete.data.inventaire.map((article) => {
-      return { ...article, valeur: 0 }
+    let articles = requete.data.inventaire.filter(
+      (article) => article.pour_plat !== 1
+    )
+    articles = articles.map((article) => {
+      return { ...article, genre: 'boissons', valeur: 0 }
     })
     commit('ALL_ARTICLES', articles)
-    return false
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -78,7 +77,6 @@ export const actions = {
 
 export const mutations = {
   ALL_ARTICLES(state, articles) {
-    state.articles.splice(0, state.articles.length)
-    state.articles.push(...articles)
+    state.articles = articles
   },
 }

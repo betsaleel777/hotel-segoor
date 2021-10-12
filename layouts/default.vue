@@ -61,7 +61,9 @@
 
                 <v-list-item-content>
                   <v-list-item-title>{{ user.name }}</v-list-item-title>
-                  <v-list-item-subtitle>Administrateur</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{
+                    user.roles[0].name
+                  }}</v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-tooltip bottom>

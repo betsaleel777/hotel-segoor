@@ -1,27 +1,16 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="900px">
     <template #activator="{ on, attrs }">
-      <v-btn
-        v-if="floating"
-        v-bind="attrs"
-        color="primary"
-        dark
-        absolute
-        bottom
-        right
-        fab
-        v-on="on"
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn v-else v-bind="attrs" dark color="primary" v-on="on">
+      <v-btn v-bind="attrs" dark color="primary" v-on="on">
         <v-icon left>mdi-plus-thick</v-icon>
         CREER LA FACTURE
       </v-btn>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">Encaissement</span>
+        <span class="headline primary--text"
+          >Enregistrer la consommation du client</span
+        >
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -70,8 +59,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import ArticleForm from './ArticleForm.vue'
-
 export default {
   components: { ArticleForm },
   props: {
@@ -83,15 +72,11 @@ export default {
       type: Array,
       required: true,
     },
-    floating: {
-      type: Boolean,
-      default: true,
-    },
   },
   data() {
     const defaultForm = Object.freeze({
       attribution: null,
-      departement: null,
+      departement: 1,
       zone: null,
     })
     return {
@@ -100,13 +85,8 @@ export default {
       articles: [],
     }
   },
-  mounted() {
-    // doit recuperer le departement de l'utilisateur
-    this.$axios.get('parametre/departements/' + 'restaurant').then((result) => {
-      this.encaissement.departement = result.data.departement.id
-    })
-  },
   methods: {
+    ...mapActions('caisse/encaissement', ['ajouterRestau']),
     reinitialise() {
       this.articles = []
       this.encaissement.attribution = null
@@ -135,22 +115,16 @@ export default {
           variant: 'warning',
         })
       } else {
-        this.$axios
-          .post('caisses/encaissements/new', {
-            ...this.encaissement,
-            plats,
-            boissons,
-            cocktails,
-            tournees,
-            user: this.user.id,
-          })
-          .then((result) => {
-            const { message, encaissement } = result.data
-            this.$notifier.show({ text: message, variant: 'success' })
-            this.reinitialise()
-            this.$emit('new-encaissement', encaissement)
-          })
-          .catch()
+        this.ajouterRestau({
+          ...this.encaissement,
+          plats,
+          boissons,
+          cocktails,
+          tournees,
+        }).then((result) => {
+          this.$notifier.show({ text: result.message, variant: 'success' })
+          this.reinitialise()
+        })
       }
     },
     listeUpdate(reponses) {

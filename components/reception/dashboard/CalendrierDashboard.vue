@@ -88,7 +88,7 @@ export default {
         locale: frLocale,
         plugins: [interactionPlugin, resourceTimelinePlugin],
         initialView: 'resourceTimelineMonth',
-        resourceAreaWidth: '20%',
+        resourceAreaWidth: '10%',
         headerToolbar: {
           left: 'today prev,next',
           center: 'title',

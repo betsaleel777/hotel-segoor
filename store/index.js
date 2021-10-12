@@ -113,12 +113,6 @@ export const state = () => ({
           to: '/restaurant/caisse',
           permission: 'acces caisse restau',
         },
-        {
-          icon: 'mdi-bank',
-          text: 'Finance',
-          to: '/restaurant/finance',
-          permission: 'acces finance restau',
-        },
       ],
     },
     {
@@ -147,12 +141,6 @@ export const state = () => ({
           text: 'Caisse',
           to: '/bar/caisse',
           permission: 'acces caisse bar',
-        },
-        {
-          icon: 'mdi-bank',
-          text: 'Finance',
-          to: '/bar/finance',
-          permission: 'acces finance restau',
         },
       ],
     },

@@ -20,13 +20,12 @@ export const actions = {
     commit('ALL_TOURNEES', tournees)
     return false
   },
-  async getTournees({ commit }) {
+  async getTourneesCaisse({ commit }) {
     const requete = await this.$axios.get('bar/tournees')
     const tournees = requete.data.tournees.map((tournee) => {
-      return { ...tournees, genre: 'tournees', valeur: 0 }
+      return { ...tournee, nom: tournee.titre, genre: 'tournees', valeur: 0 }
     })
     commit('ALL_TOURNEES', tournees)
-    return false
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put('bar/tournees/' + payload.id, payload)
@@ -47,7 +46,6 @@ export const actions = {
 
 export const mutations = {
   ALL_TOURNEES(state, tournees) {
-    state.tournees.splice(0, state.tournees.length)
-    state.tournees.push(...tournees)
+    state.tournees = tournees
   },
 }

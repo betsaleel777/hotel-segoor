@@ -23,6 +23,17 @@ export const actions = {
     })
     commit('ALL_COCKTAILS', cocktails)
   },
+  async getCocktails({ commit }) {
+    const requete = await this.$axios.get('bar/cocktails')
+    const cocktails = requete.data.cocktails.map((cocktail) => {
+      return {
+        ...cocktail,
+        genre: 'cocktails',
+        valeur: 0,
+      }
+    })
+    commit('ALL_COCKTAILS', cocktails)
+  },
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post('bar/cocktails/new', payload)
     dispatch('getAll')

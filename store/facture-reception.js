@@ -112,7 +112,7 @@ const organiserNonSoldees = function (facture) {
     ...rest
   } = facture
   let object = {}
-  if (Object.keys(attribution_linked).length > 0) {
+  if (attribution_linked) {
     const montant = somme(versements)
     const reste = aPayer(attribution_linked) - montant
     object = {
@@ -129,7 +129,7 @@ const organiserNonSoldees = function (facture) {
       montant,
       reste,
     }
-  } else if (Object.keys(reservation_linked).length > 0) {
+  } else if (reservation_linked) {
     const montant = somme(versements)
     const reste = aPayer(reservation_linked) - montant
     object = {

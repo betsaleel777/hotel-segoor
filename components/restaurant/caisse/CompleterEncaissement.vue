@@ -13,19 +13,19 @@
             x-small
             v-on="{ ...tooltip, ...dialog }"
           >
-            <v-icon small>mdi-cart-plus</v-icon>
+            <v-icon small>mdi-pencil</v-icon>
           </v-btn>
         </template>
-        <span>completer</span>
+        <span>modifier</span>
       </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
         <span class="headline primary--text"
-          >Completer Encaissement {{ item.code }}</span
+          >Modifier Encaissement {{ item.code }}</span
         >
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="reinitialise">
+        <v-btn color="error" icon @click="dialogue = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -72,16 +72,16 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="primary" text @click="save"> Completer </v-btn>
+        <v-btn color="error" text @click="dialogue = false"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Modifier </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import ArticleFormEdit from './ArticleFormEdit.vue'
-
 export default {
   components: { ArticleFormEdit },
   props: {
@@ -113,30 +113,43 @@ export default {
     },
   },
   mounted() {
-    this.produitsSelected = [...this.item.produits, ...this.item.plats]
+    this.produitsSelected = [
+      ...this.item.produits,
+      ...this.item.plats,
+      ...this.item.cocktails,
+      ...this.item.tournees,
+    ]
   },
   methods: {
-    reinitialise() {
-      this.dialogue = false
-    },
+    ...mapActions('caisse/encaissement', ['modifierRestau']),
     save() {
       this.plats = this.articles.filter((article) => article.genre === 'plats')
       this.boissons = this.articles.filter(
         (article) => article.genre === 'boissons'
       )
-      this.$axios
-        .put('caisses/encaissements/' + this.item.id, {
+      this.cocktails = this.articles.filter(
+        (article) => article.genre === 'cocktails'
+      )
+      this.tournees = this.articles.filter(
+        (article) => article.genre === 'tournees'
+      )
+      if (Object.keys(this.articles).length > 0) {
+        this.modifierRestau({
           plats: this.plats,
           boissons: this.boissons,
-          user: this.user.id,
+          cocktails: this.cocktails,
+          tournees: this.tournees,
+          id: this.item.id,
+        }).then((result) => {
+          this.$notifier.show({ text: result.message, variant: 'success' })
+          this.dialogue = false
         })
-        .then((result) => {
-          const { message, encaissement } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.reinitialise()
-          this.$emit('completed-encaissement', encaissement)
+      } else {
+        this.$notifier.show({
+          text: 'Aucune modification détectée',
+          variant: 'info',
         })
-        .catch()
+      }
     },
     listeUpdate(reponses) {
       this.articles = reponses

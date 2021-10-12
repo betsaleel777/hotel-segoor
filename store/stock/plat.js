@@ -39,7 +39,12 @@ export const actions = {
   async getPlats({ commit }) {
     const requete = await this.$axios.get('restaurant/plats')
     const plats = requete.data.plats.map((plat) => {
-      return { ...plat, genre: 'plats', valeur: 0 }
+      return {
+        ...plat,
+        prix_vente: plat.prix[0].vente,
+        genre: 'plats',
+        valeur: 0,
+      }
     })
     commit('ALL_PLATS', plats)
   },

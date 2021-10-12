@@ -75,16 +75,16 @@ export default {
     },
   },
   mounted() {
-    this.$root.$on('vider_caisse', () => {
-      this.reponses = []
-      this.cle = !this.cle
-    })
+    // this.$root.$on('vider_caisse', () => {
+    //   this.reponses = []
+    //   this.cle = !this.cle
+    // })
     const reponses = this.produitsSelected.map((produit) => {
       return {
         id: produit.id,
         code: produit.code,
         nom: produit.nom,
-        genre: produit.prix_vente ? 'boissons' : 'plats',
+        genre: produit.genre,
         valeur: produit.pivot.quantite,
         prix_vente: produit.pivot.prix_vente,
         nouveau: false,
@@ -105,32 +105,19 @@ export default {
       if (this.valeur === 0 || Object.keys(this.article).length === 0) {
         const message = 'Veuillez remplir correctement les champs'
         this.$notifier.show({ text: message, variant: 'error' })
-      } else if (this.checkQuantite()) {
-        this.article.valeur = this.valeur
-        this.article.nouveau = true
+      } else {
+        const article = Object.assign({}, this.article)
+        article.valeur = this.valeur
+        article.nouveau = true
         const index = this.reponses.findIndex(
-          (element) => element.id === this.article.id
+          (element) => element.id === article.id
         )
         index === -1
-          ? this.reponses.push(this.article)
-          : this.reponses.splice(index, 1, this.article)
+          ? this.reponses.push(article)
+          : this.reponses.splice(index, 1, article)
         this.cle = !this.cle
         this.reinitialise()
         this.$emit('liste-update', this.reponses)
-      }
-    },
-    checkQuantite() {
-      if (this.article) {
-        if (this.valeur > parseInt(this.article.quantite)) {
-          const message =
-            'Stock insuffisant pour cette valeur du produit ' + this.article.nom
-          this.$notifier.show({ text: message, variant: 'warning' })
-          return false
-        } else {
-          return true
-        }
-      } else {
-        return true
       }
     },
     removeArticle(reponse) {

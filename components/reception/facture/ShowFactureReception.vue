@@ -267,7 +267,7 @@ export default {
     },
     consommations() {
       let resultat = []
-      if (this.hebergement.consommations) {
+      if (this.hebergement.consommation) {
         const compare = (a, b) => {
           if (this.$moment(a.jour).diff(b.jour) < 0) {
             return -1
@@ -282,7 +282,7 @@ export default {
           plats,
           produits,
           tournees,
-        } = this.hebergement.consommations
+        } = this.hebergement.consommation
         const consommations = [...cocktails, ...plats, ...produits, ...tournees]
         resultat = consommations.map((item) => {
           return {
@@ -306,9 +306,13 @@ export default {
       return nature + ' ' + client.pieces[0].numero_piece
     },
     nuiteeAvecRemise() {
-      return Math.round(
-        this.hebergement.prix * (1 - this.hebergement.remise / 100)
-      )
+      let resultat = 0
+      if (this.hebergement.remise) {
+        resultat = Math.round(
+          this.hebergement.prix * (1 - Number(this.hebergement.remise) / 100)
+        )
+      }
+      return resultat
     },
     quantiteNuitee() {
       return this.$moment(this.hebergement.sortie).diff(
@@ -324,7 +328,13 @@ export default {
       }
     },
     remise() {
-      return Math.round((this.hebergement.prix * this.hebergement.remise) / 100)
+      let remise = 0
+      if (this.hebergement.remise) {
+        remise = Math.round(
+          (this.hebergement.prix * Number(this.hebergement.remise)) / 100
+        )
+      }
+      return remise
     },
     remiseTotal() {
       return this.remise * this.quantiteNuitee
@@ -351,6 +361,7 @@ export default {
   },
   created() {
     this.hebergement = this.item.attribution ?? this.item.reservation
+    console.log(this.hebergement)
   },
   methods: {
     moyenDePaiement(element) {
