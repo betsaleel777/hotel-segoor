@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogue" persistent max-width="800px">
+  <v-dialog v-model="dialogue" persistent max-width="980px">
     <template #activator="{ on: dialog, attrs }">
       <v-tooltip top>
         <template #activator="{ on: tooltip }">
@@ -166,6 +166,7 @@
                   <thead>
                     <tr>
                       <th class="text-center">Date</th>
+                      <th class="text-center">Lieu consommation</th>
                       <th class="text-left">Désignation</th>
                       <th class="text-center">Quantité</th>
                       <th class="text-right">Prix</th>
@@ -179,6 +180,9 @@
                     >
                       <td class="text-center">
                         {{ $moment(consommation.jour).format('llll') }}
+                      </td>
+                      <td class="text-center">
+                        {{ consommation.lieu }}
                       </td>
                       <td class="text-left">{{ consommation.nom }}</td>
                       <td class="text-center">{{ consommation.quantite }}</td>
@@ -195,7 +199,7 @@
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td class="text-right" colspan="4"><b>Total</b></td>
+                      <td class="text-right" colspan="5"><b>Total</b></td>
                       <td class="text-right">
                         <b>{{ totalConsomme | formater }} FCFA</b>
                       </td>
@@ -267,34 +271,56 @@ export default {
     },
     consommations() {
       let resultat = []
-      if (this.hebergement.consommation) {
-        const compare = (a, b) => {
-          if (this.$moment(a.jour).diff(b.jour) < 0) {
-            return -1
-          }
-          if (this.$moment(a.jour).diff(b.jour) < 0) {
-            return 1
-          }
-          return 0
+      const compare = (a, b) => {
+        if (this.$moment(a.jour).diff(b.jour) < 0) {
+          return -1
         }
-        const {
-          cocktails,
-          plats,
-          produits,
-          tournees,
-        } = this.hebergement.consommation
-        const consommations = [...cocktails, ...plats, ...produits, ...tournees]
-        resultat = consommations.map((item) => {
-          return {
-            jour: item.pivot.created_at,
-            code: item.code,
-            nom: item.nom ?? item.titre,
-            quantite: item.pivot.quantite,
-            prix: item.pivot.prix_vente,
-          }
-        })
-        resultat = resultat.sort(compare)
+        if (this.$moment(a.jour).diff(b.jour) < 0) {
+          return 1
+        }
+        return 0
       }
+      const listeCocktails = []
+      const listePlats = []
+      const listeTournees = []
+      const listeProduits = []
+      this.hebergement.consommations.forEach((consommation) => {
+        let { plats, cocktails, produits, tournees } = consommation
+        const { departement } = consommation
+        plats = plats.map((item) => {
+          return { ...item, departement }
+        })
+        cocktails = cocktails.map((item) => {
+          return { ...item, departement }
+        })
+        produits = produits.map((item) => {
+          return { ...item, departement }
+        })
+        tournees = tournees.map((item) => {
+          return { ...item, departement }
+        })
+        listePlats.push(...plats)
+        listeCocktails.push(...cocktails)
+        listeProduits.push(...produits)
+        listeTournees.push(...tournees)
+      })
+      const consommations = [
+        ...listeCocktails,
+        ...listePlats,
+        ...listeProduits,
+        ...listeTournees,
+      ]
+      resultat = consommations.map((item) => {
+        return {
+          jour: item.pivot.created_at,
+          code: item.code,
+          nom: item.nom ?? item.titre,
+          quantite: item.pivot.quantite,
+          prix: item.pivot.prix_vente,
+          lieu: item.departement === 1 ? 'restaurant' : 'bar',
+        }
+      })
+      resultat = resultat.sort(compare)
       return resultat
     },
     pieceInfos() {
@@ -361,7 +387,6 @@ export default {
   },
   created() {
     this.hebergement = this.item.attribution ?? this.item.reservation
-    console.log(this.hebergement)
   },
   methods: {
     moyenDePaiement(element) {

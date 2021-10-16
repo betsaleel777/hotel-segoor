@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogue" persistent max-width="900px">
     <template #activator="{ on: dialog, attrs }">
-      <v-tooltip>
+      <v-tooltip top>
         <template #activator="{ on: tooltip }">
           <v-btn
             v-bind="attrs"
@@ -13,19 +13,19 @@
             x-small
             v-on="{ ...tooltip, ...dialog }"
           >
-            <v-icon small>mdi-cart-plus</v-icon>
+            <v-icon small>mdi-pencil</v-icon>
           </v-btn>
         </template>
-        <span>completer</span>
+        <span>modifier</span>
       </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
         <span class="headline primary--text"
-          >Completer Encaissement {{ item.code }}</span
+          >Modifier Encaissement {{ item.code }}</span
         >
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="reinitialise">
+        <v-btn color="error" icon @click="dialogue = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -62,7 +62,7 @@
             </v-row>
           </v-container>
           <v-container>
-            <article-form-edit-bar
+            <article-form-edit
               :produits-selected="produitsSelected"
               :produits="produits"
               @liste-update="listeUpdate"
@@ -72,18 +72,18 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="primary" text @click="save"> Completer </v-btn>
+        <v-btn color="error" text @click="dialogue = false"> Fermer </v-btn>
+        <v-btn color="primary" text @click="save"> Modifier </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import ArticleFormEditBar from './ArticleFormEditBar.vue'
-
+import { mapActions } from 'vuex'
+import ArticleFormEdit from './ArticleFormEditBar.vue'
 export default {
-  components: { ArticleFormEditBar },
+  components: { ArticleFormEdit },
   props: {
     item: {
       type: Object,
@@ -98,7 +98,9 @@ export default {
     return {
       dialogue: false,
       articles: [],
+      plats: [],
       produitsSelected: [],
+      boissons: [],
     }
   },
   computed: {
@@ -111,46 +113,44 @@ export default {
     },
   },
   mounted() {
-    const tournees = this.item.tournees.map((tournee) => {
-      return { ...tournee, nom: tournee.titre }
-    })
     this.produitsSelected = [
       ...this.item.produits,
       ...this.item.plats,
       ...this.item.cocktails,
-      ...tournees,
+      ...this.item.tournees,
     ]
   },
   methods: {
-    reinitialise() {
-      this.dialogue = false
-    },
+    ...mapActions('caisse/encaissement', ['modifier']),
     save() {
-      const plats = this.articles.filter((article) => article.genre === 'plats')
-      const boissons = this.articles.filter(
+      this.plats = this.articles.filter((article) => article.genre === 'plats')
+      this.boissons = this.articles.filter(
         (article) => article.genre === 'boissons'
       )
-      const tournees = this.articles.filter(
-        (article) => article.genre === 'tournees'
-      )
-      const cocktails = this.articles.filter(
+      this.cocktails = this.articles.filter(
         (article) => article.genre === 'cocktails'
       )
-      this.$axios
-        .put('caisses/encaissements/' + this.item.id, {
-          plats,
-          boissons,
-          tournees,
-          cocktails,
-          user: this.user.id,
+      this.tournees = this.articles.filter(
+        (article) => article.genre === 'tournees'
+      )
+      if (Object.keys(this.articles).length > 0) {
+        this.modifier({
+          plats: this.plats,
+          boissons: this.boissons,
+          cocktails: this.cocktails,
+          tournees: this.tournees,
+          id: this.item.id,
+          departement: 2,
+        }).then((result) => {
+          this.$notifier.show({ text: result.message, variant: 'success' })
+          this.dialogue = false
         })
-        .then((result) => {
-          const { message, encaissement } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.reinitialise()
-          this.$emit('completed-encaissement', encaissement)
+      } else {
+        this.$notifier.show({
+          text: 'Aucune modification détectée',
+          variant: 'info',
         })
-        .catch()
+      }
     },
     listeUpdate(reponses) {
       this.articles = reponses

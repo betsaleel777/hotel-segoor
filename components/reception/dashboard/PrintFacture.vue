@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="800px">
+  <v-dialog v-model="dialog" persistent max-width="980px">
     <template #activator="{ on, attrs }">
       <v-btn v-bind="attrs" color="primary" text v-on="on">Facture</v-btn>
     </template>
@@ -108,6 +108,7 @@
                   <thead>
                     <tr>
                       <th class="text-center">Date</th>
+                      <th class="text-center">Lieu consommation</th>
                       <th class="text-left">Désignation</th>
                       <th class="text-center">Quantité</th>
                       <th class="text-right">Prix</th>
@@ -121,6 +122,9 @@
                     >
                       <td class="text-center">
                         {{ $moment(consommation.jour).format('llll') }}
+                      </td>
+                      <td class="text-center">
+                        {{ consommation.lieu }}
                       </td>
                       <td class="text-left">{{ consommation.nom }}</td>
                       <td class="text-center">{{ consommation.quantite }}</td>
@@ -137,7 +141,7 @@
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td class="text-right" colspan="4"><b>Total</b></td>
+                      <td class="text-right" colspan="5"><b>Total</b></td>
                       <td class="text-right">
                         <b>{{ totalConsomme | formater }} FCFA</b>
                       </td>
@@ -218,7 +222,7 @@ export default {
     },
     consommations() {
       let resultat = []
-      if (this.item.consommation) {
+      if (this.item.consommations) {
         const compare = (a, b) => {
           if (this.$moment(a.jour).diff(b.jour) < 0) {
             return -1
@@ -228,8 +232,37 @@ export default {
           }
           return 0
         }
-        const { cocktails, plats, produits, tournees } = this.item.consommation
-        const consommations = [...cocktails, ...plats, ...produits, ...tournees]
+        const listeCocktails = []
+        const listePlats = []
+        const listeTournees = []
+        const listeProduits = []
+        this.item.consommations.forEach((consommation) => {
+          let { plats, cocktails, produits, tournees } = consommation
+          const { departement } = consommation
+          plats = plats.map((item) => {
+            return { ...item, departement }
+          })
+          cocktails = cocktails.map((item) => {
+            return { ...item, departement }
+          })
+          produits = produits.map((item) => {
+            return { ...item, departement }
+          })
+          tournees = tournees.map((item) => {
+            return { ...item, departement }
+          })
+          listePlats.push(...plats)
+          listeCocktails.push(...cocktails)
+          listeProduits.push(...produits)
+          listeTournees.push(...tournees)
+        })
+        const consommations = [
+          ...listeCocktails,
+          ...listePlats,
+          ...listeProduits,
+          ...listeTournees,
+        ]
+        console.log(consommations)
         resultat = consommations.map((item) => {
           return {
             jour: item.pivot.created_at,
@@ -237,6 +270,7 @@ export default {
             nom: item.nom ?? item.titre,
             quantite: item.pivot.quantite,
             prix: item.pivot.prix_vente,
+            lieu: item.departement === 1 ? 'restaurant' : 'bar',
           }
         })
         resultat = resultat.sort(compare)

@@ -164,7 +164,7 @@ export default {
   computed: {
     dejaVerse() {
       return (
-        this.encaissement.verse +
+        Number(this.encaissement.verse) +
         (Number(this.versement.montant) - Number(this.versement.monnaie))
       )
     },
@@ -208,7 +208,7 @@ export default {
         })
       } else {
         this.encaisser({
-          departement: 1,
+          departement: 2,
           encaissement: this.encaissement.id,
           montant: this.versement.montant,
           dejaVerse: this.dejaVerse,

@@ -46,6 +46,15 @@
         {{ item.status }}
       </v-chip>
     </template>
+    <template #[`item.montant`]="{ item }">
+      {{ item.montant | formater }}
+    </template>
+    <template #[`item.consommation`]="{ item }">
+      {{ item.consommation | formater }}
+    </template>
+    <template #[`item.verse`]="{ item }">
+      {{ item.verse | formater }}
+    </template>
     <template #[`item.entree`]="{ item }">
       {{ $moment(item.entree).format('ll') }}
     </template>
@@ -94,18 +103,29 @@ export default {
       if (!value) return ''
       return value.toUpperCase()
     },
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)} FCFA`
+    },
   },
   data() {
     return {
       search: '',
       loading: false,
       headers: [
-        { text: 'Client', value: 'fullname', sortable: false },
-        { text: 'Chambre', value: 'chambre_linked.nom', sortable: false },
-        { text: 'Entrée', value: 'entree' },
-        { text: 'Sortie', value: 'sortie' },
-        { text: 'status', value: 'status' },
-        { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'Client', value: 'fullname', sortable: false, align: 'left' },
+        {
+          text: 'Chambre',
+          value: 'chambre_linked.nom',
+          sortable: false,
+          align: 'center',
+        },
+        { text: 'Entrée', value: 'entree', align: 'center' },
+        { text: 'Sortie', value: 'sortie', align: 'center' },
+        { text: 'Statut', value: 'status', align: 'center' },
+        { text: 'Montant chambre', value: 'montant', align: 'center' },
+        { text: 'Consommation', value: 'consommation', align: 'center' },
+        { text: 'Total versé', value: 'verse', align: 'center' },
+        { text: 'Actions', value: 'actions', sortable: false, align: 'center' },
       ],
     }
   },

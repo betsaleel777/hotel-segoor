@@ -1,7 +1,7 @@
 <template>
   <v-card elevation="2" shaped tile>
     <v-card-title class="headline grey lighten-1 primary--text">
-      Caisse
+      Caisse du restaurant
     </v-card-title>
     <v-divider></v-divider>
     <v-card-text>

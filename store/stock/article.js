@@ -51,7 +51,8 @@ export const actions = {
       (article) => article.pour_plat !== 1
     )
     articles = articles.map((article) => {
-      return { ...article, genre: 'boissons', valeur: 0 }
+      const { produit, ...rest } = article
+      return { ...rest, id: produit, genre: 'boissons', valeur: 0 }
     })
     commit('ALL_ARTICLES', articles)
   },

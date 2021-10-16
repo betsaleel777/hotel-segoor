@@ -180,9 +180,9 @@ export default {
     ]
   },
   methods: {
-    ...mapActions('caisse/encaissement', ['getItemElementRestau']),
+    ...mapActions('caisse/encaissement', ['getItemElement']),
     getItem() {
-      this.getItemElementRestau(this.item.id).then((item) => {
+      this.getItemElement(this.item.id).then((item) => {
         this.articles = [
           ...item.produits,
           ...item.plats,

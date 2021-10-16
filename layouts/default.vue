@@ -23,6 +23,32 @@
             <v-list-item-title v-text="module.title" />
           </v-list-item-content>
         </v-list-item>
+        <v-list-group>
+          <template #activator>
+            <v-list-item-action>
+              <v-icon color="blue darken-4">mdi-food-fork-drink</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Restaurants externes</v-list-item-title>
+            </v-list-item-content>
+          </template>
+          <v-list-item
+            v-for="{ nom, id } in restaurants"
+            :key="id"
+            :to="'/externe/' + id"
+            router
+            exact
+          >
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ nom }}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <create-restaurant />
+          </v-list-item>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
@@ -123,11 +149,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import AlertComponent from '~/components/AlertComponent.vue'
-import SnackbarComponent from '~/components/SnackbarComponent.vue'
+import { mapGetters, mapActions } from 'vuex'
+import AlertComponent from '~/components/AlertComponent'
+import SnackbarComponent from '~/components/SnackbarComponent'
+import CreateRestaurant from '~/components/externe/restaurant/CreateRestaurantExterne'
 export default {
-  components: { SnackbarComponent, AlertComponent },
+  components: { SnackbarComponent, AlertComponent, CreateRestaurant },
   data() {
     return {
       menu: false,
@@ -142,11 +169,14 @@ export default {
   },
   computed: {
     ...mapGetters(['modules']),
+    ...mapGetters('externe/restaurant', ['restaurants']),
   },
   mounted() {
     this.$gates.setPermissions(this.user.permissions)
+    this.getAll()
   },
   methods: {
+    ...mapActions('externe/restaurant', ['getAll']),
     logout() {
       this.$auth.logout('laravelJWT').then(() => {
         localStorage.clear()

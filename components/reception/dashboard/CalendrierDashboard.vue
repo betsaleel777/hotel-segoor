@@ -144,12 +144,7 @@ export default {
                   event.client_linked.contact
                 }`,
                 start: moment(event.entree).format('YYYY-MM-DD').toString(),
-                end:
-                  event.status === 'libérée'
-                    ? moment(event.date_liberation)
-                        .format('YYYY-MM-DD')
-                        .toString()
-                    : moment(event.sortie).format('YYYY-MM-DD').toString(),
+                end: moment(event.sortie).format('YYYY-MM-DD').toString(),
                 backgroundColor: colorize(),
                 eventBorderColor: colorize(),
                 // eventTextColor:

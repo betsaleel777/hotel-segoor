@@ -160,6 +160,7 @@ export default {
     recuPrint(item) {
       const { plats, produits, cocktails, tournees } = item
       const consomation = [...plats, ...produits, ...cocktails, ...tournees]
+      // eslint-disable-next-line no-unused-vars
       const dataPrint = {
         code: item.code,
         created_at: this.$moment(item.created_at).format('ll'),
@@ -167,7 +168,6 @@ export default {
         montant: this.$options.filters.formater(item.montant),
         consomation,
       }
-      console.log(dataPrint)
     },
   },
 }

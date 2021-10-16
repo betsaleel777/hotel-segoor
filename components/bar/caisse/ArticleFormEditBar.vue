@@ -40,7 +40,7 @@
         ><v-icon dark>mdi-plus</v-icon></v-btn
       >
     </v-col>
-    <article-list-bar
+    <article-list
       :key="cle"
       :reponses="reponses"
       @reponse-update="removeArticle"
@@ -49,9 +49,9 @@
 </template>
 
 <script>
-import ArticleListBar from './ArticleListBar.vue'
+import ArticleList from './ArticleListBar'
 export default {
-  components: { ArticleListBar },
+  components: { ArticleList },
   props: {
     produits: {
       type: Array,
@@ -75,22 +75,16 @@ export default {
     },
   },
   mounted() {
+    // this.$root.$on('vider_caisse', () => {
+    //   this.reponses = []
+    //   this.cle = !this.cle
+    // })
     const reponses = this.produitsSelected.map((produit) => {
-      let genre = null
-      if (produit.prix) {
-        genre = 'plats'
-      } else if (produit.contenance) {
-        genre = 'tournees'
-      } else if (produit.mode) {
-        genre = 'boissons'
-      } else {
-        genre = 'cocktails'
-      }
       return {
         id: produit.id,
         code: produit.code,
         nom: produit.nom,
-        genre,
+        genre: produit.genre,
         valeur: produit.pivot.quantite,
         prix_vente: produit.pivot.prix_vente,
         nouveau: false,
@@ -111,38 +105,19 @@ export default {
       if (this.valeur === 0 || Object.keys(this.article).length === 0) {
         const message = 'Veuillez remplir correctement les champs'
         this.$notifier.show({ text: message, variant: 'error' })
-      } else if (this.checkQuantite()) {
-        const dejaSelectione = this.reponses.find(
-          (reponse) => reponse.id === this.article.id
-        )
-        const valeurDeSelection = dejaSelectione
-          ? Number(dejaSelectione.valeur)
-          : 0
-        this.article.valeur = valeurDeSelection + Number(this.valeur)
-        this.article.nouveau = true
+      } else {
+        const article = Object.assign({}, this.article)
+        article.valeur = this.valeur
+        article.nouveau = true
         const index = this.reponses.findIndex(
-          (element) => element.id === this.article.id
+          (element) => element.id === article.id
         )
         index === -1
-          ? this.reponses.push(this.article)
-          : this.reponses.splice(index, 1, this.article)
+          ? this.reponses.push(article)
+          : this.reponses.splice(index, 1, article)
         this.cle = !this.cle
         this.reinitialise()
         this.$emit('liste-update', this.reponses)
-      }
-    },
-    checkQuantite() {
-      if (this.article) {
-        if (this.valeur > parseInt(this.article.quantite)) {
-          const message =
-            'Stock insuffisant pour cette valeur du produit ' + this.article.nom
-          this.$notifier.show({ text: message, variant: 'warning' })
-          return false
-        } else {
-          return true
-        }
-      } else {
-        return true
       }
     },
     removeArticle(reponse) {

@@ -46,6 +46,12 @@
         <span v-else>{{ item.status }}</span>
       </v-chip>
     </template>
+    <template #[`item.montant`]="{ item }">
+      {{ item.montant | formater }}
+    </template>
+    <template #[`item.verse`]="{ item }">
+      {{ item.verse | formater }}
+    </template>
     <template #[`item.entree`]="{ item }">
       {{ $moment(item.entree).format('ll') }}
     </template>
@@ -89,6 +95,9 @@ export default {
       if (!value) return ''
       return value.toUpperCase()
     },
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)} FCFA`
+    },
   },
   data() {
     return {
@@ -99,7 +108,9 @@ export default {
         { text: 'Chambre', value: 'chambre_linked.nom', sortable: false },
         { text: 'Debut', value: 'entree' },
         { text: 'Fin', value: 'sortie' },
-        { text: 'status', value: 'status' },
+        { text: 'statut', value: 'status' },
+        { text: 'Montant chambre', value: 'montant', align: 'center' },
+        { text: 'Total versé', value: 'verse', align: 'center' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }

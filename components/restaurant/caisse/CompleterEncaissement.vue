@@ -121,7 +121,7 @@ export default {
     ]
   },
   methods: {
-    ...mapActions('caisse/encaissement', ['modifierRestau']),
+    ...mapActions('caisse/encaissement', ['modifier']),
     save() {
       this.plats = this.articles.filter((article) => article.genre === 'plats')
       this.boissons = this.articles.filter(
@@ -134,7 +134,7 @@ export default {
         (article) => article.genre === 'tournees'
       )
       if (Object.keys(this.articles).length > 0) {
-        this.modifierRestau({
+        this.modifier({
           plats: this.plats,
           boissons: this.boissons,
           cocktails: this.cocktails,

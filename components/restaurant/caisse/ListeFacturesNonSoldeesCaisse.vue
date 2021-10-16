@@ -136,7 +136,7 @@ export default {
   methods: {
     ...mapActions({
       getProduits: 'stock/article/getArticlesDepartement',
-      getEncaissements: 'caisse/encaissement/getEncaissementsRestau',
+      getEncaissements: 'caisse/encaissement/getEncaissements',
       getAttributions: 'reception/attribution/getEnCours',
       getPlats: 'stock/plat/getPlats',
       getTournees: 'stock/tournee/getTourneesCaisse',

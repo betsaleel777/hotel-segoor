@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="900">
+  <v-dialog v-model="dialog" persistent max-width="980">
     <v-card v-if="Object.keys(details).length > 0">
       <v-card-title class="grey lighten-2">
         <div class="headline primary--text">
@@ -87,6 +87,7 @@
                     <thead>
                       <tr>
                         <th class="text-center">Date</th>
+                        <th class="text-center">Lieu consommation</th>
                         <th class="text-left">Désignation</th>
                         <th class="text-center">Quantité</th>
                         <th class="text-right">Prix</th>
@@ -97,6 +98,9 @@
                       <tr v-for="item in consommations" :key="item.code">
                         <td class="text-center">
                           {{ $moment(item.jour).format('llll') }}
+                        </td>
+                        <td class="text-center">
+                          {{ item.lieu }}
                         </td>
                         <td class="text-left">{{ item.nom }}</td>
                         <td class="text-center">{{ item.quantite }}</td>
@@ -110,7 +114,7 @@
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td class="text-right" colspan="4">
+                        <td class="text-right" colspan="5">
                           <b>Total de consommation</b>
                         </td>
                         <td class="text-right">
@@ -118,7 +122,7 @@
                         </td>
                       </tr>
                       <tr>
-                        <td class="text-right" colspan="4">
+                        <td class="text-right" colspan="5">
                           <b>Frais d'hôtel</b>
                         </td>
                         <td class="text-right">
@@ -260,7 +264,7 @@ export default {
     },
     consommations() {
       let resultat = []
-      if (this.details.consommation) {
+      if (this.details.consommations) {
         const compare = (a, b) => {
           if (this.$moment(a.jour).diff(b.jour) < 0) {
             return -1
@@ -270,13 +274,36 @@ export default {
           }
           return 0
         }
-        const {
-          cocktails,
-          plats,
-          produits,
-          tournees,
-        } = this.details.consommation
-        const consommations = [...cocktails, ...plats, ...produits, ...tournees]
+        const listeCocktails = []
+        const listePlats = []
+        const listeTournees = []
+        const listeProduits = []
+        this.details.consommations.forEach((consommation) => {
+          let { plats, cocktails, produits, tournees } = consommation
+          const { departement } = consommation
+          plats = plats.map((item) => {
+            return { ...item, departement }
+          })
+          cocktails = cocktails.map((item) => {
+            return { ...item, departement }
+          })
+          produits = produits.map((item) => {
+            return { ...item, departement }
+          })
+          tournees = tournees.map((item) => {
+            return { ...item, departement }
+          })
+          listePlats.push(...plats)
+          listeCocktails.push(...cocktails)
+          listeProduits.push(...produits)
+          listeTournees.push(...tournees)
+        })
+        const consommations = [
+          ...listeCocktails,
+          ...listePlats,
+          ...listeProduits,
+          ...listeTournees,
+        ]
         resultat = consommations.map((item) => {
           return {
             jour: item.pivot.created_at,
@@ -284,6 +311,7 @@ export default {
             nom: item.nom ?? item.titre,
             quantite: item.pivot.quantite,
             prix: item.pivot.prix_vente,
+            lieu: item.departement === 1 ? 'restaurant' : 'bar',
           }
         })
         resultat = resultat.sort(compare)

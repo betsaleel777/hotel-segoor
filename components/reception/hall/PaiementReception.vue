@@ -99,11 +99,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="close">Fermer</v-btn>
-        <v-btn
-          :disabled="!encaissable"
-          color="success"
-          text
-          @click="createVersement"
+        <v-btn :disabled="!encaissable" color="success" text @click="save"
           >Enregistrer</v-btn
         >
       </v-card-actions>
@@ -168,63 +164,8 @@ export default {
       }
       return result
     },
-    consommations() {
-      let resultat = []
-      if (this.reception.consommation) {
-        const compare = (a, b) => {
-          if (this.$moment(a.jour).diff(b.jour) < 0) {
-            return -1
-          }
-          if (this.$moment(a.jour).diff(b.jour) < 0) {
-            return 1
-          }
-          return 0
-        }
-        const {
-          cocktails,
-          plats,
-          produits,
-          tournees,
-        } = this.reception.consommation
-        const consommations = [...cocktails, ...plats, ...produits, ...tournees]
-        resultat = consommations.map((item) => {
-          return {
-            jour: item.pivot.created_at,
-            code: item.code,
-            nom: item.nom ?? item.titre,
-            quantite: item.pivot.quantite,
-            prix: item.pivot.prix_vente,
-          }
-        })
-        resultat = resultat.sort(compare)
-      }
-      return resultat
-    },
-    totalVerse() {
-      let resultat = 0
-      this.versements.forEach((versement) => {
-        resultat += versement.montant - versement.monnaie
-      })
-      return resultat
-    },
-    totalConsomme() {
-      let resultat = 0
-      if (this.consommations.length > 0) {
-        this.consommations.forEach((item) => {
-          resultat += item.prix * item.quantite
-        })
-      }
-      return resultat
-    },
     nuiteeAvecRemise() {
       return Math.round(this.reception.prix * (1 - this.reception.remise / 100))
-    },
-    montantApayer() {
-      if (this.reception) {
-        return this.nuiteeAvecRemise * this.quantiteNuitee
-      } else {
-        return 0
-      }
     },
     quantiteNuitee() {
       return this.$moment(this.reception.sortie).diff(
@@ -240,12 +181,16 @@ export default {
     },
     dejaVerse() {
       return (
-        this.totalVerse +
+        this.reception.verse +
         (Number(this.versement.montant) - Number(this.versement.monnaie))
       )
     },
     reste() {
-      return this.montantApayer - Number(this.totalVerse) + this.totalConsomme
+      return (
+        this.reception.montant -
+        Number(this.reception.verse) +
+        this.reception.consommation
+      )
     },
   },
   watch: {
@@ -266,7 +211,7 @@ export default {
   },
   methods: {
     ...mapActions('facture-reception', ['encaisser']),
-    createVersement() {
+    save() {
       const payementChoice =
         Boolean(this.versement.mobile_money) ||
         Boolean(this.versement.espece) ||
@@ -282,7 +227,7 @@ export default {
           montant: this.versement.montant,
           attribution: this.reception.id,
           dejaVerse: this.dejaVerse,
-          montantApayer: this.montantApayer + this.totalConsomme,
+          montantApayer: this.reception.montant + this.reception.consommation,
           monnaie: this.versement.monnaie,
           mobile_money: this.versement.mobile_money,
           espece: this.versement.espece,

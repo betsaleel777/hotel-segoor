@@ -15,6 +15,23 @@ export const getters = {
     return state.eventsSource
   },
 }
+
+const aPayer = function (hebergement) {
+  return (
+    moment(hebergement.sortie).diff(hebergement.entree, 'days') *
+    hebergement.prix
+  )
+}
+const somme = function (versements) {
+  let sum = 0
+  if (versements) {
+    versements.forEach((versement) => {
+      sum += versement.montant - versement.monnaie
+    })
+  }
+  return sum
+}
+
 export const actions = {
   async getAll({ commit }) {
     const requete = await this.$axios.get('reception/reservations')
@@ -65,7 +82,13 @@ export const actions = {
   },
   async getReserved({ commit }) {
     const requete = await this.$axios.get('reception/reservations/reserved')
-    const reservations = requete.data.reservations
+    const reservations = requete.data.reservations.map((reservation) => {
+      return {
+        ...reservation,
+        montant: aPayer(reservation),
+        verse: somme(reservation?.encaissement?.versements),
+      }
+    })
     commit('ALL_RESERVATIONS', reservations)
   },
   async getHebergements({ commit }) {

@@ -45,7 +45,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import ShowFacturesSoldees from './ShowFacturesSoldees.vue'
+import ShowFacturesSoldees from '~/components/restaurant/caisse/ShowFacturesSoldees'
 export default {
   components: { ShowFacturesSoldees },
   filters: {
@@ -75,8 +75,8 @@ export default {
   },
   async mounted() {
     this.loading = true
-    await this.getSoldes().then(() => {
-      this.getCompactes().then(() => {
+    await this.getSoldes(2).then(() => {
+      this.getCompactes(2).then(() => {
         this.loading = false
       })
     })

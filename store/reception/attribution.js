@@ -1,5 +1,4 @@
-/* eslint-disable camelcase */
-// import moment from 'moment'
+import moment from 'moment'
 export const state = () => ({
   attributions: [],
   hebergements: [],
@@ -20,6 +19,43 @@ export const getters = {
     return state.hebergements
   },
 }
+const aPayer = function (hebergement) {
+  return hebergement.remise === undefined
+    ? moment(hebergement.sortie).diff(hebergement.entree, 'days') *
+        hebergement.prix
+    : moment(hebergement.sortie).diff(hebergement.entree, 'days') *
+        Math.round(hebergement.prix * (1 - hebergement.remise / 100))
+}
+const somme = function (versements) {
+  let sum = 0
+  if (versements) {
+    versements.forEach((versement) => {
+      sum += versement.montant - versement.monnaie
+    })
+  }
+  return sum
+}
+const sommeConsommations = function (consommations) {
+  let sum = 0
+  if (consommations.length > 0) {
+    consommations.forEach((consommation) => {
+      const { plats, tournees, cocktails, produits } = consommation
+      plats.forEach((plat) => {
+        sum += plat.pivot.prix_vente * plat.pivot.quantite
+      })
+      cocktails.forEach((cocktail) => {
+        sum += cocktail.pivot.prix_vente * cocktail.pivot.quantite
+      })
+      produits.forEach((produit) => {
+        sum += produit.pivot.prix_vente * produit.pivot.quantite
+      })
+      tournees.forEach((tournee) => {
+        sum += tournee.pivot.prix_vente * tournee.pivot.quantite
+      })
+    })
+  }
+  return sum
+}
 export const actions = {
   async getAll({ commit }) {
     const requete = await this.$axios.get('reception/attributions')
@@ -28,7 +64,14 @@ export const actions = {
   },
   async getBusy({ commit }) {
     const requete = await this.$axios.get('reception/attributions/busy')
-    const attributions = requete.data.attributions
+    const attributions = requete.data.attributions.map((attribution) => {
+      return {
+        ...attribution,
+        montant: aPayer(attribution),
+        verse: somme(attribution?.encaissement?.versements),
+        consommation: sommeConsommations(attribution?.consommations),
+      }
+    })
     commit('ALL_ATTRIBUTIONS', attributions)
   },
   async getHebergements({ commit }) {

@@ -100,55 +100,9 @@ export const actions = {
     const encaissements = requete.data.encaissements
     commit('ALL_ENCAISSEMENT', encaissements)
   },
-  async getEncaissementsBar({ commit }) {
+  async getEncaissements({ commit }, departement = 1) {
     const requete = await this.$axios.get(
-      'caisses/encaissements/departement/' + 2
-    )
-    const encaissements = requete.data.encaissements.map((encaissement) => {
-      const { tournees, plats, cocktails, produits, versements } = encaissement
-      return {
-        id: encaissement.id,
-        code: encaissement.code,
-        created_at: moment(encaissement.created_at).format('ll'),
-        status: encaissement.status,
-        attribution_linked: encaissement.attribution,
-        client: reformatageClient(encaissement.attribution_linked),
-        produits: reformatage(produits, 'boissons'),
-        plats: reformatage(plats, 'plats'),
-        tournees: reformatage(tournees, 'tournees'),
-        cocktails: reformatage(cocktails, 'cocktails'),
-        zone: encaissement.zone,
-        montant: somme(encaissement),
-        verse: sommeVersee(versements),
-        versements,
-      }
-    })
-    commit('ALL_ENCAISSEMENT', encaissements)
-  },
-  async getItemElementBar({ commit }, id) {
-    const requete = await this.$axios.get('caisses/encaissements/' + id)
-    const encaissement = requete.data.encaissement
-    const { tournees, plats, cocktails, produits, versements } = encaissement
-    return {
-      id: encaissement.id,
-      code: encaissement.code,
-      created_at: moment(encaissement.created_at).format('ll'),
-      status: encaissement.status,
-      attribution_linked: encaissement.attribution,
-      client: reformatageClient(encaissement.attribution_linked),
-      produits: reformatage(produits, 'boissons'),
-      plats: reformatage(plats, 'plats'),
-      tournees: reformatage(tournees, 'tournees'),
-      cocktails: reformatage(cocktails, 'cocktails'),
-      zone: encaissement.zone,
-      montant: somme(encaissement),
-      verse: sommeVersee(versements),
-      versements,
-    }
-  },
-  async getEncaissementsRestau({ commit }) {
-    const requete = await this.$axios.get(
-      'caisses/encaissements/departement/' + 1
+      'caisses/encaissements/departement/' + departement
     )
     const encaissements = requete.data.encaissements.map((encaissement) => {
       const { tournees, plats, cocktails, produits, versements } = encaissement
@@ -171,9 +125,9 @@ export const actions = {
     })
     commit('ALL_ENCAISSEMENT', encaissements)
   },
-  async getEncaissementsRestauSoldes({ commit }) {
+  async getEncaissementsSoldes({ commit }, departement = 1) {
     const requete = await this.$axios.get(
-      'caisses/encaissements/soldes/departement/' + 1
+      'caisses/encaissements/soldes/departement/' + departement
     )
     const encaissements = requete.data.encaissements.map((encaissement) => {
       const { tournees, plats, cocktails, produits, versements } = encaissement
@@ -193,9 +147,9 @@ export const actions = {
     })
     commit('ALL_SOLDES', encaissements)
   },
-  async getRestauCompact({ commit, dispatch }) {
+  async getCompact({ commit, dispatch }, departement = 1) {
     const requete = await this.$axios.get(
-      'caisses/encaissements/soldes/departement/' + 1
+      'caisses/encaissements/soldes/departement/' + departement
     )
     let encaissements = organiser(requete.data.encaissements)
     encaissements = collect(encaissements)
@@ -214,7 +168,7 @@ export const actions = {
       .toArray()
     commit('ALL_COMPACT', encaissements)
   },
-  async getItemElementRestau({ commit }, id) {
+  async getItemElement({ commit }, id) {
     const requete = await this.$axios.get('caisses/encaissements/' + id)
     const encaissement = requete.data.encaissement
     const { tournees, plats, cocktails, produits, versements } = encaissement
@@ -235,21 +189,15 @@ export const actions = {
       versements,
     }
   },
-  async modifierRestau({ dispatch }, payload) {
+  async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
       'caisses/encaissements/' + payload.id,
       payload
     )
-    dispatch('getEncaissementsRestau')
+    payload.departement
+      ? dispatch('getEncaissements', payload.departement)
+      : dispatch('getEncaissements')
     // dispatch from module to another module dispatch('/someAction', null, { root: true })
-    return { message: requete.data.message }
-  },
-  async modifierBar({ dispatch }, payload) {
-    const requete = await this.$axios.put(
-      'caisses/encaissements/' + payload.id,
-      payload
-    )
-    dispatch('getEncaissementsBar')
     return { message: requete.data.message }
   },
   async supprimer({ dispatch }, id) {
@@ -257,14 +205,11 @@ export const actions = {
     dispatch('getAll')
     return { message: requete.data.message }
   },
-  async ajouterRestau({ dispatch }, payload) {
+  async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post('caisses/encaissements/new', payload)
-    dispatch('getEncaissementsRestau')
-    return { message: requete.data.message }
-  },
-  async ajouterBar({ dispatch }, payload) {
-    const requete = await this.$axios.post('caisses/encaissements/new', payload)
-    dispatch('getEncaissementsBar')
+    payload.departement
+      ? dispatch('getEncaissements', payload.departement)
+      : dispatch('getEncaissements')
     return { message: requete.data.message }
   },
   async encaisser({ dispatch }, payload) {
@@ -272,7 +217,9 @@ export const actions = {
       'caisses/encaissements/versement',
       payload
     )
-    dispatch('getEncaissementsRestau')
+    payload.departement
+      ? dispatch('getEncaissements', payload.departement)
+      : dispatch('getEncaissements')
     return { message: requete.data.message }
   },
 }

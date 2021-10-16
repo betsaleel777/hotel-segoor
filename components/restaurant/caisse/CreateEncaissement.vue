@@ -86,7 +86,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('caisse/encaissement', ['ajouterRestau']),
+    ...mapActions('caisse/encaissement', ['ajouter']),
     reinitialise() {
       this.articles = []
       this.encaissement.attribution = null
@@ -115,7 +115,7 @@ export default {
           variant: 'warning',
         })
       } else {
-        this.ajouterRestau({
+        this.ajouter({
           ...this.encaissement,
           plats,
           boissons,
