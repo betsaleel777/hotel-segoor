@@ -10,12 +10,14 @@ export const getters = {
 
 export const actions = {
   async getAll({ commit }, id) {
+    commit('SET_TOURNEES', [])
     const requete = await this.$axios.get(
       'externe/stock/tournees/restaurant/' + id
     )
     commit('SET_TOURNEES', requete.data.tournees)
   },
   async getTrashed({ commit }, id) {
+    commit('SET_TOURNEES', [])
     const requete = await this.$axios.get(
       'externe/stock/tournees/restaurant/trashed/' + id
     )

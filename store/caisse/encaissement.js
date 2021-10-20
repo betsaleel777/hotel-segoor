@@ -96,11 +96,13 @@ const organiser = function (encaissements) {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_ENCAISSEMENT', [])
     const requete = await this.$axios.get('caisses/encaissements')
     const encaissements = requete.data.encaissements
-    commit('ALL_ENCAISSEMENT', encaissements)
+    commit('SET_ENCAISSEMENT', encaissements)
   },
   async getEncaissements({ commit }, departement = 1) {
+    commit('SET_ENCAISSEMENT', [])
     const requete = await this.$axios.get(
       'caisses/encaissements/departement/' + departement
     )
@@ -123,9 +125,10 @@ export const actions = {
         versements,
       }
     })
-    commit('ALL_ENCAISSEMENT', encaissements)
+    commit('SET_ENCAISSEMENT', encaissements)
   },
   async getEncaissementsSoldes({ commit }, departement = 1) {
+    commit('SET_SOLDES', [])
     const requete = await this.$axios.get(
       'caisses/encaissements/soldes/departement/' + departement
     )
@@ -145,9 +148,10 @@ export const actions = {
         versements,
       }
     })
-    commit('ALL_SOLDES', encaissements)
+    commit('SET_SOLDES', encaissements)
   },
   async getCompact({ commit, dispatch }, departement = 1) {
+    commit('SET_COMPACT', [])
     const requete = await this.$axios.get(
       'caisses/encaissements/soldes/departement/' + departement
     )
@@ -166,7 +170,7 @@ export const actions = {
         return { mobile, cheque, espece, date_soldee: index }
       })
       .toArray()
-    commit('ALL_COMPACT', encaissements)
+    commit('SET_COMPACT', encaissements)
   },
   async getItemElement({ commit }, id) {
     const requete = await this.$axios.get('caisses/encaissements/' + id)
@@ -225,13 +229,13 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_ENCAISSEMENT(state, encaissements) {
+  SET_ENCAISSEMENT(state, encaissements) {
     state.encaissements = encaissements
   },
-  ALL_SOLDES(state, encaissementsSoldes) {
+  SET_SOLDES(state, encaissementsSoldes) {
     state.encaissementsSoldes = encaissementsSoldes
   },
-  ALL_COMPACT(state, encaissementsCompactes) {
+  SET_COMPACT(state, encaissementsCompactes) {
     state.encaissementsCompactes = encaissementsCompactes
   },
 }

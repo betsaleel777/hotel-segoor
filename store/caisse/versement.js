@@ -8,10 +8,10 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_VERSEMENTS', [])
     const requete = await this.$axios.get('caisses/versements')
     const versements = requete.data.versements
-    commit('ALL_VERSEMENTS', versements)
-    return false
+    commit('SET_VERSEMENTS', versements)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -34,7 +34,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_VERSEMENTS(state, versements) {
+  SET_VERSEMENTS(state, versements) {
     state.versements.splice(0, state.versements.length)
     state.versements.push(...versements)
   },

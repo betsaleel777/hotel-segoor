@@ -58,11 +58,13 @@ const sommeConsommations = function (consommations) {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_ATTRIBUTIONS', [])
     const requete = await this.$axios.get('reception/attributions')
     const attributions = requete.data.attributions
-    commit('ALL_ATTRIBUTIONS', attributions)
+    commit('SET_ATTRIBUTIONS', attributions)
   },
   async getBusy({ commit }) {
+    commit('SET_ATTRIBUTIONS', [])
     const requete = await this.$axios.get('reception/attributions/busy')
     const attributions = requete.data.attributions.map((attribution) => {
       return {
@@ -72,14 +74,16 @@ export const actions = {
         consommation: sommeConsommations(attribution?.consommations),
       }
     })
-    commit('ALL_ATTRIBUTIONS', attributions)
+    commit('SET_ATTRIBUTIONS', attributions)
   },
   async getHebergements({ commit }) {
+    commit('SET_HEBERGEMENTS', [])
     const requete = await this.$axios.get('reception/attributions/used')
     const hebergements = requete.data.hebergements
-    commit('ALL_HEBERGEMENTS', hebergements)
+    commit('SET_HEBERGEMENTS', hebergements)
   },
   async getEnCours({ commit }) {
+    commit('ATTRIBUTIONS_EN_COURS', [])
     const requete = await this.$axios.get('reception/attributions/busy')
     const filtrees = requete.data.attributions.filter(
       (attribution) => attribution.status === 'occupée'
@@ -95,6 +99,7 @@ export const actions = {
     commit('ATTRIBUTIONS_EN_COURS', attributions)
   },
   async getUniq({ commit }, id) {
+    commit('ONE_ATTRIBUTION', [])
     const requete = await this.$axios.get('reception/attributions/' + id)
     const attribution = requete.data.attribution
     commit('ONE_ATTRIBUTION', attribution)
@@ -144,7 +149,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_ATTRIBUTIONS(state, attributions) {
+  SET_ATTRIBUTIONS(state, attributions) {
     state.attributions = attributions
   },
   ATTRIBUTIONS_EN_COURS(state, attributions) {
@@ -153,7 +158,7 @@ export const mutations = {
   ONE_ATTRIBUTION(state, attribution) {
     state.attribution = attribution
   },
-  ALL_HEBERGEMENTS(state, hebergements) {
+  SET_HEBERGEMENTS(state, hebergements) {
     state.hebergements = hebergements
   },
 }

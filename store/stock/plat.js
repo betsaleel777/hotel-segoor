@@ -8,6 +8,7 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_PLATS', [])
     const requete = await this.$axios.get('restaurant/plats')
     const plats = requete.data.plats.map((plat) => {
       const imageData = plat.image ? plat.image : []
@@ -34,7 +35,7 @@ export const actions = {
         ingredients,
       }
     })
-    commit('ALL_PLATS', plats)
+    commit('SET_PLATS', plats)
   },
   async getPlats({ commit }) {
     const requete = await this.$axios.get('restaurant/plats')
@@ -46,7 +47,7 @@ export const actions = {
         valeur: 0,
       }
     })
-    commit('ALL_PLATS', plats)
+    commit('SET_PLATS', plats)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -69,8 +70,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_PLATS(state, plats) {
-    state.plats.splice(0, state.plats.length)
-    state.plats.push(...plats)
+  SET_PLATS(state, plats) {
+    state.plats = plats
   },
 }

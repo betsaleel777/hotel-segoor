@@ -8,16 +8,18 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_COCKTAILS', [])
     const requete = await this.$axios.get('bar/cocktails')
     const cocktails = requete.data.cocktails
-    commit('ALL_COCKTAILS', cocktails)
+    commit('SET_COCKTAILS', cocktails)
   },
   async getCocktails({ commit }) {
+    commit('SET_COCKTAILS', [])
     const requete = await this.$axios.get('bar/cocktails')
     const cocktails = requete.data.cocktails.map((cocktail) => {
       return { ...cocktail, genre: 'cocktails', valeur: 0 }
     })
-    commit('ALL_COCKTAILS', cocktails)
+    commit('SET_COCKTAILS', cocktails)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -40,8 +42,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_COCKTAILS(state, cocktails) {
-    state.cocktails.splice(0, state.cocktails.length)
-    state.cocktails.push(...cocktails)
+  SET_COCKTAILS(state, cocktails) {
+    state.cocktails = cocktails
   },
 }

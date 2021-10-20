@@ -12,6 +12,7 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_CHAMBRES', [])
     const requete = await this.$axios.get('gestion-chambre/chambres')
     const chambres = requete.data.chambres.map((chambre) => {
       const { id, nom, ...reste } = chambre
@@ -22,15 +23,16 @@ export const actions = {
         ...reste,
       }
     })
-    commit('ALL_CHAMBRES', chambres)
+    commit('SET_CHAMBRES', chambres)
   },
   async getCalendarResources({ commit }) {
+    commit('SET_RESOURCES', [])
     const requete = await this.$axios.get('gestion-chambre/chambres')
     const resources = requete.data.chambres.map((chambre) => {
       const { id, nom } = chambre
       return { id, title: nom.toUpperCase() }
     })
-    commit('ALL_RESOURCES', resources)
+    commit('SET_RESOURCES', resources)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -60,10 +62,10 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_CHAMBRES(state, chambres) {
+  SET_CHAMBRES(state, chambres) {
     state.chambres = chambres
   },
-  ALL_RESOURCES(state, resources) {
+  SET_RESOURCES(state, resources) {
     state.resources = resources
   },
 }

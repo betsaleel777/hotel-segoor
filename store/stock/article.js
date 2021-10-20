@@ -8,6 +8,7 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_ARTICLES', [])
     const requete = await this.$axios.get('stock/produits')
     const articles = requete.data.produits.map((article) => {
       const imageData = article.image ? article.image : []
@@ -31,19 +32,22 @@ export const actions = {
         },
       }
     })
-    commit('ALL_ARTICLES', articles)
+    commit('SET_ARTICLES', articles)
   },
   async getArticlesStockes({ commit }) {
+    commit('SET_ARTICLES', [])
     const requete = await this.$axios.get('stock/produits/inventaire')
     const articles = requete.data.inventaire
-    commit('ALL_ARTICLES', articles)
+    commit('SET_ARTICLES', articles)
   },
   async getArticlesTournee({ commit }) {
+    commit('SET_ARTICLES', [])
     const requete = await this.$axios.get('stock/produits/tournees')
     const articles = requete.data.produits
-    commit('ALL_ARTICLES', articles)
+    commit('SET_ARTICLES', articles)
   },
   async getArticlesDepartement({ commit }, departement) {
+    commit('SET_ARTICLES', [])
     const requete = await this.$axios.get(
       'stock/demandes/inventaire/' + departement
     )
@@ -54,7 +58,7 @@ export const actions = {
       const { produit, ...rest } = article
       return { ...rest, id: produit, genre: 'boissons', valeur: 0 }
     })
-    commit('ALL_ARTICLES', articles)
+    commit('SET_ARTICLES', articles)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -77,7 +81,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_ARTICLES(state, articles) {
+  SET_ARTICLES(state, articles) {
     state.articles = articles
   },
 }

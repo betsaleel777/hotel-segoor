@@ -151,13 +151,15 @@ const organiserNonSoldees = function (facture) {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_FACTURES', [])
     const requete = await this.$axios.get('reception/encaissements')
     const factures = requete.data.encaissements.map((facture) => {
       return organiser(facture)
     })
-    commit('ALL_FACTURES', factures)
+    commit('SET_FACTURES', factures)
   },
   async getSoldesCompact({ commit }) {
+    commit('SET_COMPACT', [])
     const requete = await this.$axios.get('reception/encaissements/soldes')
     let factures = requete.data.encaissements.map((facture) => {
       return organiser(facture)
@@ -176,21 +178,23 @@ export const actions = {
         return { mobile, cheque, espece, date_soldee: index }
       })
       .toArray()
-    commit('ALL_COMPACT', factures)
+    commit('SET_COMPACT', factures)
   },
   async getSoldes({ commit }) {
+    commit('SET_FACTURES_SOLDEES', [])
     const requete = await this.$axios.get('reception/encaissements/soldes')
     const factures = requete.data.encaissements.map((facture) => {
       return organiser(facture)
     })
-    commit('ALL_FACTURES_SOLDEES', factures)
+    commit('SET_FACTURES_SOLDEES', factures)
   },
   async getNonSoldes({ commit }) {
+    commit('SET_FACTURES_SOLDEES', [])
     const requete = await this.$axios.get('reception/encaissements/non-soldes')
     const factures = requete.data.encaissements.map((facture) => {
       return organiserNonSoldees(facture)
     })
-    commit('ALL_FACTURES_NON_SOLDEES', factures)
+    commit('SET_FACTURES_NON_SOLDEES', factures)
   },
   async getByDate({ commit }, laDate) {
     const requete = await this.$axios.get('reception/encaissements/' + laDate)
@@ -263,16 +267,16 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_FACTURES(state, factures) {
+  SET_FACTURES(state, factures) {
     state.factures = factures
   },
-  ALL_FACTURES_SOLDEES(state, factures) {
+  SET_FACTURES_SOLDEES(state, factures) {
     state.facturesSoldees = factures
   },
-  ALL_FACTURES_NON_SOLDEES(state, factures) {
+  SET_FACTURES_NON_SOLDEES(state, factures) {
     state.facturesNonSoldees = factures
   },
-  ALL_COMPACT(state, facturesCompactees) {
+  SET_COMPACT(state, facturesCompactees) {
     state.facturesDateCompactees = facturesCompactees
   },
 }

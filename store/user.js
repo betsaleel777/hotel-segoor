@@ -8,6 +8,7 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_USERS', [])
     const requete = await this.$axios.get('parametre/users')
     const users = requete.data.users.map((user) => {
       return {
@@ -18,8 +19,7 @@ export const actions = {
         roles: user.roles,
       }
     })
-    commit('ALL_USERS', users)
-    return false
+    commit('SET_USERS', users)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -42,7 +42,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_USERS(state, users) {
+  SET_USERS(state, users) {
     state.users.splice(0, state.users.length)
     state.users.push(...users)
   },

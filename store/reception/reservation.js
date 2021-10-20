@@ -34,9 +34,10 @@ const somme = function (versements) {
 
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_EVENTS', [])
     const requete = await this.$axios.get('reception/reservations')
     const reservations = requete.data.reservations
-    commit('ALL_RESERVATIONS', reservations)
+    commit('SET_RESERVATIONS', reservations)
   },
   async getCalendarEvents({ commit }) {
     const requete = await this.$axios.get('reception/reservations/events')
@@ -78,9 +79,10 @@ export const actions = {
       startEditable: false,
       editable: true,
     }
-    commit('ALL_EVENTS', eventsSource)
+    commit('SET_EVENTS', eventsSource)
   },
   async getReserved({ commit }) {
+    commit('SET_RESERVATIONS', [])
     const requete = await this.$axios.get('reception/reservations/reserved')
     const reservations = requete.data.reservations.map((reservation) => {
       return {
@@ -89,12 +91,13 @@ export const actions = {
         verse: somme(reservation?.encaissement?.versements),
       }
     })
-    commit('ALL_RESERVATIONS', reservations)
+    commit('SET_RESERVATIONS', reservations)
   },
   async getHebergements({ commit }) {
+    commit('SET_HEBERGEMENTS', [])
     const requete = await this.$axios.get('reception/reservations/used')
     const hebergements = requete.data.hebergements
-    commit('ALL_HEBERGEMENTS', hebergements)
+    commit('SET_HEBERGEMENTS', hebergements)
   },
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post(
@@ -125,13 +128,13 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_RESERVATIONS(state, reservations) {
+  SET_RESERVATIONS(state, reservations) {
     state.reservations = reservations
   },
-  ALL_HEBERGEMENTS(state, hebergements) {
+  SET_HEBERGEMENTS(state, hebergements) {
     state.hebergements = hebergements
   },
-  ALL_EVENTS(state, eventsSource) {
+  SET_EVENTS(state, eventsSource) {
     state.eventsSource = eventsSource
   },
 }

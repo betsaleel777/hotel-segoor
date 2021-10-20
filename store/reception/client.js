@@ -8,6 +8,7 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_CLIENTS', [])
     const requete = await this.$axios.get('reception/clients')
     const clients = requete.data.clients.map((client) => {
       const { pieces, ...rest } = client
@@ -17,7 +18,7 @@ export const actions = {
         fullname: `${client.nom} ${client.prenom}`,
       }
     })
-    commit('ALL_CLIENTS', clients)
+    commit('SET_CLIENTS', clients)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -50,7 +51,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_CLIENTS(state, clients) {
+  SET_CLIENTS(state, clients) {
     state.clients = clients
   },
 }

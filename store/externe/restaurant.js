@@ -12,9 +12,10 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_RESTAURANTS', [])
     const requete = await this.$axios.get('externe/parametre/restaurants')
     const restaurants = requete.data.restaurants
-    commit('ALL_RESTAURANTS', restaurants)
+    commit('SET_RESTAURANTS', restaurants)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -46,7 +47,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_RESTAURANTS(state, restaurants) {
+  SET_RESTAURANTS(state, restaurants) {
     state.restaurants = restaurants
   },
   ONE_RESTAURANT(state, restaurant) {

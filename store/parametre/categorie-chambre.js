@@ -8,10 +8,10 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_CATEGORIES', [])
     const requete = await this.$axios.get('parametre/categories/chambres')
     const categories = requete.data.categories
-    commit('ALL_CATEGORIES', categories)
-    return false
+    commit('SET_CATEGORIES', categories)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -39,7 +39,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_CATEGORIES(state, categories) {
+  SET_CATEGORIES(state, categories) {
     state.categories.splice(0, state.categories.length)
     state.categories.push(...categories)
   },

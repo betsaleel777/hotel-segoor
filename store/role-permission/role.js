@@ -8,6 +8,7 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_ROLES', [])
     const requete = await this.$axios.get('parametre/roles')
     const roles = requete.data.roles.map((role) => {
       return {
@@ -17,7 +18,7 @@ export const actions = {
         permissions: role.permissions,
       }
     })
-    commit('ALL_ROLES', roles)
+    commit('SET_ROLES', roles)
   },
   async getRole({ commit }, payload) {
     const requete = await this.$axios.get('parametre/roles/' + payload.id)
@@ -49,7 +50,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_ROLES(state, roles) {
+  SET_ROLES(state, roles) {
     state.roles = roles
   },
 }

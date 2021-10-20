@@ -8,9 +8,10 @@ export const getters = {
 }
 export const actions = {
   async getAll({ commit }) {
+    commit('SET_MOYENS', [])
     const requete = await this.$axios.get('caisses/mobilesMoney')
     const moyens = requete.data.mobiles
-    commit('ALL_MOYENS', moyens)
+    commit('SET_MOYENS', moyens)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -33,7 +34,7 @@ export const actions = {
 }
 
 export const mutations = {
-  ALL_MOYENS(state, moyens) {
+  SET_MOYENS(state, moyens) {
     state.moyens = moyens
   },
 }

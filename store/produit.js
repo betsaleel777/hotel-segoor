@@ -10,22 +10,27 @@ export const getters = {
 
 export const actions = {
   async getAllProducts({ commit }) {
+    commit('SET_PRODUCTS', [])
     const requete = await this.$axios.get('stock/produits')
     commit('SET_PRODUCTS', requete.data.produits)
   },
   async getBoissons({ commit }) {
+    commit('SET_PRODUCTS', [])
     const requete = await this.$axios.get('stock/produits/boissons')
     commit('SET_PRODUCTS', requete.data.produits)
   },
   async getPlatsProducts({ commit }) {
+    commit('SET_PRODUCTS', [])
     const requete = await this.$axios.get('stock/produits/plats')
     commit('SET_PRODUCTS', requete.data.produits)
   },
   async getTourneesProducts({ commit }) {
+    commit('SET_PRODUCTS', [])
     const requete = await this.$axios.get('stock/produits/tournees')
     commit('SET_PRODUCTS', requete.data.produits)
   },
   async getInventory({ commit }) {
+    commit('SET_PRODUCTS', [])
     const requete = await this.$axios.get('stock/produits/inventaire/sortie')
     const inventaire = requete.data.inventaire.map((produit) => {
       return { ...produit, virtuel: produit.disponible }
