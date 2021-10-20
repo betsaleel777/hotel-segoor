@@ -9,27 +9,26 @@
             fab
             dark
             x-small
-            color="error"
+            :color="color"
             v-on="{ ...tooltip, ...dialog }"
           >
-            <v-icon small> mdi-archive-plus </v-icon>
+            <v-icon small> mdi-{{ icon }} </v-icon>
           </v-btn>
         </template>
-        <span>archiver</span>
+        <span>{{ tip }}</span>
       </v-tooltip>
     </template>
     <v-card>
       <v-card-title class="justify-center error--text headline"
-        ><div>Confirmer archivage</div>
+        ><div>{{ titre }}</div>
       </v-card-title>
       <v-card-text justify="center" align="center">
-        Voulez vous archiver l'article
-        <b>{{ item.nom.toUpperCase() }}</b>
+        <slot />
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="dialogue = false">Fermer</v-btn>
-        <v-btn color="primary" text @click="deleteItemConfirm">OK</v-btn>
+        <v-btn color="primary" text @click="confirm">OK</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
@@ -37,7 +36,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -48,19 +46,41 @@ export default {
       type: Number,
       required: true,
     },
+    titre: {
+      type: String,
+      required: true,
+    },
+    color: {
+      type: String,
+      required: true,
+    },
+    tip: {
+      type: String,
+      required: true,
+    },
+    icon: {
+      type: String,
+      required: true,
+    },
+    action: {
+      type: String,
+      required: true,
+    },
   },
   data: () => ({
     dialogue: false,
   }),
   methods: {
-    ...mapActions('externe/article', ['archiver']),
-    deleteItemConfirm() {
-      this.archiver({ id: this.item.id, restaurant_id: this.restaurant }).then(
-        (result) => {
+    confirm() {
+      this.$store
+        .dispatch(this.action, {
+          id: this.item.id,
+          restaurant_id: this.restaurant,
+        })
+        .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
           this.dialogue = false
-        }
-      )
+        })
     },
   },
 }

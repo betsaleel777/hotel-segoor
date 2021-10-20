@@ -23,6 +23,7 @@
                 ><template #[`top`]>
                   <v-toolbar flat>
                     <create-article
+                      v-can="permissions.create"
                       :categories="categories"
                       :restaurant="restaurant"
                     />
@@ -57,12 +58,23 @@
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-article
-                    v-can="'modification externe articles'"
+                    v-can="permissions.edit"
                     :categories="categories"
                     :restaurant="restaurant"
                     :item="item"
                   />
-                  <archive-article :restaurant="restaurant" :item="item" />
+                  <action-confirm
+                    :restaurant="restaurant"
+                    :item="item"
+                    tip="archiver"
+                    titre="Confirmer l'archivage"
+                    icon="archive-plus"
+                    color="error"
+                    action="externe/article/archiver"
+                  >
+                    Voulez vous archiver l'article
+                    <b>{{ item.nom.toUpperCase() }}</b>
+                  </action-confirm>
                 </template>
               </v-data-table>
             </v-col>
@@ -77,21 +89,26 @@
 <script>
 import printjs from 'print-js'
 import { mapGetters } from 'vuex'
+import { ArticleExterne } from '~/helper/permissions'
 import CreateArticle from '~/components/externe/article/CreateArticleExterne'
-import ArchiveArticle from '~/components/externe/article/ArchiveArticleExterne'
 import EditArticle from '~/components/externe/article/EditArticleExterne'
 import SideExterne from '~/components/externe/SideExterne'
+import ActionConfirm from '~/components/externe/ActionConfirmExterne.vue'
 export default {
   components: {
     CreateArticle,
-    ArchiveArticle,
     EditArticle,
     SideExterne,
+    ActionConfirm,
   },
   data() {
     return {
       search: '',
       restaurant: null,
+      permissions: {
+        create: ArticleExterne.creation,
+        edit: ArticleExterne.modifier,
+      },
       headers: [
         { text: 'Description', value: 'nom' },
         { text: 'Famille', value: 'categorie.nom' },

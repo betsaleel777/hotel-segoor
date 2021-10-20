@@ -55,16 +55,33 @@
                   {{ $moment(item.deleted_at).format('ll') }}
                 </template>
                 <template #[`item.actions`]="{ item }">
-                  <restore-article
-                    v-can="'restorer externe articles'"
+                  <action-confirm
+                    v-can="permissions.restorer"
                     :restaurant="restaurant"
                     :item="item"
-                  />
-                  <delete-article
-                    v-can="'suppression externe articles'"
+                    tip="restaurer"
+                    titre="Confirmer la restauration"
+                    color="primary"
+                    icon="archive-arrow-up"
+                    action="externe/article/restorer"
+                  >
+                    Voulez restaurer l'article
+                    <b>{{ item.nom.toUpperCase() }}</b>
+                  </action-confirm>
+                  <action-confirm
+                    v-can="permissions.supprimer"
                     :restaurant="restaurant"
                     :item="item"
-                  />
+                    tip="supprimer"
+                    color="error"
+                    titre="Confirmer la suppression"
+                    icon="delete"
+                    action="externe/article/supprimer"
+                  >
+                    Voulez vous réelement supprimer l'article
+                    <b>{{ item.nom.toUpperCase() }}</b
+                    >, cette action est irréversible
+                  </action-confirm>
                 </template>
               </v-data-table>
             </v-col>
@@ -79,19 +96,22 @@
 <script>
 import printjs from 'print-js'
 import { mapGetters } from 'vuex'
-import DeleteArticle from '~/components/externe/article/DeleteArticleExterne.vue'
+import { ArticleExterne } from '~/helper/permissions'
 import SideExterne from '~/components/externe/SideExterne'
-import RestoreArticle from '~/components/externe/article/RestoreArticleExterne.vue'
+import ActionConfirm from '~/components/externe/ActionConfirmExterne.vue'
 export default {
   components: {
-    DeleteArticle,
     SideExterne,
-    RestoreArticle,
+    ActionConfirm,
   },
   data() {
     return {
       search: '',
       restaurant: null,
+      permissions: {
+        restorer: ArticleExterne.restorer,
+        supprimer: ArticleExterne.supprimer,
+      },
       headers: [
         { text: 'Description', value: 'nom' },
         { text: 'Famille', value: 'categorie.nom' },

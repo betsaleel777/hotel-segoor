@@ -44,6 +44,13 @@ export const actions = {
     dispatch('getAll', payload.restaurant_id)
     return { message: requete.data.message }
   },
+  async restorer({ dispatch }, payload) {
+    const requete = await this.$axios.get(
+      'externe/stock/tournees/restorer/' + payload.id
+    )
+    dispatch('getTrashed', payload.restaurant_id)
+    return { message: requete.data.message }
+  },
   async supprimer({ dispatch }, payload) {
     const requete = await this.$axios.delete(
       'externe/stock/tournees/' + payload.id

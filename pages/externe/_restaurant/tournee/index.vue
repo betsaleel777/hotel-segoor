@@ -24,11 +24,20 @@
                 <template #[`top`]>
                   <v-toolbar flat>
                     <create-tournee
-                      v-can="'creation externe tournees'"
+                      v-can="permissions.create"
                       :articles="articles"
                       :categories="categories"
                       :restaurant="restaurant"
                     />
+                    <v-btn
+                      class="ml-2"
+                      color="primary"
+                      dark
+                      :to="`/externe/${restaurant}/tournee/archive/`"
+                    >
+                      <v-icon left>mdi-archive</v-icon>
+                      archives
+                    </v-btn>
                     <v-btn
                       class="ml-2"
                       :disabled="tournees.length === 0"
@@ -52,18 +61,29 @@
                 <template #[`item.nombre`]="{ item }">
                   {{ item.nombre + ' ballons' }}
                 </template>
-                <template #[`item.montant`]="{ item }">
+                <template #[`item.prix_vente`]="{ item }">
                   {{ item.prix_vente | formater }}
                 </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-tournee
-                    v-can="'modification externe tournee'"
-                    :artciles="articles"
+                    v-can="permissions.edit"
+                    :articles="articles"
                     :categories="categories"
                     :restaurant="restaurant"
                     :item="item"
                   />
-                  <archive-tournee :restaurant="restaurant" :item="item" />
+                  <action-confirm
+                    :restaurant="restaurant"
+                    :item="item"
+                    tip="archiver"
+                    titre="Confirmer l'archivage"
+                    icon="archive-plus"
+                    color="error"
+                    action="externe/tournee/archiver"
+                  >
+                    Voulez vous archiver la tournee
+                    <b>{{ item.nom.toUpperCase() }}</b>
+                  </action-confirm>
                 </template>
               </v-data-table>
             </v-col>
@@ -78,17 +98,18 @@
 <script>
 import printjs from 'print-js'
 import { mapGetters } from 'vuex'
+import { TourneeExterne } from '~/helper/permissions'
 import CreateTournee from '~/components/externe/tournee/CreateTourneeExterne.vue'
-import ArchiveTournee from '~/components/externe/tournee/ArchiveTourneeExterne.vue'
 import EditTournee from '~/components/externe/tournee/EditTourneeExterne.vue'
 import SideExterne from '~/components/externe/SideExterne.vue'
+import ActionConfirm from '~/components/externe/ActionConfirmExterne.vue'
 
 export default {
   components: {
     CreateTournee,
-    ArchiveTournee,
     EditTournee,
     SideExterne,
+    ActionConfirm,
   },
   filters: {
     formater(value) {
@@ -98,6 +119,10 @@ export default {
   data() {
     return {
       search: '',
+      permissions: {
+        create: TourneeExterne.creation,
+        edit: TourneeExterne.modifier,
+      },
       headers: [
         { text: 'Code', value: 'code', sortable: false },
         { text: 'Nom', value: 'nom', sortable: false },

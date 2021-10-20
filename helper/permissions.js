@@ -168,4 +168,62 @@ const parametre = {
   },
 }
 
-module.exports = { reception, stock, bar, restaurant, parametre, maintenance }
+const externe = {
+  acceder: 'acces externe restaurants',
+  parametre: {
+    acceder: '',
+    categorie: {
+      acceder: '',
+      artcicle: {},
+      tournee: {},
+      plat: {},
+      cocktail: {},
+    },
+  },
+  article: {
+    acceder: 'acces externe articles',
+    creation: 'creation externe articles',
+    modifier: 'modification externe articles',
+    supprimer: 'suppression externe articles',
+    restorer: 'restorer externe articles',
+  },
+  tournee: {
+    acceder: 'acces externe tournees',
+    creation: 'creation externe tournees',
+    modifier: 'modification externe tournees',
+    supprimer: 'suppression externe tournees',
+    restorer: 'restorer externe tournees',
+  },
+  plat: {
+    acceder: 'acces externe plats',
+    creation: 'creation externe plats',
+    modifier: 'modification externe plats',
+    supprimer: 'suppression externe plats',
+    restorer: 'restorer externe plats',
+  },
+  cocktail: {
+    acceder: 'acces externe cocktails',
+    creation: 'creation externe cocktails',
+    modifier: 'modification externe cocktails',
+    supprimer: 'suppression externe cocktails',
+    restorer: 'restorer externe cocktails',
+  },
+}
+
+module.exports = {
+  reception,
+  stock,
+  bar,
+  restaurant,
+  parametre,
+  maintenance,
+  ArticleExterne: externe.article,
+  PlatExterne: externe.plat,
+  CocktailExterne: externe.cocktail,
+  TourneeExterne: externe.tournee,
+  ParametreCategorieExterne: externe.parametre.categorie,
+  ParametreCategorieArticleExterne: externe.parametre.categorie.artcicle,
+  ParametreCategorieTourneeExterne: externe.parametre.categorie.tournee,
+  ParametreCategoriePlatExterne: externe.parametre.categorie.plat,
+  ParametreCategorieCocktailExterne: externe.parametre.categorie.cocktail,
+}

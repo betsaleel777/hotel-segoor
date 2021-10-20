@@ -76,7 +76,6 @@ export default {
     },
   },
   methods: {
-    ajouter(object) {},
     reinitialise() {
       this.dialog = false
       errorsInitialise(this.errors)
