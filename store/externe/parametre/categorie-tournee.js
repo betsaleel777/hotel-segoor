@@ -7,39 +7,39 @@ export const getters = {
   },
 }
 export const actions = {
-  async getAll({ commit }) {
-    const requete = await this.$axios.get('parametre/categories/articles')
-    const categories = requete.data.categories
-    commit('ALL_CATEGORIES', categories)
+  async getAll({ commit }, id) {
+    const requete = await this.$axios.get(
+      'externe/parametre/categories/tournees/restaurant/' + id
+    )
+    commit('ALL_CATEGORIES', requete.data.categories)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
-      'parametre/categories/articles/' + payload.id,
+      'externe/parametre/categories/tournees/' + payload.id,
       payload
     )
-    dispatch('getAll')
+    dispatch('getAll', payload.restaurant_id)
     return { message: requete.data.message }
   },
-  async supprimer({ dispatch }, id) {
+  async supprimer({ dispatch }, payload) {
     const requete = await this.$axios.delete(
-      'parametre/categories/articles/' + id
+      'externe/parametre/categories/tournees/' + payload.id
     )
-    dispatch('getAll')
+    dispatch('getAll', payload.restaurant_id)
     return { message: requete.data.message }
   },
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post(
-      'parametre/categories/articles/new',
+      'externe/parametre/categories/tournees/new',
       payload
     )
-    dispatch('getAll')
+    dispatch('getAll', payload.restaurant_id)
     return { message: requete.data.message }
   },
 }
 
 export const mutations = {
   ALL_CATEGORIES(state, categories) {
-    state.categories.splice(0, state.categories.length)
-    state.categories.push(...categories)
+    state.categories = categories
   },
 }
