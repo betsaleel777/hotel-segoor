@@ -3,7 +3,7 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Cocktails
+          Archives cocktails
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -13,36 +13,29 @@
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
-                no-data-text="Aucune cocktail"
+                no-data-text="Aucune tournée archivé"
                 :loading="$fetchState.pending"
                 loading-text="En chargement ..."
                 :headers="headers"
                 :items="cocktails"
                 :search="search"
                 :items-per-page="10"
-              >
-                <template #[`top`]>
+                ><template #[`top`]>
                   <v-toolbar flat>
-                    <create-cocktail
-                      v-can="permissions.create"
-                      :tournees="tournees"
-                      :categories="categories"
-                      :restaurant="restaurant"
-                    />
                     <v-btn
                       class="ml-2"
                       color="primary"
                       dark
-                      :to="`/externe/${restaurant}/cocktail/archive/`"
+                      :to="`/externe/${restaurant}/cocktail/`"
                     >
-                      <v-icon left>mdi-archive</v-icon>
-                      archives
+                      <v-icon left>mdi-arrow-left-thick</v-icon>
+                      retour
                     </v-btn>
                     <v-btn
                       class="ml-2"
                       :disabled="cocktails.length === 0"
-                      dark
                       color="primary"
+                      dark
                       @click="print"
                     >
                       <v-icon left>mdi-printer</v-icon>
@@ -61,25 +54,36 @@
                 <template #[`item.prix_vente`]="{ item }">
                   {{ item.prix_vente | formater }}
                 </template>
+                <template #[`item.deleted_at`]="{ item }">
+                  {{ $moment(item.deleted_at).format('ll') }}
+                </template>
                 <template #[`item.actions`]="{ item }">
-                  <edit-cocktail
-                    v-can="permissions.edit"
-                    :tournees="tournees"
-                    :categories="categories"
-                    :restaurant="restaurant"
-                    :item="item"
-                  />
                   <action-confirm
+                    v-can="permissions.restorer"
                     :restaurant="restaurant"
                     :item="item"
-                    tip="archiver"
-                    titre="Confirmer l'archivage"
-                    icon="archive-plus"
-                    color="error"
-                    action="externe/cocktail/archiver"
+                    tip="restaurer"
+                    titre="Confirmer la restauration"
+                    color="primary"
+                    icon="archive-arrow-up"
+                    action="externe/cocktail/restorer"
                   >
-                    Voulez vous archiver le cocktail
+                    Voulez restaurer le cocktail
                     <b>{{ item.nom.toUpperCase() }}</b>
+                  </action-confirm>
+                  <action-confirm
+                    v-can="permissions.supprimer"
+                    :restaurant="restaurant"
+                    :item="item"
+                    tip="supprimer"
+                    color="error"
+                    titre="Confirmer la suppression"
+                    icon="delete"
+                    action="externe/cocktail/supprimer"
+                  >
+                    Voulez vous réelement supprimer le cocktail
+                    <b>{{ item.nom.toUpperCase() }}</b
+                    >, cette action est irréversible
                   </action-confirm>
                 </template>
               </v-data-table>
@@ -96,17 +100,12 @@
 import printjs from 'print-js'
 import { mapGetters } from 'vuex'
 import { CocktailExterne } from '~/helper/permissions'
-import CreateCocktail from '~/components/externe/cocktail/CreateCocktailExterne.vue'
-import EditCocktail from '~/components/externe/cocktail/EditCocktailExterne.vue'
-import SideExterne from '~/components/externe/SideExterne.vue'
+import SideExterne from '~/components/externe/SideExterne'
 import ActionConfirm from '~/components/externe/ActionConfirmExterne.vue'
-
 export default {
   components: {
     SideExterne,
     ActionConfirm,
-    CreateCocktail,
-    EditCocktail,
   },
   filters: {
     formater(value) {
@@ -117,8 +116,8 @@ export default {
     return {
       search: '',
       permissions: {
-        create: CocktailExterne.creation,
-        edit: CocktailExterne.modifier,
+        restorer: CocktailExterne.restorer,
+        supprimer: CocktailExterne.supprimer,
       },
       headers: [
         { text: 'Code', value: 'code', sortable: false },
@@ -131,19 +130,10 @@ export default {
   async fetch() {
     const { params, store } = this.$nuxt.context
     this.restaurant = Number(params.restaurant)
-    await store.dispatch('externe/cocktail/getAll', params.restaurant)
-    await store.dispatch('externe/tournee/getAll', params.restaurant)
-    await store.dispatch(
-      'externe/parametre/categorie-cocktail/getAll',
-      params.restaurant
-    )
+    await store.dispatch('externe/cocktail/getTrashed', params.restaurant)
   },
   computed: {
-    ...mapGetters({
-      cocktails: 'externe/cocktail/cocktails',
-      categories: 'externe/parametre/categorie-cocktail/categories',
-      tournees: 'externe/tournee/tournees',
-    }),
+    ...mapGetters('externe/cocktail', ['cocktails']),
   },
   methods: {
     print() {

@@ -9,16 +9,8 @@
       top
     >
       {{ text }}
-      <template #action="{ attrs }">
-        <v-btn
-          :color="variantUse"
-          dark
-          text
-          fab
-          v-bind="attrs"
-          small
-          @click="show = false"
-        >
+      <template #action>
+        <v-btn :color="variantUse" dark text fab small @click="show = false">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </template>
