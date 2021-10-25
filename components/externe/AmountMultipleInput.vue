@@ -1,9 +1,8 @@
 <template>
-  <!-- le prix de l'element selectioné n'est pas géré -->
   <v-container>
     <div v-for="(donnee, index) in donnees" :key="index">
       <v-row v-if="donnee">
-        <v-col cols="6">
+        <v-col cols="4">
           <v-autocomplete
             v-model="donnee.id"
             :prepend-icon="`mdi-numeric-${index + 1}-box`"
@@ -18,10 +17,20 @@
         </v-col>
         <v-col cols="2">
           <v-text-field
+            v-model="donnee.prix"
+            dense
+            label="Prix"
+            type="number"
+            min="0"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-text-field
             v-model="donnee.quantite"
             dense
             label="Quantité"
             type="number"
+            min="0"
           ></v-text-field>
         </v-col>
         <v-col cols="3">
@@ -44,7 +53,7 @@
     </div>
     <div>
       <v-row>
-        <v-col cols="6">
+        <v-col cols="4">
           <v-autocomplete
             v-model="current.id"
             :items="elements"
@@ -58,11 +67,23 @@
         </v-col>
         <v-col cols="2">
           <v-text-field
+            v-model="current.prix"
+            dense
+            label="Prix"
+            type="number"
+            min="0"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-text-field
             v-model="current.quantite"
             dense
             label="Quantité"
             type="number"
             min="0"
+            @change="
+              current.montant = Number(current.prix) * Number(current.quantite)
+            "
           ></v-text-field>
         </v-col>
         <v-col cols="3">
@@ -83,11 +104,20 @@
         </v-col>
       </v-row>
     </div>
+    <v-divider></v-divider>
+    <p>
+      <b>Total acheté: {{ total | formater }}</b>
+    </p>
   </v-container>
 </template>
 
 <script>
 export default {
+  filters: {
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)} FCFA`
+    },
+  },
   props: {
     field: {
       type: String,
@@ -104,9 +134,16 @@ export default {
   },
   data: () => ({
     elements: [],
-    current: { id: '', quantite: '', montant: '' },
+    current: { id: '', prix: '', quantite: '', montant: '' },
   }),
   computed: {
+    total() {
+      let sum = 0
+      this.donnees.forEach((donnee) => {
+        sum += Number(donnee.prix) * Number(donnee.quantite)
+      })
+      return sum
+    },
     donnees: {
       get() {
         return this.value
@@ -134,7 +171,7 @@ export default {
       })
     },
     add() {
-      if (this.current.id && this.current.quantite) {
+      if (this.current.id && this.current.quantite && this.current.prix) {
         this.donnees.push(this.current)
         this.current = { id: '', quantite: '' }
         this.filterSelectable()

@@ -23,12 +23,16 @@ export const actions = {
     )
     commit('SET_ARTICLES', requete.data.articles)
   },
-  async getArticlesPlat({ commit }) {
-    const requete = await this.$axios.get('externe/stock/articles/plat')
+  async getArticlesPlat({ commit }, restaurant) {
+    const requete = await this.$axios.get(
+      'externe/stock/articles/plat/' + restaurant
+    )
     commit('SET_ARTICLES', requete.data.articles)
   },
-  async getArticlesTournee({ commit }) {
-    const requete = await this.$axios.get('externe/stock/articles/tournee')
+  async getArticlesTournee({ commit }, restaurant) {
+    const requete = await this.$axios.get(
+      'externe/stock/articles/tournee/' + restaurant
+    )
     commit('SET_ARTICLES', requete.data.articles)
   },
   async ajouter({ dispatch }, payload) {

@@ -66,6 +66,10 @@ export default {
       type: String,
       required: true,
     },
+    jour: {
+      type: String,
+      default: '',
+    },
   },
   data: () => ({
     dialogue: false,
@@ -76,6 +80,7 @@ export default {
         .dispatch(this.action, {
           id: this.item.id,
           restaurant_id: this.restaurant,
+          jour: this.jour,
         })
         .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })

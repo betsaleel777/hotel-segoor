@@ -208,6 +208,13 @@ const externe = {
     supprimer: 'suppression externe cocktails',
     restorer: 'restorer externe cocktails',
   },
+  depense: {
+    acceder: 'acces externe depenses',
+    creation: 'creation externe depenses',
+    modifier: 'modification externe depenses',
+    supprimer: 'suppression externe depenses',
+    restorer: 'restorer externe depenses',
+  },
 }
 
 module.exports = {
@@ -221,6 +228,7 @@ module.exports = {
   PlatExterne: externe.plat,
   CocktailExterne: externe.cocktail,
   TourneeExterne: externe.tournee,
+  DepenseExterne: externe.depense,
   ParametreCategorieExterne: externe.parametre.categorie,
   ParametreCategorieArticleExterne: externe.parametre.categorie.artcicle,
   ParametreCategorieTourneeExterne: externe.parametre.categorie.tournee,
