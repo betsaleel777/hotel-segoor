@@ -1,27 +1,14 @@
 <template>
-  <v-dialog v-model="dialogue" persistent max-width="600px">
-    <template #activator="{ on: dialog, attrs }">
-      <v-tooltip top>
-        <template #activator="{ on: tooltip }">
-          <v-btn
-            elevation="1"
-            icon
-            fab
-            dark
-            x-small
-            color="primary"
-            v-bind="attrs"
-            v-on="{ ...tooltip, ...dialog }"
-          >
-            <v-icon small> mdi-pencil </v-icon>
-          </v-btn>
-        </template>
-        <span>modifier</span>
-      </v-tooltip>
+  <v-dialog v-model="dialog" persistent max-width="600px">
+    <template #activator="{ on, attrs }">
+      <v-btn v-bind="attrs" dark color="primary" v-on="on">
+        <v-icon left>mdi-plus-thick</v-icon>
+        AJOUTER
+      </v-btn>
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">Modifier un cocktail</span>
+        <span class="headline primary--text">Créer un plat</span>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -33,7 +20,7 @@
             <v-row>
               <v-col cols="7">
                 <v-text-field
-                  v-model="cocktail.nom"
+                  v-model="plat.nom"
                   :errors="errors.nom.exist"
                   :error-messages="errors.nom.message"
                   dense
@@ -46,7 +33,7 @@
               </v-col>
               <v-col cols="5">
                 <v-text-field
-                  v-model="cocktail.prix_vente"
+                  v-model="plat.prix_vente"
                   :errors="errors.prix_vente.exist"
                   :error-messages="errors.prix_vente.message"
                   dense
@@ -62,7 +49,7 @@
               </v-col>
               <v-col cols="12">
                 <v-autocomplete
-                  v-model="cocktail.categorie_id"
+                  v-model="plat.categorie_id"
                   :items="categories"
                   item-value="id"
                   item-text="nom"
@@ -79,23 +66,23 @@
               <create-categorie
                 v-model="dialog1"
                 :restaurant="restaurant"
-                element="cocktail"
+                element="plat"
               />
               <v-col cols="12">
                 <v-textarea
-                  v-model="cocktail.description"
+                  v-model="plat.description"
                   dense
                   outlined
                   label="Commentaires"
                 ></v-textarea>
               </v-col>
             </v-row>
-            <center><h4>Composants du mélange</h4></center>
+            <center><h4>Ingrédients du plat</h4></center>
             <simple-multiple-input
               :key="remount"
-              v-model="melanges"
-              field="Tournées"
-              :items="tournees"
+              v-model="ingredients"
+              field="Articles"
+              :items="articles"
             />
           </v-container>
         </v-form>
@@ -103,7 +90,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="primary" text @click="save"> modifier </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -121,7 +108,7 @@ import {
 export default {
   components: { CreateCategorie, SimpleMultipleInput },
   props: {
-    tournees: {
+    articles: {
       type: Array,
       required: true,
     },
@@ -133,18 +120,14 @@ export default {
       type: Number,
       required: true,
     },
-    item: {
-      type: Object,
-      required: true,
-    },
   },
   data() {
     return {
-      dialogue: false,
+      dialog: false,
       dialog1: false,
-      melanges: [],
+      ingredients: [],
       remount: false,
-      cocktail: {
+      plat: {
         categorie_id: null,
         prix_vente: null,
         nom: null,
@@ -156,24 +139,18 @@ export default {
       },
     }
   },
-  mounted() {
-    const { categorie, melanges, ...rest } = this.item
-    this.melanges = JSON.parse(JSON.stringify(melanges))
-    this.cocktail = Object.assign({}, rest)
-  },
   methods: {
-    ...mapActions('externe/cocktail', ['modifier']),
+    ...mapActions('externe/plat', ['ajouter']),
     reinitialise() {
+      this.$refs.form.reset()
+      this.ingredients = []
       errorsInitialise(this.errors)
-      const { categorie, melanges, ...rest } = this.item
-      this.melanges = JSON.parse(JSON.stringify(melanges))
-      this.cocktail = Object.assign({}, rest)
-      this.dialogue = false
+      this.dialog = false
       this.remount = !this.remount
     },
     save() {
-      if (this.melanges.length >= 2) {
-        this.modifier({ ...this.cocktail, melanges: this.melanges })
+      if (this.ingredients.length >= 2) {
+        this.ajouter({ ...this.plat, articles: this.ingredients })
           .then((result) => {
             this.$notifier.show({ text: result.message, variant: 'success' })
             this.reinitialise()
@@ -188,7 +165,7 @@ export default {
       } else {
         this.$notifier.show({
           text:
-            'Un cocktail doit contenir au moins deux elements de tournées distincts',
+            'Un plat doit contenir au moins deux Ingrédients (articles) distincts',
           variant: 'error',
         })
       }

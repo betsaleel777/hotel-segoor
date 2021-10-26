@@ -3,7 +3,7 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Plats
+          Archives plats
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -13,36 +13,29 @@
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
-                no-data-text="Aucun plat"
+                no-data-text="Aucun plat archivé"
                 :loading="$fetchState.pending"
                 loading-text="En chargement ..."
                 :headers="headers"
                 :items="plats"
                 :search="search"
                 :items-per-page="10"
-              >
-                <template #[`top`]>
+                ><template #[`top`]>
                   <v-toolbar flat>
-                    <create-plat
-                      v-can="permissions.create"
-                      :articles="articles"
-                      :categories="categories"
-                      :restaurant="restaurant"
-                    />
                     <v-btn
                       class="ml-2"
                       color="primary"
                       dark
-                      :to="`/externe/${restaurant}/plat/archive/`"
+                      :to="`/externe/${restaurant}/plat/`"
                     >
-                      <v-icon left>mdi-archive</v-icon>
-                      archives
+                      <v-icon left>mdi-arrow-left-thick</v-icon>
+                      retour
                     </v-btn>
                     <v-btn
                       class="ml-2"
                       :disabled="plats.length === 0"
-                      dark
                       color="primary"
+                      dark
                       @click="print"
                     >
                       <v-icon left>mdi-printer</v-icon>
@@ -61,25 +54,36 @@
                 <template #[`item.prix_vente`]="{ item }">
                   {{ item.prix_vente | formater }}
                 </template>
+                <template #[`item.deleted_at`]="{ item }">
+                  {{ $moment(item.deleted_at).format('ll') }}
+                </template>
                 <template #[`item.actions`]="{ item }">
-                  <edit-plat
-                    v-can="permissions.edit"
-                    :articles="articles"
-                    :categories="categories"
-                    :restaurant="restaurant"
-                    :item="item"
-                  />
                   <action-confirm
+                    v-can="permissions.restorer"
                     :restaurant="restaurant"
                     :item="item"
-                    tip="archiver"
-                    titre="Confirmer l'archivage"
-                    icon="archive-plus"
-                    color="error"
-                    action="externe/plat/archiver"
+                    tip="restaurer"
+                    titre="Confirmer la restauration"
+                    color="primary"
+                    icon="archive-arrow-up"
+                    action="externe/plat/restorer"
                   >
-                    Voulez vous archiver le plat
+                    Voulez restaurer le plat
                     <b>{{ item.nom.toUpperCase() }}</b>
+                  </action-confirm>
+                  <action-confirm
+                    v-can="permissions.supprimer"
+                    :restaurant="restaurant"
+                    :item="item"
+                    tip="supprimer"
+                    color="error"
+                    titre="Confirmer la suppression"
+                    icon="delete"
+                    action="externe/plat/supprimer"
+                  >
+                    Voulez vous réelement supprimer le plat
+                    <b>{{ item.nom.toUpperCase() }}</b
+                    >, cette action est irréversible
                   </action-confirm>
                 </template>
               </v-data-table>
@@ -96,17 +100,12 @@
 import printjs from 'print-js'
 import { mapGetters } from 'vuex'
 import { PlatExterne } from '~/helper/permissions'
-import SideExterne from '~/components/externe/SideExterne.vue'
+import SideExterne from '~/components/externe/SideExterne'
 import ActionConfirm from '~/components/externe/ActionConfirmExterne.vue'
-import CreatePlat from '~/components/externe/plat/CreatePlatExterne.vue'
-import EditPlat from '~/components/externe/plat/EditPlatExterne.vue'
-
 export default {
   components: {
     SideExterne,
     ActionConfirm,
-    CreatePlat,
-    EditPlat,
   },
   filters: {
     formater(value) {
@@ -117,8 +116,8 @@ export default {
     return {
       search: '',
       permissions: {
-        create: PlatExterne.creation,
-        edit: PlatExterne.modifier,
+        restorer: PlatExterne.restorer,
+        supprimer: PlatExterne.supprimer,
       },
       headers: [
         { text: 'Code', value: 'code', sortable: false },
@@ -131,19 +130,10 @@ export default {
   async fetch() {
     const { params, store } = this.$nuxt.context
     this.restaurant = Number(params.restaurant)
-    await store.dispatch('externe/plat/getAll', params.restaurant)
-    await store.dispatch('externe/article/getArticlesPlat', params.restaurant)
-    await store.dispatch(
-      'externe/parametre/categorie-plat/getAll',
-      params.restaurant
-    )
+    await store.dispatch('externe/plat/getTrashed', params.restaurant)
   },
   computed: {
-    ...mapGetters({
-      plats: 'externe/plat/plats',
-      categories: 'externe/parametre/categorie-plat/categories',
-      articles: 'externe/article/articles',
-    }),
+    ...mapGetters('externe/plat', ['plats']),
   },
   methods: {
     print() {
@@ -160,7 +150,7 @@ export default {
           { field: 'prix_vente', displayName: 'Prix de vente' },
         ],
         type: 'json',
-        header: `<center><h3>Liste des plats</h3>${this.$moment().format(
+        header: `<center><h3>Liste des plats archivés</h3>${this.$moment().format(
           'll'
         )}</center><br>`,
         css: [
