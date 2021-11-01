@@ -26,6 +26,17 @@ export const actions = {
     })
     commit('SET_PLATS', plats)
   },
+  async getPlats({ commit }, id) {
+    commit('SET_PLATS', [])
+    const requete = await this.$axios.get(
+      'externe/stock/plats/restaurant/' + id
+    )
+    const plats = requete.data.plats.map((plat) => {
+      const { id, prix_vente: prix, nom } = plat
+      return { id, nom, prix, genre: 'plats' }
+    })
+    commit('SET_PLATS', plats)
+  },
   async getTrashed({ commit }, restaurant) {
     commit('SET_PLATS', [])
     const requete = await this.$axios.get(

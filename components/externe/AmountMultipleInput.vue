@@ -62,6 +62,8 @@
             dense
             clearable
             :label="field"
+            :attach="true"
+            @change="setPrice"
           >
           </v-autocomplete>
         </v-col>
@@ -72,6 +74,7 @@
             label="Prix"
             type="number"
             min="0"
+            :readonly="readOnlyPrice"
           ></v-text-field>
         </v-col>
         <v-col cols="2">
@@ -127,6 +130,10 @@ export default {
       type: Array,
       required: true,
     },
+    readOnlyPrice: {
+      type: Boolean,
+      default: false,
+    },
     value: {
       type: Array,
       required: true,
@@ -157,10 +164,27 @@ export default {
     this.filterSelectable()
   },
   methods: {
+    setPrice() {
+      if (this.current.id) {
+        const currentElement = this.elements.find(
+          (element) => this.current.id === element.id
+        )
+        this.current.prix = currentElement.prix
+      } else {
+        this.current = { id: '', prix: '', quantite: '', montant: '' }
+      }
+    },
     filterSelectable() {
       this.elements = Object.assign([], this.items)
       this.items.forEach((item) => {
-        const found = this.donnees.find((donnee) => donnee.id === item.id)
+        let found = {}
+        if (item.genre) {
+          found = this.donnees.find(
+            (donnee) => donnee.id === item.id && donnee.genre === item.genre
+          )
+        } else {
+          found = this.donnees.find((donnee) => donnee.id === item.id)
+        }
         if (found) {
           this.elements = this.elements.map((element) => {
             return element.id !== found.id
@@ -172,8 +196,14 @@ export default {
     },
     add() {
       if (this.current.id && this.current.quantite && this.current.prix) {
+        const currentElement = this.elements.find(
+          (element) => this.current.id === element.id
+        )
+        if (currentElement.genre) {
+          this.current.genre = currentElement.genre
+        }
         this.donnees.push(this.current)
-        this.current = { id: '', quantite: '' }
+        this.current = { id: '', prix: '', quantite: '', montant: '' }
         this.filterSelectable()
       } else {
         this.$notifier.show({

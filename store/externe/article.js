@@ -16,6 +16,23 @@ export const actions = {
     )
     commit('SET_ARTICLES', requete.data.articles)
   },
+  async getArticles({ commit }, id) {
+    commit('SET_ARTICLES', [])
+    const requete = await this.$axios.get(
+      'externe/stock/articles/restaurant/' + id
+    )
+    let articles = requete.data.articles.filter(
+      (article) =>
+        article.pour_plat !== 1 &&
+        article.pour_tournee !== 1 &&
+        article.pour_cocktail !== 1
+    )
+    articles = articles.map((article) => {
+      const { id, prix_vente: prix, nom } = article
+      return { id, nom, prix, genre: 'autres' }
+    })
+    commit('SET_ARTICLES', articles)
+  },
   async getTrashed({ commit }, id) {
     commit('SET_ARTICLES', [])
     const requete = await this.$axios.get(

@@ -171,13 +171,42 @@ const parametre = {
 const externe = {
   acceder: 'acces externe restaurants',
   parametre: {
-    acceder: '',
+    acceder: 'acces externe parametre',
     categorie: {
-      acceder: '',
-      artcicle: {},
-      tournee: {},
-      plat: {},
-      cocktail: {},
+      acceder: 'acces externe categories',
+      article: {
+        modifier: 'modification externe categories article',
+        supprimer: 'suppression externe categories article',
+        restorer: 'restorer externe categories article',
+      },
+      tournee: {
+        modifier: 'modification externe categories tournee',
+        supprimer: 'suppression externe categories tournee',
+        restorer: 'restorer externe categories tournee',
+      },
+      plat: {
+        modifier: 'modification externe categories plat',
+        supprimer: 'suppression externe categories plat',
+        restorer: 'restorer externe categories plat',
+      },
+      cocktail: {
+        modifier: 'modification externe categories cocktail',
+        supprimer: 'suppression externe categories cocktail',
+        restorer: 'restorer externe categories cocktail',
+      },
+    },
+    mobile: {
+      acceder: 'acces externe mobiles',
+      creation: 'creation externe mobiles',
+      modifier: 'modification externe mobiles',
+      supprimer: 'suppression externe mobiles',
+      restorer: 'restorer externe mobiles',
+    },
+    table: {
+      acceder: 'acces externe tables',
+      modifier: 'modification externe tables',
+      supprimer: 'suppression externe tables',
+      restorer: 'restorer externe tables',
     },
   },
   article: {
@@ -215,6 +244,16 @@ const externe = {
     supprimer: 'suppression externe depenses',
     restorer: 'restorer externe depenses',
   },
+  facture: {
+    acceder: 'acces externe factures',
+    creation: 'creation externe factures',
+    modifier: 'modification externe factures',
+    supprimer: 'suppression externe factures',
+    restorer: 'restorer externe factures',
+  },
+}
+const parameterSet = (element) => {
+  return externe.parametre.categorie[element]
 }
 
 module.exports = {
@@ -229,9 +268,13 @@ module.exports = {
   CocktailExterne: externe.cocktail,
   TourneeExterne: externe.tournee,
   DepenseExterne: externe.depense,
+  FactureExterne: externe.facture,
+  ParametreMobileExterne: externe.parametre.mobile,
+  ParametreTableExterne: externe.parametre.table,
   ParametreCategorieExterne: externe.parametre.categorie,
-  ParametreCategorieArticleExterne: externe.parametre.categorie.artcicle,
+  ParametreCategorieArticleExterne: externe.parametre.categorie.article,
   ParametreCategorieTourneeExterne: externe.parametre.categorie.tournee,
   ParametreCategoriePlatExterne: externe.parametre.categorie.plat,
   ParametreCategorieCocktailExterne: externe.parametre.categorie.cocktail,
+  parameterSet,
 }

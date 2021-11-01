@@ -16,6 +16,17 @@ export const actions = {
     )
     commit('SET_TOURNEES', requete.data.tournees)
   },
+  async getTournees({ commit }, id) {
+    commit('SET_TOURNEES', [])
+    const requete = await this.$axios.get(
+      'externe/stock/tournees/restaurant/' + id
+    )
+    const tournees = requete.data.tournees.map((tournee) => {
+      const { id, prix_vente: prix, nom } = tournee
+      return { id, nom, prix, genre: 'tournees' }
+    })
+    commit('SET_TOURNEES', tournees)
+  },
   async getTrashed({ commit }, id) {
     commit('SET_TOURNEES', [])
     const requete = await this.$axios.get(

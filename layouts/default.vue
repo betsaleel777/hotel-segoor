@@ -33,17 +33,20 @@
             </v-list-item-content>
           </template>
           <v-list-item
-            v-for="{ nom, id } in restaurants"
-            :key="id"
-            :to="'/externe/' + id"
+            v-for="(restaurant, index) in restaurants"
+            :key="index"
+            :to="'/externe/' + restaurant.id"
             router
             exact
           >
             <v-list-item-content>
               <v-list-item-title>
-                {{ nom }}
+                {{ restaurant.nom }}
               </v-list-item-title>
             </v-list-item-content>
+            <v-list-item-icon>
+              <edit-restaurant :item="restaurant" />
+            </v-list-item-icon>
           </v-list-item>
           <v-list-item>
             <create-restaurant />
@@ -153,11 +156,18 @@ import { mapGetters, mapActions } from 'vuex'
 import AlertComponent from '~/components/AlertComponent'
 import SnackbarComponent from '~/components/SnackbarComponent'
 import CreateRestaurant from '~/components/externe/restaurant/CreateRestaurantExterne'
+import EditRestaurant from '~/components/externe/restaurant/EditRestaurantExterne.vue'
 export default {
-  components: { SnackbarComponent, AlertComponent, CreateRestaurant },
+  components: {
+    SnackbarComponent,
+    AlertComponent,
+    CreateRestaurant,
+    EditRestaurant,
+  },
   data() {
     return {
       menu: false,
+      dialog: false,
       clipped: false,
       drawer: true,
       fixed: false,
