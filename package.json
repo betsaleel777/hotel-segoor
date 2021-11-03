@@ -19,7 +19,7 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/proxy": "^2.1.0",
     "collect.js": "^4.28.6",
-    "core-js": "^3.9.1",
+    "core-js": "^3.19.1",
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",
     "nuxt": "^2.15.3",
