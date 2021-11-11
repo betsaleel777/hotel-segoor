@@ -42,7 +42,7 @@
     </template>
     <template #[`item.table`]="{ item }">
       <v-chip v-if="item.table" small label color="secondary" dark>{{
-        item.table
+        item.table.nom
       }}</v-chip>
       <v-chip v-else small label color="primary" dark>emporté</v-chip>
     </template>
@@ -102,7 +102,7 @@ export default {
       freeTables: [],
       headers: [
         { text: 'Date', value: 'created_at', align: 'center' },
-        { text: 'Table', value: 'table.nom', align: 'center', sortable: false },
+        { text: 'Table', value: 'table', align: 'center', sortable: false },
         { text: 'Montant', value: 'montant', align: 'center' },
         { text: 'Versé', value: 'verse', align: 'center' },
         { text: 'Actions', value: 'actions', align: 'right', sortable: false },

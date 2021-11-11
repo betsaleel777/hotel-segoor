@@ -120,10 +120,9 @@ export default {
     const { params, store } = this.$nuxt.context
     this.restaurant = Number(params.restaurant)
     await store.dispatch('externe/article/getAll', params.restaurant)
-    await store.dispatch(
-      'externe/parametre/categorie-article/getAll',
-      params.restaurant
-    )
+    await store.dispatch('externe/parametre/categorie-article/getAll', {
+      restaurant_id: this.restaurant,
+    })
   },
   computed: {
     ...mapGetters('externe/article', ['articles']),

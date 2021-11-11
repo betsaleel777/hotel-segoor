@@ -1,4 +1,5 @@
 import collect from 'collect.js'
+import moment from 'moment-timezone'
 // import moment from 'moment'
 export const state = () => ({
   factures: [],
@@ -19,11 +20,19 @@ export const getters = {
 }
 const reassembler = (facture) => {
   const { paiements, articles, plats, cocktails, tournees, ...rest } = facture
-  let verse = 0
+  let cheque = 0
+  let espece = 0
+  let mobile = 0
   let montant = 0
   if (paiements.length > 0) {
     paiements.forEach((paiement) => {
-      verse += Number(paiement.montant) - Number(paiement.monnaie)
+      if (paiement.espece) {
+        espece += Number(paiement.montant) - Number(paiement.monnaie)
+      } else if (paiement.cheque) {
+        cheque += Number(paiement.montant) - Number(paiement.monnaie)
+      } else {
+        mobile += Number(paiement.montant) - Number(paiement.monnaie)
+      }
     })
   }
   articles.forEach((article) => {
@@ -42,7 +51,17 @@ const reassembler = (facture) => {
   selected.forEach((select) => {
     montant += Number(select.pivot.prix_vente) * Number(select.pivot.quantite)
   })
-  return { montant, verse, selected, paiements, ...rest }
+  return {
+    montant,
+    selected,
+    paiements,
+    cheque,
+    espece,
+    mobile,
+    verse: cheque + espece + mobile,
+    group_date: moment(rest.date_soldee).format('YYYY-MM-DD'),
+    ...rest,
+  }
 }
 
 const organiser = (factures) => {
@@ -77,11 +96,20 @@ export const actions = {
     factures = collect(factures)
       .groupBy('group_date')
       .map((lignes, index) => {
-        let montant = 0
+        let cheque = 0
+        let espece = 0
+        let mobile = 0
         lignes.all().forEach((ligne) => {
-          montant += Number(ligne.montant)
+          cheque += Number(ligne.cheque)
+          espece += Number(ligne.espece)
+          mobile += Number(ligne.mobile)
         })
-        return { montant, jour: index }
+        return {
+          cheque,
+          mobile,
+          espece,
+          jour: index,
+        }
       })
       .toArray()
     commit('SET_COMPACTES', factures)
@@ -151,6 +179,9 @@ export const actions = {
       payload
     )
     dispatch('getNonSoldees', payload.restaurant_id)
+    if (requete.data.payed) {
+      dispatch('getSoldees', payload.restaurant_id)
+    }
     return { message: requete.data.message }
   },
 }

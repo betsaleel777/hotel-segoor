@@ -166,14 +166,16 @@ export default {
       this.articlesSelected = selected.map((select) => {
         const {
           id,
+          code,
           genre,
           pivot: { prix_vente: prix, quantite },
         } = select
         return {
           id,
+          code,
+          genre,
           prix,
           quantite,
-          genre,
           montant: Number(prix) * Number(quantite),
         }
       })

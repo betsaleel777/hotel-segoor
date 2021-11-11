@@ -4,10 +4,10 @@
       <v-row v-if="donnee">
         <v-col cols="4">
           <v-autocomplete
-            v-model="donnee.id"
+            v-model="donnee.code"
             :prepend-icon="`mdi-numeric-${index + 1}-box`"
             :items="elements"
-            item-value="id"
+            item-value="code"
             item-text="nom"
             dense
             :label="field"
@@ -55,9 +55,10 @@
       <v-row>
         <v-col cols="4">
           <v-autocomplete
-            v-model="current.id"
+            v-model="current"
+            return-object
             :items="elements"
-            item-value="id"
+            item-value="code"
             item-text="nom"
             dense
             clearable
@@ -141,7 +142,7 @@ export default {
   },
   data: () => ({
     elements: [],
-    current: { id: '', prix: '', quantite: '', montant: '' },
+    current: { id: '', code: '', prix: '', quantite: '', montant: '' },
   }),
   computed: {
     total() {
@@ -165,29 +166,23 @@ export default {
   },
   methods: {
     setPrice() {
-      if (this.current.id) {
+      if (this.current) {
         const currentElement = this.elements.find(
-          (element) => this.current.id === element.id
+          (element) => this.current.code === element.code
         )
         this.current.prix = currentElement.prix
       } else {
-        this.current = { id: '', prix: '', quantite: '', montant: '' }
+        this.current = { id: '', code: '', prix: '', quantite: '', montant: '' }
       }
     },
     filterSelectable() {
-      this.elements = Object.assign([], this.items)
+      this.elements = JSON.parse(JSON.stringify(this.items))
       this.items.forEach((item) => {
         let found = {}
-        if (item.genre) {
-          found = this.donnees.find(
-            (donnee) => donnee.id === item.id && donnee.genre === item.genre
-          )
-        } else {
-          found = this.donnees.find((donnee) => donnee.id === item.id)
-        }
+        found = this.donnees.find((donnee) => donnee.code === item.code)
         if (found) {
           this.elements = this.elements.map((element) => {
-            return element.id !== found.id
+            return element.code !== found.code
               ? element
               : { ...element, disabled: true }
           })
@@ -195,15 +190,15 @@ export default {
       })
     },
     add() {
-      if (this.current.id && this.current.quantite && this.current.prix) {
+      if (this.current.code && this.current.quantite && this.current.prix) {
         const currentElement = this.elements.find(
-          (element) => this.current.id === element.id
+          (element) => this.current.code === element.code
         )
         if (currentElement.genre) {
           this.current.genre = currentElement.genre
         }
         this.donnees.push(this.current)
-        this.current = { id: '', prix: '', quantite: '', montant: '' }
+        this.current = { id: '', code: '', prix: '', quantite: '', montant: '' }
         this.filterSelectable()
       } else {
         this.$notifier.show({

@@ -1,10 +1,14 @@
 export const state = () => ({
   articles: [],
+  inventaire: [],
 })
 
 export const getters = {
   articles: (state) => {
     return state.articles
+  },
+  inventaire: (state) => {
+    return state.inventaire
   },
 }
 
@@ -28,8 +32,8 @@ export const actions = {
         article.pour_cocktail !== 1
     )
     articles = articles.map((article) => {
-      const { id, prix_vente: prix, nom } = article
-      return { id, nom, prix, genre: 'autres' }
+      const { id, code, prix_vente: prix, nom } = article
+      return { id, code, nom, prix, genre: 'autres' }
     })
     commit('SET_ARTICLES', articles)
   },
@@ -51,6 +55,13 @@ export const actions = {
       'externe/stock/articles/tournee/' + restaurant
     )
     commit('SET_ARTICLES', requete.data.articles)
+  },
+  async getInventaire({ commit }, restaurant) {
+    commit('SET_INVENTAIRE', [])
+    const requete = await this.$axios.get(
+      'externe/stock/articles/inventaire/' + restaurant
+    )
+    commit('SET_INVENTAIRE', requete.data.articles)
   },
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post(
@@ -94,5 +105,8 @@ export const actions = {
 export const mutations = {
   SET_ARTICLES(state, articles) {
     state.articles = articles
+  },
+  SET_INVENTAIRE(state, inventaire) {
+    state.inventaire = inventaire
   },
 }

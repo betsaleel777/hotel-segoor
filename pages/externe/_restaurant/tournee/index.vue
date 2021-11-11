@@ -140,10 +140,9 @@ export default {
       'externe/article/getArticlesTournee',
       params.restaurant
     )
-    await store.dispatch(
-      'externe/parametre/categorie-tournee/getAll',
-      params.restaurant
-    )
+    await store.dispatch('externe/parametre/categorie-tournee/getAll', {
+      restaurant_id: this.restaurant,
+    })
   },
   computed: {
     ...mapGetters({

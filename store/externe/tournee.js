@@ -22,8 +22,8 @@ export const actions = {
       'externe/stock/tournees/restaurant/' + id
     )
     const tournees = requete.data.tournees.map((tournee) => {
-      const { id, prix_vente: prix, nom } = tournee
-      return { id, nom, prix, genre: 'tournees' }
+      const { id, code, prix_vente: prix, nom } = tournee
+      return { id, code, nom, prix, genre: 'tournees' }
     })
     commit('SET_TOURNEES', tournees)
   },

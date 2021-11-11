@@ -149,7 +149,7 @@ export default {
       this.remount = !this.remount
     },
     save() {
-      if (this.ingredients.length >= 2) {
+      if (this.ingredients.length >= 1) {
         this.ajouter({ ...this.plat, articles: this.ingredients })
           .then((result) => {
             this.$notifier.show({ text: result.message, variant: 'success' })

@@ -51,8 +51,8 @@ export default {
   data: () => ({
     tab: null,
     items: [
-      { text: 'Factures Non Soldées', icon: 'mdi-file-outline' },
-      { text: 'Factures Soldées', icon: 'mdi-dollars' },
+      { text: 'Factures Non Soldées', icon: 'mdi-checkbox-blank-outline' },
+      { text: 'Factures Soldées', icon: 'mdi-checkbox-marked-outline' },
     ],
   }),
   async fetch() {

@@ -32,8 +32,8 @@ export const actions = {
       'externe/stock/plats/restaurant/' + id
     )
     const plats = requete.data.plats.map((plat) => {
-      const { id, prix_vente: prix, nom } = plat
-      return { id, nom, prix, genre: 'plats' }
+      const { id, code, prix_vente: prix, nom } = plat
+      return { id, code, nom, prix, genre: 'plats' }
     })
     commit('SET_PLATS', plats)
   },

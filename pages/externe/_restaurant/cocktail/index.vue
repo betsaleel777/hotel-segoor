@@ -133,10 +133,9 @@ export default {
     this.restaurant = Number(params.restaurant)
     await store.dispatch('externe/cocktail/getAll', params.restaurant)
     await store.dispatch('externe/tournee/getAll', params.restaurant)
-    await store.dispatch(
-      'externe/parametre/categorie-cocktail/getAll',
-      params.restaurant
-    )
+    await store.dispatch('externe/parametre/categorie-cocktail/getAll', {
+      restaurant_id: this.restaurant,
+    })
   },
   computed: {
     ...mapGetters({

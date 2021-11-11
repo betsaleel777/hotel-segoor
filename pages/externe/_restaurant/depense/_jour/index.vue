@@ -148,19 +148,19 @@ export default {
       articles: 'externe/article/articles',
       depenses: 'externe/depense/depenses',
     }),
-    links() {
-      return [
-        {
-          text: 'Dépenses',
-          disabled: false,
-          href: `/externe/${this.restaurant}/depense`,
-        },
-        {
-          text: this.$moment(this.jour).format('ll'),
-          disabled: true,
-        },
-      ]
-    },
+    // links() {
+    //   return [
+    //     {
+    //       text: 'Dépenses',
+    //       disabled: false,
+    //       href: `/externe/${this.restaurant}/depense`,
+    //     },
+    //     {
+    //       text: this.$moment(this.jour).format('ll'),
+    //       disabled: true,
+    //     },
+    //   ]
+    // },
   },
   methods: {
     print() {

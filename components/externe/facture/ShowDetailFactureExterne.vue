@@ -43,7 +43,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="element in versements" :key="element.id">
+              <tr v-for="element in item.paiements" :key="element.id">
                 <td class="text-center">
                   {{ $moment(element.created_at).format('llll') }}
                 </td>
@@ -62,7 +62,7 @@
                   <b>Total versé</b>
                 </td>
                 <td class="text-right">
-                  <b>{{ totalVerse }} FCFA</b>
+                  <b>{{ item.verse }}</b>
                 </td>
               </tr>
             </tfoot>
@@ -100,63 +100,6 @@
         <!-- corps de facture -->
         <v-container>
           <v-row>
-            <v-col cols="3"> <b>Client:</b> {{ fullName }} </v-col>
-            <v-col cols="3"
-              ><b>Contact:</b> {{ hebergement.client_linked.contact }}</v-col
-            >
-            <v-col cols="3"
-              ><span v-if="hebergement.client_linked.email"
-                ><b>Email:</b> {{ hebergement.client_linked.email }}</span
-              ></v-col
-            >
-            <v-col cols="3">
-              <span v-if="hebergement.client_linked.domicile"
-                ><b>Domicile:</b> {{ hebergement.client_linked.domicile }}</span
-              >
-            </v-col>
-            <v-col cols="12">
-              <div class="text-center">
-                <h3 class="primary--text text--darken-3">HEBERGEMENT</h3>
-              </div>
-              <v-simple-table>
-                <template #default>
-                  <thead>
-                    <tr>
-                      <th class="text-center">Chambre</th>
-                      <th class="text-center">Quantité</th>
-                      <th class="text-center">Nuitée</th>
-                      <th class="text-center">Total sans Remise</th>
-                      <th class="text-center">Remise</th>
-                      <th class="text-center">Total avec Remise</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="text-center">
-                        {{ hebergement.chambre_linked.nom }}
-                      </td>
-                      <td class="text-center">
-                        {{ quantiteNuitee + ' ' }}
-                        jours
-                      </td>
-                      <td class="text-center">
-                        {{ hebergement.prix | formater }} FCFA
-                      </td>
-                      <td class="text-center">
-                        {{ (hebergement.prix * quantiteNuitee) | formater }}
-                        FCFA
-                      </td>
-                      <td class="text-center">
-                        {{ remise | formater }}x{{ quantiteNuitee }} FCFA
-                      </td>
-                      <td class="text-center">
-                        <b>{{ montantAvecRemise | formater }} FCFA</b>
-                      </td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-            </v-col>
             <v-col cols="12">
               <div class="text-center">
                 <h3 class="primary--text text--darken-3">CONSOMMATION</h3>
@@ -166,7 +109,6 @@
                   <thead>
                     <tr>
                       <th class="text-center">Date</th>
-                      <th class="text-center">Lieu consommation</th>
                       <th class="text-left">Désignation</th>
                       <th class="text-center">Quantité</th>
                       <th class="text-right">Prix</th>
@@ -180,9 +122,6 @@
                     >
                       <td class="text-center">
                         {{ $moment(consommation.jour).format('llll') }}
-                      </td>
-                      <td class="text-center">
-                        {{ consommation.lieu }}
                       </td>
                       <td class="text-left">{{ consommation.nom }}</td>
                       <td class="text-center">{{ consommation.quantite }}</td>
@@ -199,23 +138,14 @@
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td class="text-right" colspan="5"><b>Total</b></td>
+                      <td class="text-right" colspan="4"><b>Total</b></td>
                       <td class="text-right">
-                        <b>{{ totalConsomme | formater }} FCFA</b>
+                        <b>{{ item.montant | formater }} FCFA</b>
                       </td>
                     </tr>
                   </tfoot>
                 </template>
               </v-simple-table>
-            </v-col>
-            <v-col cols="12">
-              <div class="text-right">
-                <h3 class="pink--text darken-3">
-                  Montant total à payer:
-                  {{ (totalConsomme + montantAvecRemise) | formater }}
-                  FCFA
-                </h3>
-              </div>
             </v-col>
           </v-row>
         </v-container>
@@ -246,7 +176,7 @@ Vue.use(VueHtmlToPaper)
 export default {
   filters: {
     formater(value) {
-      return `${Intl.NumberFormat().format(value)}`
+      return `${Intl.NumberFormat().format(value)} FCFA`
     },
   },
   props: {
@@ -258,142 +188,25 @@ export default {
   data() {
     return {
       dialogue: false,
-      hebergement: {},
+      consommations: [],
     }
   },
-  computed: {
-    fullName() {
-      return (
-        this.hebergement.client_linked.nom +
-        ' ' +
-        this.hebergement.client_linked.prenom
-      )
-    },
-    consommations() {
-      let resultat = []
-      const compare = (a, b) => {
-        if (this.$moment(a.jour).diff(b.jour) < 0) {
-          return -1
-        }
-        if (this.$moment(a.jour).diff(b.jour) < 0) {
-          return 1
-        }
-        return 0
-      }
-      const listeCocktails = []
-      const listePlats = []
-      const listeTournees = []
-      const listeProduits = []
-      if (this.hebergement.consommations) {
-        this.hebergement.consommations.forEach((consommation) => {
-          let { plats, cocktails, produits, tournees } = consommation
-          const { departement } = consommation
-          plats = plats.map((item) => {
-            return { ...item, departement }
-          })
-          cocktails = cocktails.map((item) => {
-            return { ...item, departement }
-          })
-          produits = produits.map((item) => {
-            return { ...item, departement }
-          })
-          tournees = tournees.map((item) => {
-            return { ...item, departement }
-          })
-          listePlats.push(...plats)
-          listeCocktails.push(...cocktails)
-          listeProduits.push(...produits)
-          listeTournees.push(...tournees)
-        })
-      }
-      const consommations = [
-        ...listeCocktails,
-        ...listePlats,
-        ...listeProduits,
-        ...listeTournees,
-      ]
-      resultat = consommations.map((item) => {
-        return {
-          jour: item.pivot.created_at,
-          code: item.code,
-          nom: item.nom ?? item.titre,
-          quantite: item.pivot.quantite,
-          prix: item.pivot.prix_vente,
-          lieu: item.departement === 1 ? 'restaurant' : 'bar',
-        }
-      })
-      resultat = resultat.sort(compare)
-      return resultat
-    },
-    pieceInfos() {
-      const client = this.hebergement.client_linked
-      let nature = 'CNI'
-      if (client.pieces[0].nature !== 'cni') {
-        nature = 'PASSEPORT'
-      }
-      return nature + ' ' + client.pieces[0].numero_piece
-    },
-    nuiteeAvecRemise() {
-      let resultat = 0
-      if (this.hebergement.remise) {
-        resultat = Math.round(
-          this.hebergement.prix * (1 - Number(this.hebergement.remise) / 100)
-        )
-      }
-      return resultat
-    },
-    quantiteNuitee() {
-      return this.$moment(this.hebergement.sortie).diff(
-        this.hebergement.entree,
-        'days'
-      )
-    },
-    montantAvecRemise() {
-      if (this.hebergement) {
-        return this.nuiteeAvecRemise * this.quantiteNuitee
-      } else {
-        return null
-      }
-    },
-    remise() {
-      let remise = 0
-      if (this.hebergement.remise) {
-        remise = Math.round(
-          (this.hebergement.prix * Number(this.hebergement.remise)) / 100
-        )
-      }
-      return remise
-    },
-    remiseTotal() {
-      return this.remise * this.quantiteNuitee
-    },
-    totalConsomme() {
-      let total = 0
-      if (this.consommations.length > 0) {
-        this.consommations.forEach((item) => {
-          total += item.prix * item.quantite
-        })
-      }
-      return total
-    },
-    versements() {
-      return this.item.versements
-    },
-    totalVerse() {
-      let total = 0
-      this.versements.forEach((element) => {
-        total += element.montant - element.monnaie
-      })
-      return total
-    },
-  },
+  computed: {},
   created() {
-    this.hebergement = this.item.attribution ?? this.item.reservation
+    this.consommations = this.item.selected.map((element) => {
+      return {
+        code: element.code,
+        nom: element.nom,
+        jour: element.created_at,
+        quantite: element.pivot.quantite,
+        prix: element.pivot.prix_vente,
+      }
+    })
   },
   methods: {
     moyenDePaiement(element) {
-      if (element.mobile) {
-        return element.mobile.nom
+      if (element.moyen) {
+        return element.moyen.nom
       } else if (element.espece) {
         return 'espèce'
       } else {

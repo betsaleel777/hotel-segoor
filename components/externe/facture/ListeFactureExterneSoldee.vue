@@ -20,7 +20,7 @@
       </v-toolbar>
     </template>
     <template #[`item.date_soldee`]="{ item }">
-      {{ $moment(item.date_soldee).format('ll') }}
+      {{ $moment(item.jour).format('ll') }}
     </template>
     <template #[`item.espece`]="{ item }">
       {{ item.espece | formater }}
@@ -34,12 +34,16 @@
     <template #[`item.total`]="{ item }">
       {{ (item.espece + item.cheque + item.mobile) | formater }}
     </template>
-    <!-- <template #[`item.actions`]="{ item }"> </template> -->
+    <template #[`item.actions`]="{ item }">
+      <show-facture-soldee-externe :jour="item.jour" :restaurant="restaurant" />
+    </template>
   </v-data-table>
 </template>
 
 <script>
+import ShowFactureSoldeeExterne from './ShowFactureSoldeeExterne.vue'
 export default {
+  components: { ShowFactureSoldeeExterne },
   filters: {
     formater(value) {
       return `${Intl.NumberFormat().format(value)} FCFA`
@@ -60,7 +64,7 @@ export default {
       search: '',
       loading: false,
       headers: [
-        { text: 'Date', value: 'date_soldee', align: 'left', sortable: false },
+        { text: 'Date', value: 'jour', align: 'left', sortable: false },
         { text: 'Espèces', value: 'espece', align: 'center', sortable: false },
         { text: 'Cheque', value: 'cheque', align: 'center', sortable: false },
         { text: 'Mobile', value: 'mobile', align: 'center' },

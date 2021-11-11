@@ -22,6 +22,7 @@ const organiser = (depenses) => {
       montant += Number(article.pivot.quantite) * Number(article.pivot.cout)
       return {
         id: article.pivot.article_id,
+        code: article.code,
         quantite: article.pivot.quantite,
         prix: article.pivot.cout,
         montant: Number(article.pivot.quantite) * Number(article.pivot.cout),
