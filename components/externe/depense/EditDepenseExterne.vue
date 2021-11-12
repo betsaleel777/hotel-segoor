@@ -118,7 +118,6 @@ export default {
   },
   mounted() {
     const { pannier, ...rest } = this.item
-    console.log(pannier)
     this.pannier = JSON.parse(JSON.stringify(pannier))
     this.depense = Object.assign({}, rest)
   },

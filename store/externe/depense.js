@@ -13,28 +13,29 @@ export const getters = {
     return state.depensesDatesCompactees
   },
 }
-
-const organiser = (depenses) => {
-  return depenses.map((depense) => {
-    const { articles, ...rest } = depense
-    let montant = 0
-    const pannier = articles.map((article) => {
-      montant += Number(article.pivot.quantite) * Number(article.pivot.cout)
-      return {
-        id: article.pivot.article_id,
-        code: article.code,
-        quantite: article.pivot.quantite,
-        prix: article.pivot.cout,
-        montant: Number(article.pivot.quantite) * Number(article.pivot.cout),
-      }
-    })
+const reassembler = (depense) => {
+  const { articles, ...rest } = depense
+  let montant = 0
+  const pannier = articles.map((article) => {
+    montant += Number(article.pivot.quantite) * Number(article.pivot.cout)
     return {
-      ...rest,
-      group_date: moment(rest.created_at).format('YYYY-MM-DD'),
-      pannier,
-      montant,
+      id: article.pivot.article_id,
+      nom: article.nom,
+      code: article.code,
+      quantite: article.pivot.quantite,
+      prix: article.pivot.cout,
+      montant: Number(article.pivot.quantite) * Number(article.pivot.cout),
     }
   })
+  return {
+    ...rest,
+    group_date: moment(rest.created_at).format('YYYY-MM-DD'),
+    pannier,
+    montant,
+  }
+}
+const organiser = (depenses) => {
+  return depenses.map(reassembler)
 }
 
 export const actions = {
@@ -83,6 +84,10 @@ export const actions = {
       `externe/stock/depenses/restaurant/trashed/${payload.restaurant_id}/date/${payload.jour}`
     )
     commit('SET_DEPENSES', organiser(requete.data.depenses))
+  },
+  async getItem({ commit }, id) {
+    const requete = await this.$axios.get('externe/stock/depenses/' + id)
+    return reassembler(requete.data.depense)
   },
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post(

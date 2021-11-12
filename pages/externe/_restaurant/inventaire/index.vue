@@ -15,13 +15,6 @@
               <v-row>
                 <v-col cols="2"></v-col>
                 <v-col cols="8">
-                  <v-text-field
-                    v-model="search"
-                    append-icon="mdi-magnify"
-                    label="recherche ..."
-                    single-line
-                    hide-details
-                  ></v-text-field>
                   <v-data-table
                     no-data-text="Inventaire vide"
                     :loading="$fetchState.pending"
@@ -30,12 +23,61 @@
                     :items="inventaire"
                     :search="search"
                     :items-per-page="10"
+                    :item-class="colorize"
                   >
-                    <template #[`item.disponible`]="{ item }">
-                      {{ item.disponible + ' ' }}
+                    <template #[`top`]>
+                      <v-toolbar flat>
+                        <v-btn
+                          class="ml-2"
+                          :disabled="inventaire.length === 0"
+                          dark
+                          color="primary"
+                          @click="print"
+                        >
+                          <v-icon left>mdi-printer</v-icon>
+                          IMPRIMER
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-text-field
+                          v-model="search"
+                          append-icon="mdi-magnify"
+                          label="recherche ..."
+                          single-line
+                          hide-details
+                        ></v-text-field>
+                      </v-toolbar>
                     </template>
-                    <template #[`item.reste`]="{ item }">
-                      {{ item.reste + ' %' }}
+                    <template #item="{ item, expand, isExpanded }">
+                      <tr>
+                        <td class="d-block d-sm-table-cell">
+                          {{ item.nom }}
+                        </td>
+                        <td class="d-block d-sm-table-cell">
+                          {{ item.disponible }}
+                        </td>
+                        <td>
+                          <v-tooltip right>
+                            <template #activator="{ on: tooltip }">
+                              <v-btn
+                                v-if="item.reste !== 0"
+                                small
+                                v-on="{ tooltip }"
+                                @click="expand(!isExpanded)"
+                                ><v-icon left>mdi-information</v-icon
+                                >détails</v-btn
+                              >
+                            </template>
+                            <span>modifier</span>
+                          </v-tooltip>
+                        </td>
+                      </tr>
+                    </template>
+                    <template #[`expanded-item`]="{ item }">
+                      <td v-if="item.reste !== 0" :colspan="headers.length">
+                        <p class="text-right primary--text">
+                          quantité encore en bouteille {{ item.reste + '%' }}
+                        </p>
+                      </td>
                     </template>
                   </v-data-table>
                 </v-col>
@@ -62,9 +104,9 @@ export default {
     return {
       search: '',
       headers: [
-        { text: 'Description', value: 'nom' },
+        { text: 'Description', value: 'nom', width: '70%' },
         { text: 'Disponible', value: 'disponible' },
-        { text: 'En cours', value: 'reste' },
+        { text: 'Options', value: 'data-table-expand' },
       ],
     }
   },
@@ -72,17 +114,21 @@ export default {
     const { params, store } = this.$nuxt.context
     this.restaurant = Number(params.restaurant)
     await store.dispatch('externe/article/getInventaire', params.restaurant)
+    // this.expanded = this.inventaire.filter((article) => article.reste !== 0)
   },
   computed: {
     ...mapGetters('externe/article', ['inventaire']),
   },
   methods: {
+    colorize(item) {
+      return item.archive ? 'archive-style' : null
+    },
     print() {
       printjs({
-        printable: this.articles,
+        printable: this.inventaire,
         properties: [
           { field: 'nom', displayName: 'Description' },
-          { field: 'disponible', displayName: 'Catégorie' },
+          { field: 'disponible', displayName: 'Disponible' },
           { field: 'reste', displayName: 'En cours' },
         ],
         type: 'json',
@@ -99,4 +145,9 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.archive-style {
+  /* background-color: darkgray; */
+  background-color: rgba(223, 216, 216, 0.681);
+}
+</style>

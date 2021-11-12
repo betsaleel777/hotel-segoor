@@ -61,7 +61,19 @@ export const actions = {
     const requete = await this.$axios.get(
       'externe/stock/articles/inventaire/' + restaurant
     )
-    commit('SET_INVENTAIRE', requete.data.articles)
+    // devrait se faire directement par la requette d'inventaire
+    const trashed = await this.$axios.get(
+      'externe/stock/articles/restaurant/trashed/' + restaurant
+    )
+    const articles = requete.data.articles.map((article) => {
+      const found = trashed.data.articles.find(
+        (trashed) => trashed.id === article.id
+      )
+      return found
+        ? { ...article, archive: true }
+        : { ...article, archive: false }
+    })
+    commit('SET_INVENTAIRE', articles)
   },
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post(

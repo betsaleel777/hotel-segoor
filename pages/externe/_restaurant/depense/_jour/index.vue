@@ -70,6 +70,7 @@
                   {{ item.montant | formater }}
                 </template>
                 <template #[`item.actions`]="{ item }">
+                  <show-depense :id="item.id" />
                   <edit-depense
                     v-can="permissions.edit"
                     :item="item"
@@ -108,12 +109,14 @@ import { DepenseExterne } from '~/helper/permissions'
 import SideExterne from '~/components/externe/SideExterne.vue'
 import EditDepense from '~/components/externe/depense/EditDepenseExterne.vue'
 import ActionConfirm from '~/components/externe/ActionConfirmExterne.vue'
+import ShowDepense from '~/components/externe/depense/ShowDepenseExterne.vue'
 
 export default {
   components: {
     SideExterne,
     EditDepense,
     ActionConfirm,
+    ShowDepense,
   },
   filters: {
     formater(value) {
