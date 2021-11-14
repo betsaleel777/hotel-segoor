@@ -98,8 +98,12 @@ export default {
   methods: {
     ...mapActions('externe/depense', ['ajouter']),
     reinitialise() {
-      this.$refs.form.reset()
       this.pannier = []
+      this.depense = {
+        nom: null,
+        description: null,
+        restaurant_id: this.restaurant,
+      }
       errorsInitialise(this.errors)
       this.dialog = false
       this.remount = !this.remount

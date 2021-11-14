@@ -262,7 +262,6 @@ export default {
           ...listeProduits,
           ...listeTournees,
         ]
-        console.log(consommations)
         resultat = consommations.map((item) => {
           return {
             jour: item.pivot.created_at,

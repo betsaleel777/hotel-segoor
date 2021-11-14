@@ -35,7 +35,7 @@
         </v-col>
         <v-col cols="3">
           <v-text-field
-            v-model="donnee.montant"
+            :value="amount(donnee)"
             dense
             label="Montant"
             type="number"
@@ -85,9 +85,6 @@
             label="Quantité"
             type="number"
             min="0"
-            @change="
-              current.montant = Number(current.prix) * Number(current.quantite)
-            "
           ></v-text-field>
         </v-col>
         <v-col cols="3">
@@ -161,6 +158,18 @@ export default {
       },
     },
   },
+  watch: {
+    'current.quantite'(value) {
+      if (Number(value) !== 0 && this.current.prix !== 0) {
+        this.current.montant = Number(this.current.prix) * Number(value)
+      }
+    },
+    'current.prix'(value) {
+      if (Number(value) !== 0 && this.current.quantite !== 0) {
+        this.current.montant = Number(this.current.quantite) * Number(value)
+      }
+    },
+  },
   mounted() {
     this.filterSelectable()
   },
@@ -170,10 +179,17 @@ export default {
         const currentElement = this.elements.find(
           (element) => this.current.code === element.code
         )
-        this.current.prix = currentElement.prix
+        if (this.readOnlyPrice) {
+          this.current.prix = currentElement.prix
+        }
+        this.current.code = currentElement.code
+        this.current.id = currentElement.id
       } else {
         this.current = { id: '', code: '', prix: '', quantite: '', montant: '' }
       }
+    },
+    amount(item) {
+      return Number(item.quantite) * Number(item.prix)
     },
     filterSelectable() {
       this.elements = JSON.parse(JSON.stringify(this.items))

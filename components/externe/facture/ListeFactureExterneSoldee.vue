@@ -4,22 +4,25 @@
     :loading="loading"
     loading-text="En chargement ..."
     :headers="headers"
-    :items="factures"
-    :search="search"
+    :items="founds"
     :items-per-page="10"
   >
     <template #[`top`]>
       <v-toolbar flat>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="recherche ..."
-          single-line
-          hide-details
-        ></v-text-field>
+        <dialog-date-picker
+          v-model="day"
+          label="Intervalle de jour"
+          mode="date"
+        />
+        <dialog-date-picker
+          v-model="mois"
+          label="Intervalle de mois"
+          mode="month"
+        />
+        <v-spacer></v-spacer>
       </v-toolbar>
     </template>
-    <template #[`item.date_soldee`]="{ item }">
+    <template #[`item.jour`]="{ item }">
       {{ $moment(item.jour).format('ll') }}
     </template>
     <template #[`item.espece`]="{ item }">
@@ -37,13 +40,29 @@
     <template #[`item.actions`]="{ item }">
       <show-facture-soldee-externe :jour="item.jour" :restaurant="restaurant" />
     </template>
+    <template #[`footer`]>
+      <div v-if="displayFooter">
+        <v-divider></v-divider>
+        <div class="pt-1 pb-1">
+          <v-btn color="indigo" text
+            ><v-icon left>mdi-cash</v-icon>Total: {{ total | formater }}</v-btn
+          >
+        </div>
+      </div>
+    </template>
   </v-data-table>
 </template>
 
 <script>
+import Moment from 'moment'
+import { extendMoment } from 'moment-range'
+import printjs from 'print-js'
+import DialogDatePicker from '../DialogDatePicker.vue'
 import ShowFactureSoldeeExterne from './ShowFactureSoldeeExterne.vue'
+const moment = extendMoment(Moment)
+
 export default {
-  components: { ShowFactureSoldeeExterne },
+  components: { ShowFactureSoldeeExterne, DialogDatePicker },
   filters: {
     formater(value) {
       return `${Intl.NumberFormat().format(value)} FCFA`
@@ -61,7 +80,10 @@ export default {
   },
   data() {
     return {
-      search: '',
+      mois: [],
+      day: [],
+      founds: [],
+      displayFooter: false,
       loading: false,
       headers: [
         { text: 'Date', value: 'jour', align: 'left', sortable: false },
@@ -73,7 +95,70 @@ export default {
       ],
     }
   },
-  methods: {},
+  computed: {
+    total() {
+      let sum = 0
+      this.founds.forEach((facture) => {
+        sum +=
+          Number(facture.cheque) +
+          Number(facture.espece) +
+          Number(facture.mobile)
+      })
+      return sum
+    },
+  },
+  watch: {
+    day(value) {
+      this.filtrer(value)
+    },
+    mois(value) {
+      this.filtrer(value)
+    },
+  },
+  mounted() {
+    this.founds = this.factures
+  },
+  methods: {
+    print() {
+      const factures = this.founds.map((found) => {
+        return {
+          jour: found.jour,
+          espece: found.espece,
+          cheque: found.cheque,
+          mobile: found.mobile,
+          total:
+            Number(found.espece) + Number(found.cheque) + Number(found.mobile),
+        }
+      })
+      printjs({
+        printable: factures,
+        properties: [
+          { field: 'jour', displayName: 'Date' },
+          { field: 'total', displayName: 'Montant total' },
+        ],
+        type: 'json',
+        header: `<center><h3>Liste des achats de marchandises</h3>${this.$moment().format(
+          'll'
+        )}</center><br>`,
+        css: [
+          'https://cdnjs.cloudflare.com/ajax/libs/vuetify/3.0.0-alpha.11/vuetify.min.css',
+        ],
+        style: 'td {text-align: center }',
+      })
+    },
+    filtrer(value) {
+      if (value.length > 0) {
+        this.founds = this.factures.filter((facture) => {
+          const searchInterval = moment.range(value)
+          return searchInterval.contains(this.$moment(facture.jour))
+        })
+        this.displayFooter = true
+      } else {
+        this.founds = this.factures
+        this.displayFooter = false
+      }
+    },
+  },
 }
 </script>
 

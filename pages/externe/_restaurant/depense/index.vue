@@ -17,8 +17,7 @@
                 :loading="$fetchState.pending"
                 loading-text="En chargement ..."
                 :headers="headers"
-                :items="depenses"
-                :search="search"
+                :items="founds"
                 :items-per-page="10"
               >
                 <template #[`top`]>
@@ -29,7 +28,7 @@
                       :restaurant="restaurant"
                     />
                     <v-btn
-                      class="ml-2"
+                      class="ml-2 mr-2"
                       :disabled="depenses.length === 0"
                       dark
                       color="primary"
@@ -38,14 +37,17 @@
                       <v-icon left>mdi-printer</v-icon>
                       IMPRIMER
                     </v-btn>
+                    <dialog-date-picker
+                      v-model="day"
+                      label="Intervalle de jour"
+                      mode="date"
+                    />
+                    <dialog-date-picker
+                      v-model="mois"
+                      label="Intervalle de mois"
+                      mode="month"
+                    />
                     <v-spacer></v-spacer>
-                    <v-text-field
-                      v-model="search"
-                      append-icon="mdi-magnify"
-                      label="recherche ..."
-                      single-line
-                      hide-details
-                    ></v-text-field>
                   </v-toolbar>
                 </template>
                 <template #[`item.montant`]="{ item }">
@@ -67,6 +69,19 @@
                     <v-icon>mdi-eye</v-icon>
                   </v-btn>
                 </template>
+                <template #[`footer`]>
+                  <div v-if="displayFooter">
+                    <v-divider></v-divider>
+                    <center>
+                      <div class="pt-1 pb-1">
+                        <v-btn color="indigo" text
+                          ><v-icon left>mdi-cash</v-icon>Total:
+                          {{ total | formater }}</v-btn
+                        >
+                      </div>
+                    </center>
+                  </div>
+                </template>
               </v-data-table>
             </v-col>
           </v-row>
@@ -78,16 +93,20 @@
 </template>
 
 <script>
+import Moment from 'moment'
+import { extendMoment } from 'moment-range'
 import printjs from 'print-js'
 import { mapGetters } from 'vuex'
 import { DepenseExterne } from '~/helper/permissions'
 import SideExterne from '~/components/externe/SideExterne.vue'
 import CreateDepense from '~/components/externe/depense/CreateDepenseExterne.vue'
-
+import DialogDatePicker from '~/components/externe/DialogDatePicker.vue'
+const moment = extendMoment(Moment)
 export default {
   components: {
     SideExterne,
     CreateDepense,
+    DialogDatePicker,
   },
   filters: {
     formater(value) {
@@ -96,7 +115,10 @@ export default {
   },
   data() {
     return {
-      search: '',
+      mois: [],
+      day: [],
+      founds: [],
+      displayFooter: false,
       permissions: {
         create: DepenseExterne.creation,
       },
@@ -112,17 +134,33 @@ export default {
     this.restaurant = Number(params.restaurant)
     await store.dispatch('externe/depense/getCompactees', params.restaurant)
     await store.dispatch('externe/article/getAll', params.restaurant)
+    this.founds = this.depenses
   },
   computed: {
     ...mapGetters({
       articles: 'externe/article/articles',
       depenses: 'externe/depense/depensesDatesCompactees',
     }),
+    total() {
+      let sum = 0
+      this.founds.forEach((depense) => {
+        sum += Number(depense.montant)
+      })
+      return sum
+    },
+  },
+  watch: {
+    day(value) {
+      this.filtrer(value)
+    },
+    mois(value) {
+      this.filtrer(value)
+    },
   },
   methods: {
     print() {
       printjs({
-        printable: this.depenses,
+        printable: this.founds,
         properties: [
           { field: 'jour', displayName: 'Date' },
           { field: 'montant', displayName: 'Montant total' },
@@ -136,6 +174,18 @@ export default {
         ],
         style: 'td {text-align: center }',
       })
+    },
+    filtrer(value) {
+      if (value.length > 0) {
+        this.founds = this.depenses.filter((depense) => {
+          const searchInterval = moment.range(value)
+          return searchInterval.contains(this.$moment(depense.jour))
+        })
+        this.displayFooter = true
+      } else {
+        this.founds = this.depenses
+        this.displayFooter = false
+      }
     },
   },
 }

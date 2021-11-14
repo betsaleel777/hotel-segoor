@@ -13,8 +13,8 @@
             </v-col>
             <v-col cols="9">
               <v-row>
-                <v-col cols="2"></v-col>
-                <v-col cols="8">
+                <v-col cols="1"></v-col>
+                <v-col cols="10">
                   <v-data-table
                     no-data-text="Inventaire vide"
                     :loading="$fetchState.pending"
@@ -23,7 +23,6 @@
                     :items="inventaire"
                     :search="search"
                     :items-per-page="10"
-                    :item-class="colorize"
                   >
                     <template #[`top`]>
                       <v-toolbar flat>
@@ -48,12 +47,14 @@
                       </v-toolbar>
                     </template>
                     <template #item="{ item, expand, isExpanded }">
-                      <tr>
-                        <td class="d-block d-sm-table-cell">
+                      <tr :class="colorize(item)">
+                        <td>
                           {{ item.nom }}
                         </td>
-                        <td class="d-block d-sm-table-cell">
-                          {{ item.disponible }}
+                        <td>
+                          {{ item.disponible.toFixed(2) + ' ' }}
+                          <span v-if="!item.contenance">{{ item.mesure }}</span>
+                          <span v-else>Bouteilles</span>
                         </td>
                         <td>
                           <v-tooltip right>
@@ -81,7 +82,7 @@
                     </template>
                   </v-data-table>
                 </v-col>
-                <v-col cols="2"></v-col>
+                <v-col cols="1"></v-col>
               </v-row>
             </v-col>
           </v-row>
@@ -104,9 +105,9 @@ export default {
     return {
       search: '',
       headers: [
-        { text: 'Description', value: 'nom', width: '70%' },
-        { text: 'Disponible', value: 'disponible' },
-        { text: 'Options', value: 'data-table-expand' },
+        { text: 'Description', value: 'nom', width: '65%' },
+        { text: 'Disponible', value: 'disponible', width: '25%' },
+        { text: 'Options', value: 'data-table-expand', width: '10%' },
       ],
     }
   },
@@ -114,14 +115,13 @@ export default {
     const { params, store } = this.$nuxt.context
     this.restaurant = Number(params.restaurant)
     await store.dispatch('externe/article/getInventaire', params.restaurant)
-    // this.expanded = this.inventaire.filter((article) => article.reste !== 0)
   },
   computed: {
     ...mapGetters('externe/article', ['inventaire']),
   },
   methods: {
     colorize(item) {
-      return item.archive ? 'archive-style' : null
+      return item.deleted_at ? 'archive-style' : null
     },
     print() {
       printjs({
@@ -149,5 +149,6 @@ export default {
 .archive-style {
   /* background-color: darkgray; */
   background-color: rgba(223, 216, 216, 0.681);
+  color: rgba(110, 107, 107, 0.329);
 }
 </style>
