@@ -10,15 +10,11 @@
     <template #[`top`]>
       <v-toolbar flat>
         <dialog-date-picker
-          v-model="day"
+          v-model="days"
           label="Intervalle de jour"
-          mode="date"
+          :range="true"
         />
-        <dialog-date-picker
-          v-model="mois"
-          label="Intervalle de mois"
-          mode="month"
-        />
+        <dialog-date-picker v-model="day" label="Pour un jour" :range="false" />
         <v-spacer></v-spacer>
       </v-toolbar>
     </template>
@@ -80,8 +76,8 @@ export default {
   },
   data() {
     return {
-      mois: [],
-      day: [],
+      days: [],
+      day: '',
       founds: [],
       displayFooter: false,
       loading: false,
@@ -108,11 +104,11 @@ export default {
     },
   },
   watch: {
-    day(value) {
+    days(value) {
       this.filtrer(value)
     },
-    mois(value) {
-      this.filtrer(value)
+    day(value) {
+      this.filtrer(value, false)
     },
   },
   mounted() {
@@ -146,11 +142,13 @@ export default {
         style: 'td {text-align: center }',
       })
     },
-    filtrer(value) {
+    filtrer(value, interval = true) {
       if (value.length > 0) {
+        const search = interval ? moment.range(value) : this.$moment(value)
         this.founds = this.factures.filter((facture) => {
-          const searchInterval = moment.range(value)
-          return searchInterval.contains(this.$moment(facture.jour))
+          return interval
+            ? search.contains(this.$moment(facture.jour))
+            : search.isSame(this.$moment(facture.jour), 'days')
         })
         this.displayFooter = true
       } else {

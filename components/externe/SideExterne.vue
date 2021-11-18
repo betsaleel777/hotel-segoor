@@ -88,7 +88,7 @@ export default {
         },
         {
           icon: 'mdi-basket-plus',
-          text: 'Depenses',
+          text: 'Approvisionements',
           to: `${prefix}/depense`,
           permission: 'acces externe depenses',
         },

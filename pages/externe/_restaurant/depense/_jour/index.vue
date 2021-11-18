@@ -3,7 +3,7 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Les dépenses du {{ $moment(jour).format('ll') }}
+          Les dépenses d'approvisionement {{ $moment(jour).format('ll') }}
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>

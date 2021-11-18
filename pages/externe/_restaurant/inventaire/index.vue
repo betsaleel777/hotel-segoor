@@ -124,8 +124,15 @@ export default {
       return item.deleted_at ? 'archive-style' : null
     },
     print() {
+      const inventaire = this.inventaire.map((inventaire) => {
+        return {
+          nom: inventaire.nom,
+          disponible: inventaire.disponible,
+          reste: inventaire.reste,
+        }
+      })
       printjs({
-        printable: this.inventaire,
+        printable: inventaire,
         properties: [
           { field: 'nom', displayName: 'Description' },
           { field: 'disponible', displayName: 'Disponible' },
