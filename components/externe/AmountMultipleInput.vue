@@ -5,7 +5,6 @@
         <v-col cols="4">
           <v-autocomplete
             v-model="donnee.code"
-            :prepend-icon="`mdi-numeric-${index + 1}-box`"
             :items="elements"
             item-value="code"
             item-text="nom"
@@ -30,6 +29,7 @@
             dense
             label="Quantité"
             type="number"
+            :suffix="donnee.contenance ? 'btl' : donnee.mesure"
             min="0"
           ></v-text-field>
         </v-col>
@@ -84,6 +84,7 @@
             dense
             label="Quantité"
             type="number"
+            :suffix="current.contenance ? 'btl' : current.mesure"
             min="0"
           ></v-text-field>
         </v-col>

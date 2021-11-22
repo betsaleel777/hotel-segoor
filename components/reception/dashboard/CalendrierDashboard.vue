@@ -1,7 +1,18 @@
 <template>
   <v-row justify="center" align="center">
     <v-col cols="12">
-      <FullCalendar ref="calendrier" :options="calendarOptions" />
+      <full-calendar ref="calendrier" :options="calendarOptions">
+        <template #eventContent="{ event }">
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <div v-bind="attrs" class="text-truncate text-center" v-on="on">
+                {{ event.title }}
+              </div>
+            </template>
+            <span>Contact du client: {{ event.extendedProps.contact }}</span>
+          </v-tooltip>
+        </template>
+      </full-calendar>
     </v-col>
     <v-dialog v-model="dialog" max-width="300">
       <v-card>
@@ -45,7 +56,11 @@
       :details="details"
       @refresh="refresh"
     />
-    <edit-event v-model="dialog3" :item="event" @edit-closed="onEditEvent" />
+    <edit-event
+      v-model="dialog3"
+      :item="evenement"
+      @edit-closed="onEditEvent"
+    />
   </v-row>
 </template>
 
@@ -55,11 +70,11 @@ import FullCalendar from '@fullcalendar/vue'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import interactionPlugin from '@fullcalendar/interaction'
 import frLocale from '@fullcalendar/core/locales/fr'
-import DetailsReception from '~/components/reception/dashboard/DetailsReception'
-import DetailsReservation from '~/components/reception/dashboard/DetailsReservation'
-import CreateReservation from '~/components/reception/dashboard/CreateReservationDialog'
-import CreateReception from '~/components/reception/dashboard/CreateReceptionDialog'
-import EditEvent from '~/components/reception/dashboard/EditEvent'
+import DetailsReception from '~/components/reception/dashboard/DetailsReception.vue'
+import DetailsReservation from '~/components/reception/dashboard/DetailsReservation.vue'
+import CreateReservation from '~/components/reception/dashboard/CreateReservationDialog.vue'
+import CreateReception from '~/components/reception/dashboard/CreateReceptionDialog.vue'
+import EditEvent from '~/components/reception/dashboard/EditEvent.vue'
 
 export default {
   components: {
@@ -74,7 +89,7 @@ export default {
     return {
       dialog: false,
       events: [],
-      event: {},
+      evenement: {},
       infos: {},
       details: {},
       consommations: [],
@@ -140,9 +155,7 @@ export default {
               return {
                 id: event.id,
                 resourceId: event.chambre,
-                title: `${event.client_linked.nom.toUpperCase()} ${event.client_linked.prenom.toUpperCase()} ${
-                  event.client_linked.contact
-                }`,
+                title: `${event.client_linked.nom.toUpperCase()} ${event.client_linked.prenom.toUpperCase()}`,
                 start: moment(event.entree).format('YYYY-MM-DD').toString(),
                 end: moment(event.sortie).format('YYYY-MM-DD').toString(),
                 backgroundColor: colorize(),
@@ -150,6 +163,7 @@ export default {
                 // eventTextColor:
                 extendedProps: {
                   status: event.status,
+                  contact: event.client_linked.contact,
                 },
                 overlap: false,
                 resourceEditable: false,
@@ -177,7 +191,7 @@ export default {
       this.dialog = true
     },
     handleResize(info) {
-      this.event = info.event
+      this.evenement = info.event
       const start = moment(info.event.start)
       const validation = moment().isAfter(start, 'days')
       if (validation) {

@@ -15,6 +15,7 @@
           :to="module.to"
           router
           exact
+          @click="title = module.title"
         >
           <v-list-item-action>
             <v-icon color="blue darken-4">{{ module.icon }}</v-icon>
@@ -38,6 +39,7 @@
             :to="'/externe/' + restaurant.id"
             router
             exact
+            @click="title = 'Restaurants Externes'"
           >
             <v-list-item-content>
               <v-list-item-title>

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="800px">
+  <v-dialog v-model="dialog" persistent max-width="950px">
     <template #activator="{ on, attrs }">
       <v-btn v-bind="attrs" dark color="primary" v-on="on">
         <v-icon left>mdi-plus-thick</v-icon>
