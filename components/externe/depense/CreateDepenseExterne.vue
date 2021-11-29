@@ -114,6 +114,7 @@ export default {
           .then((result) => {
             this.$notifier.show({ text: result.message, variant: 'success' })
             this.reinitialise()
+            this.$emit('new-depense')
           })
           .catch((err) => {
             const { data } = err.response

@@ -1,20 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template #activator="{ on, attrs }">
-      <v-btn
-        v-if="floating"
-        v-bind="attrs"
-        color="primary"
-        dark
-        absolute
-        bottom
-        right
-        fab
-        v-on="on"
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn v-else v-bind="attrs" dark color="primary" v-on="on">
+      <v-btn v-bind="attrs" dark color="primary" v-on="on">
         <v-icon left>mdi-plus-thick</v-icon>
         AJOUTER
       </v-btn>
@@ -101,7 +88,7 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
+import { mapActions } from 'vuex'
 import {
   errorsInitialise,
   errorsWriting,
@@ -112,10 +99,6 @@ export default {
     produits: {
       type: Array,
       required: true,
-    },
-    floating: {
-      type: Boolean,
-      default: true,
     },
   },
   data: () => {
@@ -139,33 +122,28 @@ export default {
   },
   computed: {
     suffixQuantite() {
-      if (this.produit.mesure) {
-        return this.produit.mesure
-      } else return "l'unité"
+      return this.produit.mesure ?? "l'unité"
     },
   },
   methods: {
+    ...mapActions('stock/achat', ['ajouter']),
     reinitialise() {
-      this.$refs.form.reset()
       this.produit = { mesure: '' }
       errorsInitialise(this.errors)
       this.dialog = false
     },
     save() {
       this.achat.ingredient = this.produit.id
-      this.$axios
-        .post('stock/achats/new', { ...this.achat, user: this.user.id })
+      this.ajouter(this.achat)
         .then((result) => {
-          const { message, achat } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
-          this.$emit('new-achat', achat)
+          this.$emit('new-achat')
         })
         .catch((err) => {
-          const { data } = err.response
-          if (data) {
+          if (err.response.data) {
             errorsInitialise(this.errors)
-            errorsWriting(data, this.errors)
+            errorsWriting(err.response.data, this.errors)
           }
         })
     },

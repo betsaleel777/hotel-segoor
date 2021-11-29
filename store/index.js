@@ -147,16 +147,36 @@ export const state = () => ({
     {
       name: 'maintenance',
       link: {
-        icon: 'mdi-home-city',
+        icon: 'mdi-tools',
         title: 'Maintenance hôtel',
         to: '/maintenance',
         permission: 'acces maintenance hotel',
       },
       sousModules: [
         {
-          icon: 'mdi-bed',
-          text: 'Chambres',
-          to: '/maintenance/chambre',
+          icon: 'mdi-devices',
+          text: 'Equipements',
+          to: '/maintenance/fourniture',
+        },
+        {
+          icon: 'mdi-account-tie',
+          text: 'Employés',
+          to: '/maintenance/employe',
+        },
+        {
+          icon: 'mdi-account-hard-hat',
+          text: 'Artisans',
+          to: '/maintenance/artisan',
+        },
+        {
+          icon: 'mdi-progress-wrench',
+          text: 'Entretiens',
+          to: '/maintenance/entretien',
+        },
+        {
+          icon: 'mdi-hammer-wrench',
+          text: 'Réparations',
+          to: '/maintenance/reparation',
         },
       ],
     },

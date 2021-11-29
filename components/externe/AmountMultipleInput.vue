@@ -72,7 +72,7 @@
           <v-text-field
             v-model="current.prix"
             dense
-            label="Prix"
+            label="Prix unitaire"
             type="number"
             min="0"
             :readonly="readOnlyPrice"

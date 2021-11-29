@@ -1,27 +1,10 @@
 <template>
-  <v-dialog v-model="dialogue" persistent max-width="450px">
-    <template #activator="{ on: dialog, attrs }">
-      <v-tooltip top>
-        <template #activator="{ on: tooltip }">
-          <v-btn
-            elevation="1"
-            icon
-            fab
-            dark
-            x-small
-            color="primary"
-            v-bind="attrs"
-            v-on="{ ...tooltip, ...dialog }"
-          >
-            <v-icon small> mdi-pencil </v-icon>
-          </v-btn>
-        </template>
-        <span>modifier</span>
-      </v-tooltip>
-    </template>
+  <v-dialog v-model="dialog" persistent max-width="600px">
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">Modification de catégorie</span>
+        <span class="headline primary--text"
+          >Créer categorie {{ element }}</span
+        >
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -33,17 +16,16 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="categorie.nom"
-                  :errors="errors.nom.exist"
+                  v-model="nom"
+                  :error="errors.nom.exist"
                   :error-messages="errors.nom.message"
                   dense
                   outlined
-                  label="Nom de catégorie"
+                  label="Nom"
                   required
                 >
                   <template #label>
-                    Nom de catégorie
-                    <span class="red--text"><strong>* </strong></span>
+                    Nom <span class="red--text"><strong>* </strong></span>
                   </template>
                 </v-text-field>
               </v-col>
@@ -54,51 +36,52 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
-        <v-btn color="primary" text @click="save"> Modifier </v-btn>
+        <v-btn color="primary" text @click="save"> Créer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import {
-  errorsInitialise,
   errorsWriting,
+  errorsInitialise,
 } from '~/components/helper/errorsHandle'
 export default {
   props: {
-    item: {
-      type: Object,
+    value: Boolean,
+    element: {
+      type: String,
       required: true,
     },
   },
-  data: () => {
+  data() {
     return {
-      dialogue: false,
-      categorie: {
-        nom: '',
-        id: null,
-      },
-      errors: {
-        nom: { exist: false, message: null },
-      },
+      nom: null,
+      errors: { nom: { exist: false, message: null } },
     }
   },
-  mounted() {
-    this.categorie = this.item
+  computed: {
+    dialog: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit('input', value)
+      },
+    },
   },
   methods: {
-    ...mapActions('parametre/categorie-article', ['modifier']),
     reinitialise() {
-      this.categorie = this.item
-      this.errors = {
-        nom: { exist: false, message: null },
-      }
-      this.dialogue = false
+      this.dialog = false
+      errorsInitialise(this.errors)
+      this.$refs.form.reset()
     },
     save() {
-      this.modifier({ id: this.item.id, ...this.categorie })
+      this.$store
+        .dispatch(`parametre/categorie-${this.element}/ajouter`, {
+          nom: this.nom,
+        })
         .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()

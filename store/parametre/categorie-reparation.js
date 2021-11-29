@@ -13,20 +13,20 @@ export const getters = {
 export const actions = {
   async getAll({ commit }) {
     commit('SET_CATEGORIES', [])
-    const requete = await this.$axios.get('parametre/categories/chambres')
+    const requete = await this.$axios.get('parametre/categories/maintenance')
     const categories = requete.data.categories
     commit('SET_CATEGORIES', categories)
   },
   async getTrashed({ commit }) {
     commit('SET_ARCHIVES', [])
     const requete = await this.$axios.get(
-      'parametre/categories/chambres/trashed/'
+      'parametre/categories/maintenance/trashed/'
     )
     commit('SET_ARCHIVES', requete.data.categories)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
-      'parametre/categories/chambres/' + payload.id,
+      'parametre/categories/maintenance/' + payload.id,
       payload
     )
     dispatch('getAll')
@@ -34,14 +34,14 @@ export const actions = {
   },
   async supprimer({ dispatch }, payload) {
     const requete = await this.$axios.delete(
-      'parametre/categories/chambres/' + payload.id
+      'parametre/categories/maintenance/' + payload.id
     )
     dispatch('getTrashed')
     return { message: requete.data.message }
   },
   async ajouter({ dispatch }, payload) {
     const requete = await this.$axios.post(
-      'parametre/categories/chambres/new',
+      'parametre/categories/maintenance/new',
       payload
     )
     dispatch('getAll')
@@ -49,14 +49,14 @@ export const actions = {
   },
   async restorer({ dispatch }, payload) {
     const requete = await this.$axios.get(
-      'parametre/categories/chambres/restorer/' + payload.id
+      'parametre/categories/maintenance/restorer/' + payload.id
     )
     dispatch('getTrashed')
     return { message: requete.data.message }
   },
   async archiver({ dispatch }, payload) {
     const requete = await this.$axios.delete(
-      'parametre/categories/chambres/archiver/' + payload.id
+      'parametre/categories/maintenance/archiver/' + payload.id
     )
     dispatch('getAll')
     return { message: requete.data.message }

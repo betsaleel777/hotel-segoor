@@ -56,6 +56,7 @@
                   {{ item.prix_vente | formater }}
                 </template>
                 <template #[`item.actions`]="{ item }">
+                  <show-chambre :id="item.id" />
                   <edit-chambre-form :categories="categories" :item="item" />
                   <delete-chambre-form :item="item" />
                 </template>
@@ -78,6 +79,7 @@ import CreateChambreForm from '~/components/parametre/chambre/CreateChambreForm.
 import EditChambreForm from '~/components/parametre/chambre/EditChambreForm.vue'
 import DeleteChambreForm from '~/components/parametre/chambre/DeleteChambreForm.vue'
 import SideParametre from '~/components/parametre/SideParametre.vue'
+import ShowChambre from '~/components/parametre/chambre/ShowChambre.vue'
 
 export default {
   components: {
@@ -85,6 +87,7 @@ export default {
     DeleteChambreForm,
     CreateChambreForm,
     SideParametre,
+    ShowChambre,
   },
   filters: {
     formater(value) {

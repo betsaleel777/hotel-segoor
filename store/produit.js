@@ -37,6 +37,18 @@ export const actions = {
     })
     commit('SET_PRODUCTS', inventaire)
   },
+  async getProduits({ commit }) {
+    const requete = await this.$axios.get('stock/produits')
+    const produits = requete.data.produits.map((produit) => {
+      return {
+        id: produit.id,
+        mesure: produit.mesure,
+        nom: produit.nom,
+        type: produit.type,
+      }
+    })
+    commit('SET_PRODUCTS', produits)
+  },
   modifier({ commit }, payload) {
     commit('SET_ONE_PRODUCT', payload)
   },

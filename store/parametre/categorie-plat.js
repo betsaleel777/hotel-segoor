@@ -13,6 +13,13 @@ export const actions = {
     const categories = requete.data.categories
     commit('SET_CATEGORIES', categories)
   },
+  async getTrashed({ commit }) {
+    commit('SET_ARCHIVES', [])
+    const requete = await this.$axios.get(
+      'parametre/categories/reparations/trashed/'
+    )
+    commit('SET_ARCHIVES', requete.data.categories)
+  },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
       'parametre/categories/plats/' + payload.id,
@@ -21,9 +28,11 @@ export const actions = {
     dispatch('getAll')
     return { message: requete.data.message }
   },
-  async supprimer({ dispatch }, id) {
-    const requete = await this.$axios.delete('parametre/categories/plats/' + id)
-    dispatch('getAll')
+  async supprimer({ dispatch }, payload) {
+    const requete = await this.$axios.delete(
+      'parametre/categories/plats/' + payload.id
+    )
+    dispatch('getTrashed')
     return { message: requete.data.message }
   },
   async ajouter({ dispatch }, payload) {
@@ -34,11 +43,27 @@ export const actions = {
     dispatch('getAll')
     return { message: requete.data.message }
   },
+  async restorer({ dispatch }, payload) {
+    const requete = await this.$axios.get(
+      'parametre/categories/chambres/restorer/' + payload.id
+    )
+    dispatch('getTrashed')
+    return { message: requete.data.message }
+  },
+  async archiver({ dispatch }, payload) {
+    const requete = await this.$axios.delete(
+      'parametre/categories/chambres/archiver/' + payload.id
+    )
+    dispatch('getAll')
+    return { message: requete.data.message }
+  },
 }
 
 export const mutations = {
   SET_CATEGORIES(state, categories) {
-    state.categories.splice(0, state.categories.length)
-    state.categories.push(...categories)
+    state.categories = categories
+  },
+  SET_ARCHIVES(state, archives) {
+    state.archives = archives
   },
 }

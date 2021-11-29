@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogue" persistent max-width="450px">
+  <v-dialog v-model="dialogue" persistent max-width="600px">
     <template #activator="{ on: dialog, attrs }">
       <v-tooltip top>
         <template #activator="{ on: tooltip }">
@@ -21,7 +21,9 @@
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">Modification de catégorie</span>
+        <span class="headline primary--text"
+          >Modifier categorie {{ element }}</span
+        >
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -33,17 +35,16 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="categorie.nom"
-                  :errors="errors.nom.exist"
+                  v-model="nom"
+                  :error="errors.nom.exist"
                   :error-messages="errors.nom.message"
                   dense
                   outlined
-                  label="Nom de catégorie"
+                  label="Nom"
                   required
                 >
                   <template #label>
-                    Nom de catégorie
-                    <span class="red--text"><strong>* </strong></span>
+                    Nom <span class="red--text"><strong>* </strong></span>
                   </template>
                 </v-text-field>
               </v-col>
@@ -61,44 +62,43 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import {
-  errorsInitialise,
   errorsWriting,
+  errorsInitialise,
 } from '~/components/helper/errorsHandle'
 export default {
   props: {
+    element: {
+      type: String,
+      required: true,
+    },
     item: {
       type: Object,
       required: true,
     },
   },
-  data: () => {
+  data() {
     return {
-      dialogue: false,
-      categorie: {
-        nom: '',
-        id: null,
-      },
-      errors: {
-        nom: { exist: false, message: null },
-      },
+      dialogue: null,
+      nom: null,
+      errors: { nom: { exist: false, message: null } },
     }
   },
   mounted() {
-    this.categorie = this.item
+    this.nom = this.item.nom
   },
   methods: {
-    ...mapActions('parametre/categorie-chambre', ['modifier']),
     reinitialise() {
-      this.categorie = this.item
-      this.errors = {
-        nom: { exist: false, message: null },
-      }
       this.dialogue = false
+      this.nom = this.item.nom
+      errorsInitialise(this.errors)
     },
     save() {
-      this.modifier({ id: this.item.id, ...this.categorie })
+      this.$store
+        .dispatch(`parametre/categorie-${this.element}/modifier`, {
+          nom: this.nom,
+          id: this.item.id,
+        })
         .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()

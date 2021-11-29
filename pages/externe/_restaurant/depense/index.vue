@@ -26,6 +26,7 @@
                       v-can="permissions.create"
                       :articles="articles"
                       :restaurant="restaurant"
+                      @new-depense="update"
                     />
                     <v-btn
                       class="ml-2 mr-2"
@@ -188,6 +189,9 @@ export default {
         this.founds = this.depenses
         this.displayFooter = false
       }
+    },
+    update() {
+      location.reload()
     },
   },
 }

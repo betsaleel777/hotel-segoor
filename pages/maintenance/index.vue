@@ -3,7 +3,7 @@
     <v-col cols="12" sm="12" md="12">
       <v-card elevation="2" shaped tile>
         <v-card-title class="headline grey lighten-1 primary--text">
-          Acceuil gestion des chambres
+          Maintenance Hotel
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -12,7 +12,7 @@
               <side-maintenance />
             </v-col>
             <v-col justify="center" align="center" cols="12" sm="6" md="9">
-              Informations générales liées au chambres
+              Informations générales la maintenance
             </v-col>
           </v-row>
         </v-card-text>

@@ -26,7 +26,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="success" text @click="dialog4 = true">
-            attribuer
+            <v-icon left>mdi-location-enter</v-icon> attribuer
           </v-btn>
           <create-reception
             v-if="dialog4"
@@ -34,7 +34,9 @@
             :infos="infos"
             @new-reception="newCalendarEvent"
           />
-          <v-btn color="success" text @click="dialog5 = true"> reserver </v-btn>
+          <v-btn color="success" text @click="dialog5 = true">
+            <v-icon left>mdi-shield-home-outline</v-icon> reserver
+          </v-btn>
           <create-reservation
             v-if="dialog5"
             v-model="dialog5"

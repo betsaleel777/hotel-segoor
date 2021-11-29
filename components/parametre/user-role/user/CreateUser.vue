@@ -218,15 +218,9 @@ export default {
       }
     },
     save() {
-      this.ajouter({
-        ...this.utilisateur,
-        user: this.user.id,
-      })
+      this.ajouter(this.utilisateur)
         .then((result) => {
-          this.$notifier.show({
-            text: result.message,
-            variant: 'success',
-          })
+          this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
           this.dialog = false
         })

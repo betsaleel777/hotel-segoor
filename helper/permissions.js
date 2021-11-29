@@ -144,9 +144,26 @@ const parametre = {
   acceder: 'acces gestion parametre',
   categorie: {
     acceder: 'acces parametre categorie',
-    creation: '',
-    modifier: '',
-    supprimer: '',
+    article: {
+      modifier: 'modification categories article',
+      supprimer: 'suppression categories article',
+      restorer: 'restorer categories article',
+    },
+    plat: {
+      modifier: 'modification categories plat',
+      supprimer: 'suppression categories plat',
+      restorer: 'restorer categories plat',
+    },
+    reparation: {
+      modifier: 'modification categories reparation',
+      supprimer: 'suppression categories reparation',
+      restorer: 'restorer categories reparation',
+    },
+    chambre: {
+      modifier: 'modification categories chambre',
+      supprimer: 'suppression categories chambre',
+      restorer: 'restorer categories chambre',
+    },
   },
   chambre: {
     acceder: 'acces parametre chambre',
@@ -252,8 +269,10 @@ const externe = {
     restorer: 'restorer externe factures',
   },
 }
-const parameterSet = (element) => {
-  return externe.parametre.categorie[element]
+const parameterSet = (element, external = true) => {
+  return external
+    ? externe.parametre.categorie[element]
+    : parametre.categorie[element]
 }
 
 module.exports = {
@@ -263,6 +282,7 @@ module.exports = {
   restaurant,
   parametre,
   maintenance,
+  StockAchats: stock.achat,
   ArticleExterne: externe.article,
   PlatExterne: externe.plat,
   CocktailExterne: externe.cocktail,
