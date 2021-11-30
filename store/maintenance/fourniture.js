@@ -33,21 +33,23 @@ export const actions = {
     const requete = await this.$axios.get('maintenance/fournitures/' + id)
     commit('SET_FOURNITURE', requete.data.fourniture)
   },
-  async archiver({ dispatch }, id) {
+  async archiver({ dispatch }, payload) {
     const requete = await this.$axios.delete(
-      'maintenance/fournitures/archiver/' + id
+      'maintenance/fournitures/archiver/' + payload.id
     )
     dispatch('getAll')
     return { message: requete.data.message }
   },
-  async supprimer({ dispatch }, id) {
-    const requete = await this.$axios.delete('maintenance/fournitures/' + id)
+  async supprimer({ dispatch }, payload) {
+    const requete = await this.$axios.delete(
+      'maintenance/fournitures/' + payload.id
+    )
     dispatch('getTrashed')
     return { message: requete.data.message }
   },
-  async restorer({ dispatch }, id) {
+  async restorer({ dispatch }, payload) {
     const requete = await this.$axios.get(
-      'maintenance/fournitures/restorer/' + id
+      'maintenance/fournitures/restorer/' + payload.id
     )
     dispatch('getTrashed')
     return { message: requete.data.message }

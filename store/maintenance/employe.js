@@ -14,12 +14,18 @@ export const actions = {
   async getAll({ commit }) {
     commit('SET_EMPLOYES', [])
     const requete = await this.$axios.get('maintenance/employes')
-    commit('SET_EMPLOYES', requete.data.employes)
+    const employes = requete.data.employes.map((employe) => {
+      return { ...employe, fullname: `${employe.nom} ${employe.prenom}` }
+    })
+    commit('SET_EMPLOYES', employes)
   },
   async getTrashed({ commit }) {
     commit('SET_EMPLOYES', [])
     const requete = await this.$axios.get('maintenance/employes/trashed/')
-    commit('SET_EMPLOYES', requete.data.employes)
+    const employes = requete.data.employes.map((employe) => {
+      return { ...employe, fullname: `${employe.nom} ${employe.prenom}` }
+    })
+    commit('SET_EMPLOYES', employes)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -33,18 +39,24 @@ export const actions = {
     const requete = await this.$axios.get('maintenance/employes/' + id)
     commit('SET_EMPLOYE', requete.data.employe)
   },
-  async archiver({ dispatch }, id) {
-    const requete = await this.$axios.delete('maintenance/archiver/' + id)
+  async archiver({ dispatch }, payload) {
+    const requete = await this.$axios.delete(
+      'maintenance/employes/archiver/' + payload.id
+    )
     dispatch('getAll')
     return { message: requete.data.message }
   },
-  async supprimer({ dispatch }, id) {
-    const requete = await this.$axios.delete('maintenance/employes/' + id)
+  async supprimer({ dispatch }, payload) {
+    const requete = await this.$axios.delete(
+      'maintenance/employes/' + payload.id
+    )
     dispatch('getTrashed')
     return { message: requete.data.message }
   },
-  async restorer({ dispatch }, id) {
-    const requete = await this.$axios.get('maintenance/restorer/' + id)
+  async restorer({ dispatch }, payload) {
+    const requete = await this.$axios.get(
+      'maintenance/employes/restorer/' + payload.id
+    )
     dispatch('getTrashed')
     return { message: requete.data.message }
   },

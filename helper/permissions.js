@@ -86,7 +86,30 @@ const stock = {
   },
 }
 
-const maintenance = { acceder: 'acces maintenance hotel' }
+const maintenance = {
+  acceder: 'acces maintenance hotel',
+  fourniture: {
+    acceder: 'acces maintenance equipement',
+    creation: 'creation maintenance equipement',
+    modifier: 'modification maintenance equipement',
+    supprimer: 'supprimer maintenance equipement',
+    restorer: 'restorer maintenance equipement',
+  },
+  artisan: {
+    acceder: 'acces maintenance artisan',
+    creation: 'creation maintenance artisan',
+    modifier: 'modification maintenance artisan',
+    supprimer: 'supprimer maintenance artisan',
+    restorer: 'restorer maintenance artisan',
+  },
+  employe: {
+    acceder: 'acces maintenance employe',
+    creation: 'creation maintenance employe',
+    modifier: 'modification maintenance employe',
+    supprimer: 'supprimer maintenance employe',
+    restorer: 'restorer maintenance employe',
+  },
+}
 
 const bar = {
   acceder: 'acces gestion bar',
@@ -282,6 +305,9 @@ module.exports = {
   restaurant,
   parametre,
   maintenance,
+  MaintenanceEquipement: maintenance.fourniture,
+  MaintenanceArtisan: maintenance.artisan,
+  MaintenanceEmploye: maintenance.employe,
   StockAchats: stock.achat,
   ArticleExterne: externe.article,
   PlatExterne: externe.plat,

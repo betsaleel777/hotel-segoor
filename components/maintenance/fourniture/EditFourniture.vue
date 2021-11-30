@@ -21,7 +21,7 @@
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">Créer emloyé</span>
+        <span class="headline primary--text">Modifier Equipement</span>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -31,7 +31,7 @@
         <v-form ref="form">
           <v-container>
             <v-text-field
-              v-model="employe.nom"
+              v-model="fourniture.nom"
               :errors="errors.nom.exist"
               :error-messages="errors.nom.message"
               dense
@@ -41,56 +41,13 @@
                 Nom<span class="red--text"><strong> *</strong></span>
               </template>
             </v-text-field>
-            <v-text-field
-              v-model="employe.prenom"
-              :errors="errors.prenom.exist"
-              :error-messages="errors.prenom.message"
+            <v-textarea
+              v-model="fourniture.description"
               dense
               outlined
-              required
+              label="Description"
             >
-              <template #label>
-                Prénoms<span class="red--text"><strong> *</strong></span>
-              </template>
-            </v-text-field>
-            <v-text-field
-              v-model="employe.poste"
-              :errors="errors.poste.exist"
-              :error-messages="errors.poste.message"
-              dense
-              outlined
-              required
-            >
-              <template #label>
-                Poste<span class="red--text"><strong> *</strong></span>
-              </template>
-            </v-text-field>
-            <v-text-field
-              v-model="employe.adresse"
-              :errors="errors.adresse.exist"
-              :error-messages="errors.adresse.message"
-              dense
-              outlined
-              required
-            >
-              <template #label>
-                Adresse<span class="red--text"><strong> *</strong></span>
-              </template>
-            </v-text-field>
-            <v-text-field
-              v-model="employe.telephone"
-              :errors="errors.telephone.exist"
-              :error-messages="errors.telephone.message"
-              dense
-              outlined
-              required
-            >
-              <template #label>
-                Téléphone<span class="red--text"><strong> *</strong></span>
-              </template>
-            </v-text-field>
-            <v-text-field v-model="employe.email" dense outlined label="Email">
-            </v-text-field>
+            </v-textarea>
           </v-container>
         </v-form>
       </v-card-text>
@@ -120,35 +77,27 @@ export default {
   data: () => {
     return {
       dialogue: false,
-      employe: {
-        prenom: null,
+      fourniture: {
+        description: null,
         nom: null,
-        poste: null,
-        adresse: null,
-        telephone: null,
-        email: null,
       },
       errors: {
-        prenom: { exist: false, message: null },
         nom: { exist: false, message: null },
-        poste: { exist: false, message: null },
-        adresse: { exist: false, message: null },
-        telephone: { exist: false, message: null },
       },
     }
   },
   mounted() {
-    this.employe = Object.assign({}, this.item)
+    this.fourniture = Object.assign({}, this.item)
   },
   methods: {
-    ...mapActions('maintenance/employe', ['modifier']),
+    ...mapActions('maintenance/fourniture', ['modifier']),
     reinitialise() {
-      this.employe = Object.assign({}, this.item)
+      this.fourniture = Object.assign({}, this.item)
       errorsInitialise(this.errors)
       this.dialogue = false
     },
     save() {
-      this.modifier(this.employe)
+      this.ajouter(this.fourniture)
         .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
