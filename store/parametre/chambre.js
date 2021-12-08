@@ -59,6 +59,20 @@ export const actions = {
     dispatch('getAll')
     return { message: requete.data.message }
   },
+  async setState({ dispatch }, payload) {
+    const requete = await this.$axios.post(
+      'gestion-chambre/chambres/equipement/new',
+      payload
+    )
+    return { message: requete.data.message }
+  },
+  async editState({ dispatch }, payload) {
+    const requete = await this.$axios.put(
+      'gestion-chambre/chambres/equipement/' + payload.id,
+      payload
+    )
+    return { message: requete.data.message }
+  },
 }
 
 export const mutations = {

@@ -84,6 +84,7 @@ export default {
         })
         .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
+          this.$emit('new-categorie', result.id)
           this.reinitialise()
         })
         .catch((err) => {

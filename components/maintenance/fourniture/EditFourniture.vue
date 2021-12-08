@@ -97,7 +97,7 @@ export default {
       this.dialogue = false
     },
     save() {
-      this.ajouter(this.fourniture)
+      this.modifier(this.fourniture)
         .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()

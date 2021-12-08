@@ -54,18 +54,27 @@
                 </v-list-item>
               </v-list>
             </v-col>
+            <v-divider vertical></v-divider>
             <v-col cols="6">
-              <v-alert :type="colorize(chambre.status)" dense width="50%" text>
-                <h3 class="text-uppercase">{{ chambre.status }}</h3>
-              </v-alert>
+              <div class="d-flex justify-center ma-10">
+                <v-alert
+                  :type="colorize(chambre.status)"
+                  prominent
+                  dense
+                  width="75%"
+                  text
+                >
+                  <h2>{{ chambre.status }}</h2>
+                </v-alert>
+              </div>
             </v-col>
           </v-row>
-          <v-expansion-panels v-model="panel" focusable multiple>
+          <v-expansion-panels v-model="panel" focusable multiple tile>
             <v-expansion-panel>
-              <v-expansion-panel-header>
-                <span class="blue--text text--darken-4">Synthèse des prix</span>
+              <v-expansion-panel-header color="blue darken-4">
+                <span class="white--text">Synthèse des prix</span>
                 <template #actions>
-                  <v-icon color="primary"> $expand </v-icon>
+                  <v-icon color="white"> $expand </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
@@ -78,10 +87,10 @@
               </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
-              <v-expansion-panel-header>
-                <span class="blue--text text--darken-4">Historique</span>
+              <v-expansion-panel-header color="blue darken-4">
+                <span class="white--text">Historique</span>
                 <template #actions>
-                  <v-icon color="primary"> $expand </v-icon>
+                  <v-icon color="white"> $expand </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
@@ -89,14 +98,19 @@
               </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
-              <v-expansion-panel-header>
-                <span class="blue--text text--darken-4">Etat Actuel</span>
+              <v-expansion-panel-header color="blue darken-4">
+                <span class="white--text">Etat Actuel</span>
                 <template #actions>
-                  <v-icon color="primary"> $expand </v-icon>
+                  <v-icon color="white"> $expand </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                Etat actuelle de la chambre composant
+                <etat-chambre
+                  :id="id"
+                  :key="key"
+                  :etat="etat"
+                  @new-state="dialogue = false"
+                />
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -112,7 +126,9 @@
 
 <script>
 import { mapActions } from 'vuex'
+import EtatChambre from './EtatChambre.vue'
 export default {
+  components: { EtatChambre },
   filters: {
     formater(value) {
       return `${Intl.NumberFormat().format(value)} FCFA`
@@ -126,8 +142,10 @@ export default {
   },
   data: () => ({
     chambre: null,
+    key: false,
     dialogue: false,
     panel: [2],
+    etat: [],
     series: [
       {
         name: '',
@@ -172,8 +190,17 @@ export default {
     ...mapActions('parametre/chambre', ['getOne']),
     getItem() {
       this.getOne(this.id).then((chambre) => {
-        const { prix_list: prices, ...rest } = chambre
+        const { prix_list: prices, equipements, ...rest } = chambre
         this.chambre = rest
+        this.etat = equipements.map((equipement) => {
+          return {
+            id: equipement.pivot.fourniture_id,
+            nom: equipement.nom,
+            libelle: equipement.pivot.libelle,
+            quantite: equipement.pivot.quantite,
+          }
+        })
+        this.key = !this.key
         this.xAxeData = prices.map((price) => {
           return this.$moment(price.created_at).format('LL').toString()
         })

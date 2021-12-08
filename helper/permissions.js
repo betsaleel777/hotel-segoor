@@ -109,6 +109,13 @@ const maintenance = {
     supprimer: 'supprimer maintenance employe',
     restorer: 'restorer maintenance employe',
   },
+  entretien: {
+    acceder: 'acces maintenance entretien',
+    creation: 'creation maintenance entretien',
+    modifier: 'modification maintenance entretien',
+    supprimer: 'supprimer maintenance entretien',
+    restorer: 'restorer maintenance entretien',
+  },
 }
 
 const bar = {
@@ -305,6 +312,7 @@ module.exports = {
   restaurant,
   parametre,
   maintenance,
+  MaintenanceEntretien: maintenance.entretien,
   MaintenanceEquipement: maintenance.fourniture,
   MaintenanceArtisan: maintenance.artisan,
   MaintenanceEmploye: maintenance.employe,

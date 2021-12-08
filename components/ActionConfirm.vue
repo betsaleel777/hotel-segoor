@@ -70,6 +70,7 @@ export default {
     confirm() {
       this.$store.dispatch(this.action, { id: this.item.id }).then((result) => {
         this.$notifier.show({ text: result.message, variant: 'success' })
+        this.$emit('action-done')
         this.dialogue = false
       })
     },

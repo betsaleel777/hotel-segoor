@@ -54,6 +54,10 @@
                     ></v-text-field>
                   </v-toolbar>
                 </template>
+                <template #[`item.color`]="{ item }">
+                  <v-btn elevation="0" fab dark x-small :color="item.color">
+                  </v-btn>
+                </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-employe v-can="permissions.modifier" :item="item" />
                   <action-confirm
@@ -98,6 +102,7 @@ export default {
       search: '',
       permissions: MaintenanceEmploye,
       headers: [
+        { value: 'color', sortable: false },
         { text: 'Nom et prénom', value: 'fullname' },
         { text: 'Poste', value: 'poste', sortable: false },
         { text: 'Téléphone', value: 'telephone', sortable: false },

@@ -45,7 +45,7 @@ export const actions = {
       payload
     )
     dispatch('getAll')
-    return { message: requete.data.message }
+    return { message: requete.data.message, id: requete.data.id }
   },
   async restorer({ dispatch }, payload) {
     const requete = await this.$axios.get(

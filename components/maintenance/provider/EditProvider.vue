@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogue" persistent max-width="560px">
+  <v-dialog v-model="dialogue" persistent max-width="600px">
     <template #activator="{ on: dialog, attrs }">
       <v-tooltip top>
         <template #activator="{ on: tooltip }">
@@ -21,7 +21,7 @@
     </template>
     <v-card>
       <v-card-title class="grey lighten-2">
-        <span class="headline primary--text">Créer emloyé</span>
+        <span class="headline primary--text">modifier un artisan</span>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="reinitialise">
           <v-icon>mdi-close</v-icon>
@@ -31,7 +31,7 @@
         <v-form ref="form">
           <v-container>
             <v-text-field
-              v-model="employe.nom"
+              v-model="artisan.nom"
               :errors="errors.nom.exist"
               :error-messages="errors.nom.message"
               dense
@@ -42,58 +42,61 @@
               </template>
             </v-text-field>
             <v-text-field
-              v-model="employe.prenom"
+              v-model="artisan.prenom"
               :errors="errors.prenom.exist"
               :error-messages="errors.prenom.message"
               dense
               outlined
-              required
             >
               <template #label>
                 Prénoms<span class="red--text"><strong> *</strong></span>
               </template>
             </v-text-field>
-            <v-text-field
-              v-model="employe.poste"
-              :errors="errors.poste.exist"
-              :error-messages="errors.poste.message"
+            <v-autocomplete
+              v-model="artisan.categorie_id"
+              :errors="errors.categorie_id.exist"
+              :error-messages="errors.categorie_id.message"
+              :items="categories"
+              item-value="id"
+              item-text="nom"
               dense
               outlined
-              required
+              :disabled="newCategorieSet"
+              append-outer-icon="mdi-plus"
+              @click:append-outer="dialog1 = true"
             >
               <template #label>
-                Poste<span class="red--text"><strong> *</strong></span>
+                Spécialité<span class="red--text"><strong> *</strong></span>
               </template>
-            </v-text-field>
+            </v-autocomplete>
+            <create-categorie
+              v-model="dialog1"
+              element="réparation"
+              @new-categorie="pushCategorie"
+            />
             <v-text-field
-              v-model="employe.adresse"
-              :errors="errors.adresse.exist"
-              :error-messages="errors.adresse.message"
+              v-model="artisan.adresse"
               dense
               outlined
-              required
+              label="Adresse"
             >
-              <template #label>
-                Adresse<span class="red--text"><strong> *</strong></span>
-              </template>
             </v-text-field>
             <v-text-field
-              v-model="employe.telephone"
+              v-model="artisan.telephone"
               :errors="errors.telephone.exist"
               :error-messages="errors.telephone.message"
               dense
               outlined
-              required
             >
               <template #label>
                 Téléphone<span class="red--text"><strong> *</strong></span>
               </template>
             </v-text-field>
-            <v-text-field v-model="employe.email" dense outlined label="Email">
+            <v-text-field v-model="artisan.email" dense outlined label="Email">
             </v-text-field>
             <p v-if="errors.color.exist">{{ errors.color.message }}</p>
             <v-color-picker
-              v-model="employe.color"
+              v-model="artisan.color"
               dot-size="25"
               hide-mode-switch
               mode="hexa"
@@ -108,7 +111,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="reinitialise"> fermer </v-btn>
+        <v-btn color="error" text @click="reinitialise"> Fermer </v-btn>
         <v-btn color="primary" text @click="save"> modifier </v-btn>
       </v-card-actions>
     </v-card>
@@ -117,13 +120,19 @@
 
 <script>
 import { mapActions } from 'vuex'
+import CreateCategorie from '~/components/CreateCategorie.vue'
 import {
   errorsInitialise,
   errorsWriting,
 } from '~/components/helper/errorsHandle'
 
 export default {
+  components: { CreateCategorie },
   props: {
+    categories: {
+      type: Array,
+      required: true,
+    },
     item: {
       type: Object,
       required: true,
@@ -132,37 +141,39 @@ export default {
   data: () => {
     return {
       dialogue: false,
-      employe: {
-        prenom: null,
+      dialog1: false,
+      newCategorieSet: false,
+      artisan: {
         nom: null,
-        poste: null,
-        adresse: null,
+        prenom: null,
+        categorie_id: null,
         telephone: null,
+        adresse: null,
         email: null,
-        color: '',
+        color: null,
       },
       errors: {
-        prenom: { exist: false, message: null },
         nom: { exist: false, message: null },
-        poste: { exist: false, message: null },
-        adresse: { exist: false, message: null },
+        prenom: { exist: false, message: null },
+        categorie_id: { exist: false, message: null },
         telephone: { exist: false, message: null },
         color: { exist: false, message: null },
       },
     }
   },
   mounted() {
-    this.employe = Object.assign({}, this.item)
+    this.artisan = Object.assign({}, this.item)
   },
   methods: {
-    ...mapActions('maintenance/employe', ['modifier']),
+    ...mapActions('maintenance/provider', ['modifier']),
     reinitialise() {
-      this.employe = Object.assign({}, this.item)
+      this.artisan = Object.assign({}, this.item)
       errorsInitialise(this.errors)
       this.dialogue = false
+      this.newCategorieSet = false
     },
     save() {
-      this.modifier(this.employe)
+      this.modifier(this.artisan)
         .then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()
@@ -174,6 +185,10 @@ export default {
             errorsWriting(data, this.errors)
           }
         })
+    },
+    pushCategorie(id) {
+      this.artisan.categorie_id = id
+      this.newCategorieSet = true
     },
   },
 }

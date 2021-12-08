@@ -14,12 +14,18 @@ export const actions = {
   async getAll({ commit }) {
     commit('SET_PROVIDERS', [])
     const requete = await this.$axios.get('maintenance/providers')
-    commit('SET_PROVIDERS', requete.data.providers)
+    const providers = requete.data.providers.map((provider) => {
+      return { ...provider, fullname: `${provider.nom} ${provider.prenom}` }
+    })
+    commit('SET_PROVIDERS', providers)
   },
   async getTrashed({ commit }) {
     commit('SET_PROVIDERS', [])
     const requete = await this.$axios.get('maintenance/providers/trashed/')
-    commit('SET_PROVIDERS', requete.data.providers)
+    const providers = requete.data.providers.map((provider) => {
+      return { ...provider, fullname: `${provider.nom} ${provider.prenom}` }
+    })
+    commit('SET_PROVIDERS', providers)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(

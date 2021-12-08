@@ -165,8 +165,8 @@ export const state = () => ({
         },
         {
           icon: 'mdi-account-hard-hat',
-          text: 'Artisans',
-          to: '/maintenance/artisan',
+          text: 'Fournisseurs',
+          to: '/maintenance/provider',
         },
         {
           icon: 'mdi-progress-wrench',
