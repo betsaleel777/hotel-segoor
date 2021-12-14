@@ -21,35 +21,35 @@
 import printjs from 'print-js'
 export default {
   props: {
-    entretiens: {
+    reparations: {
       type: Array,
       required: true,
     },
   },
   methods: {
     print() {
-      const entretiens = this.entretiens.map((entretien) => {
+      const reparations = this.reparations.map((reparation) => {
         return {
-          nom: entretien.name,
-          jour: this.$moment(entretien.start).format('DD-MM-YYYY'),
-          start: this.$moment(entretien.start).format('HH:mm'),
-          end: this.$moment(entretien.end).format('HH:mm'),
-          chambre: entretien.nomChambre,
-          employe: entretien.fullnameEmploye,
+          nom: reparation.name,
+          jour: this.$moment(reparation.start).format('DD-MM-YYYY'),
+          start: this.$moment(reparation.start).format('HH:mm'),
+          end: this.$moment(reparation.end).format('HH:mm'),
+          chambre: reparation.nomChambre,
+          provider: reparation.fullnameProvider,
         }
       })
       printjs({
-        printable: entretiens,
+        printable: reparations,
         properties: [
           { field: 'nom', displayName: 'Titre' },
           { field: 'jour', displayName: 'Date' },
-          { field: 'start', displayName: 'Entretien' },
+          { field: 'start', displayName: 'Réparation' },
           { field: 'end', displayName: 'Fin' },
           { field: 'chambre', displayName: 'Chambre' },
-          { field: 'employe', displayName: 'Employe' },
+          { field: 'provider', displayName: 'Fournisseur' },
         ],
         type: 'json',
-        header: `<center><h3>Liste des entretien</h3>${this.$moment().format(
+        header: `<center><h3>Liste des Réparations</h3>${this.$moment().format(
           'll'
         )}</center><br>`,
         css: [

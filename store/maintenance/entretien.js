@@ -135,19 +135,4 @@ export const mutations = {
   SET_ENTRETIEN(state, entretien) {
     state.entretien = entretien
   },
-  SEARCH_BY_CHAMBRE(state, id) {
-    const entretiens = state.entretiens.filter(
-      (entretien) => entretien.chambre === id
-    )
-    console.log(state.entretiens)
-    state.found = entretiens.length
-    if (state.found !== 0) state.entretiens = entretiens
-  },
-  SEARCH_BY_EMPLOYE(state, id) {
-    const entretiens = state.entretiens.filter(
-      (entretien) => entretien.employe === id
-    )
-    state.found = entretiens.length
-    if (state.found !== 0) state.entretiens = entretiens
-  },
 }

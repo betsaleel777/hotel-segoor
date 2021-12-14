@@ -8,10 +8,10 @@
         <v-divider></v-divider>
         <v-card-text>
           <v-row>
-            <v-col cols="12" sm="6" md="3">
+            <v-col cols="12" sm="6" md="2">
               <side-maintenance />
             </v-col>
-            <v-col cols="12" sm="6" md="9">
+            <v-col cols="12" sm="6" md="10">
               <v-data-table
                 no-data-text="Aucun Fournisseur"
                 :loading="$fetchState.pending"

@@ -29,6 +29,7 @@ export default {
     { src: '~/plugins/user.js', ssr: false },
     { src: '~/plugins/vue-gates', ssr: false },
     { src: '~/plugins/apex-chart', ssr: false },
+    { src: '~/plugins/TiptapVuetify', ssr: false },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -123,5 +124,7 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: {
+    transpile: ['vuetify/lib', 'tiptap-vuetify'],
+  },
 }

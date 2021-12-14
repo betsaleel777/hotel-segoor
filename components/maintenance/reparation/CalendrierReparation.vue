@@ -6,8 +6,13 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
-        <print-entretien :entretiens="events" />
-        <create-entretien :employes="employes" :chambres="chambres" />
+        <print-reparation :reparations="events" />
+        <create-reparation
+          :categories="categories"
+          :providers="providers"
+          :chambres="chambres"
+          :incompletes="incompletes"
+        />
         <v-toolbar-title v-if="$refs.calendar">
           <span class="subtitle-1">{{ $refs.calendar.title }}</span>
         </v-toolbar-title>
@@ -52,18 +57,18 @@
           @click:append-outer="rechercheChambre"
         ></v-autocomplete>
         <v-autocomplete
-          v-model="searchEmploye"
+          v-model="searchProvider"
           single-line
           class="mt-1 mx-2"
-          label="Employés"
-          :items="employes"
+          label="Fournisseurs"
+          :items="providers"
           item-value="id"
           item-text="fullname"
           dense
           append-outer-icon="mdi-magnify"
           color="indigo"
           item-color="indigo"
-          @click:append-outer="rechercheEmploye"
+          @click:append-outer="rechercheProvider"
         ></v-autocomplete>
         <v-spacer></v-spacer>
         <v-btn icon class="ma-2" @click="$refs.calendar.next()">
@@ -92,7 +97,7 @@
               <v-chip
                 label
                 text-color="white"
-                :color="event.color"
+                :color="colorize(event)"
                 v-bind="attrs"
                 x-small
                 class="pa-1 white--text"
@@ -101,18 +106,18 @@
                 <span class="text-truncate">{{ event.name }}</span>
               </v-chip>
             </template>
-            <span>
-              {{ event.name }}<br />le {{ $moment(event.start).format('ll') }},
-              de
+            <span class="text-center">
+              {{ event.name }}le {{ $moment(event.start).format('ll') }}, de
               {{ $moment(event.start).format('HH:mm') }}
               à {{ $moment(event.end).format('HH:mm') }}
             </span>
           </v-tooltip>
         </template>
       </v-calendar>
-      <edit-entretien
+      <edit-reparation
         v-if="selectedOpen"
         v-model="selectedOpen"
+        :categories="categories"
         :item="selectedEvent"
       />
     </v-sheet>
@@ -120,11 +125,15 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import PrintEntretien from './PrintEntretien.vue'
-import CreateEntretien from '~/components/maintenance/entretien/CreateEntretien.vue'
-import EditEntretien from '~/components/maintenance/entretien/EditEntretien.vue'
+import CreateReparation from './CreateReparation.vue'
+import PrintReparation from './PrintReparation.vue'
+import EditReparation from '~/components/maintenance/reparation/EditReparation.vue'
 export default {
-  components: { CreateEntretien, EditEntretien, PrintEntretien },
+  components: {
+    EditReparation,
+    CreateReparation,
+    PrintReparation,
+  },
   data() {
     return {
       type: 'month',
@@ -134,33 +143,40 @@ export default {
         week: 'Semaine',
         day: 'Jour',
       },
+      incompletes: [],
       focus: '',
       weekday: [1, 2, 3, 4, 5, 6, 0],
       selectedEvent: {},
       selectedOpen: false,
       searchChambre: null,
-      searchEmploye: null,
+      searchProvider: null,
     }
   },
   async fetch() {
     await this.getEvents()
-    await this.getEmployes()
+    this.incompletes = this.events.filter(
+      (event) => event.status === 'incomplete'
+    )
+    await this.getProviders()
     await this.getChambres()
+    await this.getCategories()
   },
   computed: {
     ...mapGetters({
-      events: 'maintenance/entretien/events',
-      employes: 'maintenance/employe/employes',
+      events: 'maintenance/reparation/events',
+      providers: 'maintenance/provider/providers',
       chambres: 'parametre/chambre/chambres',
+      categories: 'parametre/categorie-reparation/categories',
     }),
   },
   methods: {
     ...mapActions({
-      getEvents: 'maintenance/entretien/getEvents',
-      getEmployes: 'maintenance/employe/getAll',
+      getCategories: 'parametre/categorie-reparation/getAll',
+      getEvents: 'maintenance/reparation/getEvents',
+      getProviders: 'maintenance/provider/getAll',
       getChambres: 'parametre/chambre/getAll',
-      getSearchEmployes: 'maintenance/entretien/getSearchEmployes',
-      getSearchChambres: 'maintenance/entretien/getSearchChambres',
+      getSearchProviders: 'maintenance/reparation/getSearchProviders',
+      getSearchChambres: 'maintenance/reparation/getSearchChambres',
     }),
     getEventColor(event) {
       return event.color
@@ -195,15 +211,28 @@ export default {
         })
       }
     },
-    rechercheEmploye() {
-      if (this.searchEmploye) {
-        this.getSearchEmployes(this.searchEmploye).then((result) => {
+    rechercheProvider() {
+      if (this.searchProvider) {
+        this.getSearchProviders(this.searchProvider).then((result) => {
           this.$notifier.show({
             text: result.message,
             variant: 'info',
           })
-          this.searchEmploye = null
+          this.searchProvider = null
         })
+      }
+    },
+    colorize(event) {
+      if (this.$moment().isBefore(event.start, 'days')) {
+        return 'info'
+      } else if (this.$moment().isSame(event.start, 'days')) {
+        return 'primary darken-4'
+      } else if (event.status === 'complete') {
+        return 'success'
+      } else if (event.status === 'incomplete') {
+        return 'warning'
+      } else {
+        return 'error'
       }
     },
   },

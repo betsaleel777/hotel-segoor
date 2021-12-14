@@ -148,7 +148,7 @@ export const state = () => ({
       name: 'maintenance',
       link: {
         icon: 'mdi-tools',
-        title: 'Maintenance hôtel',
+        title: 'Maintenance',
         to: '/maintenance',
         permission: 'acces maintenance hotel',
       },

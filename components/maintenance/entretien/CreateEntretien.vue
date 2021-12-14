@@ -9,6 +9,7 @@
             dark
             small
             color="primary"
+            elevation="4"
             class="mx-1"
             v-on="{ ...tooltip, ...dialog }"
           >
@@ -226,10 +227,6 @@ export default {
       required: true,
     },
     chambres: {
-      type: Array,
-      required: true,
-    },
-    events: {
       type: Array,
       required: true,
     },

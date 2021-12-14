@@ -27,6 +27,7 @@
     "moment-range": "^4.0.2",
     "nuxt": "^2.15.3",
     "print-js": "^1.6.0",
+    "tiptap-vuetify": "^2.24.0",
     "vue-apexcharts": "^1.6.2",
     "vue-gates": "^2.1.2",
     "vue-html-to-paper": "^1.4.3",
