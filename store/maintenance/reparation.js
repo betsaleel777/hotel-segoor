@@ -21,6 +21,19 @@ export const getters = {
     return state.repairs
   },
 }
+const colorize = (event) => {
+  if (moment().isBefore(event.entree, 'days')) {
+    return 'info'
+  } else if (moment().isSame(event.sortie, 'days')) {
+    return 'primary darken-4'
+  } else if (event.reparation.status === 'complete') {
+    return 'success'
+  } else if (event.reparation.status === 'incomplete') {
+    return 'warning'
+  } else {
+    return 'error'
+  }
+}
 const montant = (ordres) => {
   let somme = 0
   ordres.forEach((ordre) => (somme += ordre.montant))
@@ -47,6 +60,7 @@ const organise = (ordre) => {
     name: `${ordre.reparation.nom}`,
     start: ordre.entree.substring(0, 19),
     end: ordre.sortie.substring(0, 19),
+    color: colorize(ordre),
     chambre: ordre.reparation.chambre.id,
     categorie: ordre.reparation.categorie_id,
     fermeture: ordre.fermeture,

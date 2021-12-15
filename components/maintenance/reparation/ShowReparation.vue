@@ -61,7 +61,7 @@
             </v-col>
             <v-divider vertical></v-divider>
             <v-col cols="6">
-              <div class="d-flex justify-center ma-15">
+              <!-- <div class="d-flex justify-center ma-15">
                 <v-alert
                   :color="colorize(reparation)"
                   prominent
@@ -71,20 +71,22 @@
                 >
                   <h2>{{ reparation.status }}</h2>
                 </v-alert>
-              </div>
+              </div> -->
             </v-col>
           </v-row>
-          <v-expansion-panel>
-            <v-expansion-panel-header color="blue darken-4">
-              <span class="white--text">Ordres de réparations</span>
-              <template #actions>
-                <v-icon color="white"> $expand </v-icon>
-              </template>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <timeline-reparation :ordres="ordres" />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
+          <v-expansion-panels>
+            <v-expansion-panel active-class="grey lighten-3">
+              <v-expansion-panel-header color="blue darken-4">
+                <span class="white--text">Ordres de réparations</span>
+                <template #actions>
+                  <v-icon color="white"> $expand </v-icon>
+                </template>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <timeline-reparation :ordres="ordres" />
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-container>
       </v-card-text>
       <v-card-actions>
@@ -127,24 +129,24 @@ export default {
         )
       })
     },
-    colorize(reparation) {
-      if (this.$moment().isBefore(reparation.start, 'days')) {
-        this.reparation.status = 'Prévisionel'
-        return 'info'
-      } else if (this.$moment().isSame(reparation.start, 'days')) {
-        this.reparation.status = "Aujourd'hui"
-        return 'primary darken-4'
-      } else if (reparation.status === 'complete') {
-        this.reparation.status = 'terminée'
-        return 'success'
-      } else if (reparation.status === 'incomplete') {
-        this.reparation.status = 'inachevée'
-        return 'warning'
-      } else {
-        this.reparation.status = 'non traitée'
-        return 'error'
-      }
-    },
+    // colorize(reparation) {
+    //   if (this.$moment().isBefore(reparation.entree, 'days')) {
+    //     this.reparation.status = 'Prévisionel'
+    //     return 'info'
+    //   } else if (this.$moment().isSame(reparation.entree, 'days')) {
+    //     this.reparation.status = "Aujourd'hui"
+    //     return 'primary darken-4'
+    //   } else if (reparation.status === 'complete') {
+    //     this.reparation.status = 'terminée'
+    //     return 'success'
+    //   } else if (reparation.status === 'incomplete') {
+    //     this.reparation.status = 'inachevée'
+    //     return 'warning'
+    //   } else {
+    //     this.reparation.status = 'non traitée'
+    //     return 'error'
+    //   }
+    // },
   },
 }
 </script>

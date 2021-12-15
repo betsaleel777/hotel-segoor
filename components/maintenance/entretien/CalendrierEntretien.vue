@@ -91,7 +91,6 @@
             <template #activator="{ on, attrs }">
               <v-chip
                 label
-                text-color="white"
                 :color="event.color"
                 v-bind="attrs"
                 x-small

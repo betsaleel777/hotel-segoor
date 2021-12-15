@@ -96,8 +96,7 @@
             <template #activator="{ on, attrs }">
               <v-chip
                 label
-                text-color="white"
-                :color="colorize(event)"
+                :color="event.color"
                 v-bind="attrs"
                 x-small
                 class="pa-1 white--text"
@@ -220,19 +219,6 @@ export default {
           })
           this.searchProvider = null
         })
-      }
-    },
-    colorize(event) {
-      if (this.$moment().isBefore(event.start, 'days')) {
-        return 'info'
-      } else if (this.$moment().isSame(event.start, 'days')) {
-        return 'primary darken-4'
-      } else if (event.status === 'complete') {
-        return 'success'
-      } else if (event.status === 'incomplete') {
-        return 'warning'
-      } else {
-        return 'error'
       }
     },
   },

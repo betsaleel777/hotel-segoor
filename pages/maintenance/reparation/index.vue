@@ -27,8 +27,8 @@
                       <calendrier-reparation
                         v-if="item.text === 'Programme des réparations'"
                       />
-                      <depense-reparation
-                        v-if="item.text === 'Dépenses de réparations'"
+                      <liste-reparation
+                        v-if="item.text === 'Liste des réparations'"
                       />
                     </v-col>
                   </v-row>
@@ -46,19 +46,19 @@
 <script>
 import SideMaintenance from '~/components/maintenance/SideMaintenance.vue'
 import CalendrierReparation from '~/components/maintenance/reparation/CalendrierReparation.vue'
-import DepenseReparation from '~/components/maintenance/reparation/DepenseReparation.vue'
+import ListeReparation from '~/components/maintenance/reparation/ListeReparation.vue'
 
 export default {
   components: {
     SideMaintenance,
     CalendrierReparation,
-    DepenseReparation,
+    ListeReparation,
   },
   data: () => ({
     tab: null,
     items: [
       { text: 'Programme des réparations', icon: 'mdi-calendar' },
-      { text: 'Dépenses de réparations', icon: 'mdi-cash' },
+      { text: 'Liste des réparations', icon: 'mdi-view-list' },
     ],
   }),
 }
