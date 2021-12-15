@@ -63,6 +63,7 @@ const organise = (ordre) => {
     color: colorize(ordre),
     chambre: ordre.reparation.chambre.id,
     categorie: ordre.reparation.categorie_id,
+    nomCategorie: ordre.reparation.categorie.nom,
     fermeture: ordre.fermeture,
     montant: ordre.montant,
     provider: ordre.provider.id,

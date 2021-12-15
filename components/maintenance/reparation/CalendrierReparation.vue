@@ -119,6 +119,7 @@
         :categories="categories"
         :item="selectedEvent"
       />
+      <show-event v-if="shownOpen" v-model="shownOpen" :item="selectedEvent" />
     </v-sheet>
   </div>
 </template>
@@ -126,12 +127,14 @@
 import { mapActions, mapGetters } from 'vuex'
 import CreateReparation from './CreateReparation.vue'
 import PrintReparation from './PrintReparation.vue'
+import ShowEvent from './ShowEvent.vue'
 import EditReparation from '~/components/maintenance/reparation/EditReparation.vue'
 export default {
   components: {
     EditReparation,
     CreateReparation,
     PrintReparation,
+    ShowEvent,
   },
   data() {
     return {
@@ -147,6 +150,7 @@ export default {
       weekday: [1, 2, 3, 4, 5, 6, 0],
       selectedEvent: {},
       selectedOpen: false,
+      shownOpen: false,
       searchChambre: null,
       searchProvider: null,
     }
@@ -188,11 +192,18 @@ export default {
       const open = () => {
         this.selectedEvent = event
         requestAnimationFrame(() =>
-          requestAnimationFrame(() => (this.selectedOpen = true))
+          requestAnimationFrame(() =>
+            event.status !== 'complete'
+              ? (this.selectedOpen = true)
+              : (this.shownOpen = true)
+          )
         )
       }
       if (this.selectedOpen) {
         this.selectedOpen = false
+        requestAnimationFrame(() => requestAnimationFrame(() => open()))
+      } else if (this.shownOpen) {
+        this.shownOpen = false
         requestAnimationFrame(() => requestAnimationFrame(() => open()))
       } else {
         open()
