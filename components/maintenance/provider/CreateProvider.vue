@@ -81,18 +81,6 @@
             </v-text-field>
             <v-text-field v-model="artisan.email" dense outlined label="Email">
             </v-text-field>
-            <p v-if="errors.color.exist">{{ errors.color.message }}</p>
-            <v-color-picker
-              v-model="artisan.color"
-              dot-size="25"
-              hide-mode-switch
-              mode="hexa"
-              hide-canvas
-              show-swatches
-              dense
-              swatches-max-height="100"
-              width="100%"
-            ></v-color-picker>
           </v-container>
         </v-form>
       </v-card-text>
@@ -132,14 +120,12 @@ export default {
         adresse: null,
         telephone: null,
         email: null,
-        color: null,
       },
       errors: {
         categorie_id: { exist: false, message: null },
         prenom: { exist: false, message: null },
         nom: { exist: false, message: null },
         telephone: { exist: false, message: null },
-        color: { exist: false, message: null },
       },
     }
   },

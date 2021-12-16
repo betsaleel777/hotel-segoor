@@ -58,10 +58,6 @@
                     ></v-text-field>
                   </v-toolbar>
                 </template>
-                <template #[`item.color`]="{ item }">
-                  <v-btn elevation="0" fab dark x-small :color="item.color">
-                  </v-btn>
-                </template>
                 <template #[`item.actions`]="{ item }">
                   <edit-provider
                     v-can="permissions.modifier"
@@ -110,7 +106,6 @@ export default {
       search: '',
       permissions: MaintenanceArtisan,
       headers: [
-        { value: 'color', sortable: false },
         { text: 'Nom et prénom', value: 'fullname' },
         { text: 'Spécialité', value: 'categorie.nom', sortable: false },
         { text: 'Téléphone', value: 'telephone', sortable: false },

@@ -15,18 +15,31 @@ export const getters = {
     return state.entretien
   },
 }
-
+const colorize = ({ entree, sortie, status }) => {
+  if (moment().isBefore(entree, 'days')) {
+    return 'info'
+  } else if (moment().isSame(sortie, 'days')) {
+    return 'primary darken-4'
+  } else if (status === 'complete') {
+    return 'success'
+  } else {
+    return 'error'
+  }
+}
 const organise = (entretien) => {
   return {
     id: entretien.id,
     name: `${entretien.chambre.nom} ${entretien.employe.nom} ${entretien.employe.prenom}`,
     start: entretien.entree,
     end: entretien.sortie,
-    color: entretien.employe.color,
+    color: colorize(entretien),
     chambre: entretien.chambre.id,
     employe: entretien.employe.id,
     nomChambre: entretien.chambre.nom,
     fullnameEmploye: `${entretien.employe.nom} ${entretien.employe.prenom}`,
+    note: entretien.note ? Number(entretien.note.valeur) : 0,
+    description: entretien.description,
+    status: entretien.status,
     details: `entretien de la chambre ${entretien.chambre.nom} par l'employée
     ${entretien.employe.nom} ${entretien.employe.prenom} \n du ${moment(
       entretien.entree

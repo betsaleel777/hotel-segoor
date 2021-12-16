@@ -114,16 +114,22 @@
         v-model="selectedOpen"
         :item="selectedEvent"
       />
+      <show-entretien
+        v-if="shownOpen"
+        v-model="shownOpen"
+        :item="selectedEvent"
+      />
     </v-sheet>
   </div>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import PrintEntretien from './PrintEntretien.vue'
+import ShowEntretien from './ShowEntretien.vue'
 import CreateEntretien from '~/components/maintenance/entretien/CreateEntretien.vue'
 import EditEntretien from '~/components/maintenance/entretien/EditEntretien.vue'
 export default {
-  components: { CreateEntretien, EditEntretien, PrintEntretien },
+  components: { CreateEntretien, EditEntretien, PrintEntretien, ShowEntretien },
   data() {
     return {
       type: 'month',
@@ -137,6 +143,7 @@ export default {
       weekday: [1, 2, 3, 4, 5, 6, 0],
       selectedEvent: {},
       selectedOpen: false,
+      shownOpen: false,
       searchChambre: null,
       searchEmploye: null,
     }
@@ -172,11 +179,18 @@ export default {
       const open = () => {
         this.selectedEvent = event
         requestAnimationFrame(() =>
-          requestAnimationFrame(() => (this.selectedOpen = true))
+          requestAnimationFrame(() =>
+            event.status !== 'complete'
+              ? (this.selectedOpen = true)
+              : (this.shownOpen = true)
+          )
         )
       }
       if (this.selectedOpen) {
         this.selectedOpen = false
+        requestAnimationFrame(() => requestAnimationFrame(() => open()))
+      } else if (this.shownOpen) {
+        this.shownOpen = false
         requestAnimationFrame(() => requestAnimationFrame(() => open()))
       } else {
         open()

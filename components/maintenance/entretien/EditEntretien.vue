@@ -116,6 +116,23 @@
                 </v-btn>
               </v-time-picker>
             </v-dialog>
+            <v-spacer></v-spacer>
+            <v-switch
+              v-model="entretien.status"
+              :disabled="future"
+              label="accompli"
+              color="success"
+              value="complete"
+              hide-details
+              @change="entretien.status !== null ? (modal4 = true) : null"
+            ></v-switch>
+            <confirm-entretien
+              v-if="modal4"
+              :id="item.id"
+              v-model="modal4"
+              @finished="dialog = false"
+              @closed="entretien.status = null"
+            />
           </v-container>
         </v-form>
       </v-card-text>
@@ -141,6 +158,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import ConfirmEntretien from './ConfirmEntretien.vue'
 import ActionConfirm from '~/components/ActionConfirm.vue'
 import {
   errorsInitialise,
@@ -148,7 +166,7 @@ import {
 } from '~/components/helper/errorsHandle'
 
 export default {
-  components: { ActionConfirm },
+  components: { ActionConfirm, ConfirmEntretien },
   props: {
     item: {
       type: Object,
@@ -161,6 +179,7 @@ export default {
       modal1: false,
       modal2: false,
       modal3: false,
+      modal4: false,
       entretien: {
         id: null,
 
@@ -183,6 +202,9 @@ export default {
       set(value) {
         this.$emit('input', value)
       },
+    },
+    future() {
+      return this.$moment().isBefore(this.item.start, 'days')
     },
   },
   mounted() {
