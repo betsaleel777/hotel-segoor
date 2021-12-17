@@ -77,6 +77,9 @@
       </v-toolbar>
     </v-sheet>
     <v-sheet height="600">
+      <v-overlay :value="overlay" absolute>
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <v-calendar
         ref="calendar"
         v-model="focus"
@@ -153,9 +156,11 @@ export default {
       shownOpen: false,
       searchChambre: null,
       searchProvider: null,
+      overlay: false,
     }
   },
   async fetch() {
+    this.overlay = true
     await this.getEvents()
     this.incompletes = this.events.filter(
       (event) => event.status === 'incomplete'
@@ -163,6 +168,7 @@ export default {
     await this.getProviders()
     await this.getChambres()
     await this.getCategories()
+    this.overlay = false
   },
   computed: {
     ...mapGetters({

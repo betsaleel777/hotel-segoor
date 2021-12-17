@@ -37,7 +37,7 @@ const organise = (entretien) => {
     employe: entretien.employe.id,
     nomChambre: entretien.chambre.nom,
     fullnameEmploye: `${entretien.employe.nom} ${entretien.employe.prenom}`,
-    note: entretien.note ? Number(entretien.note.valeur) : 0,
+    note: entretien.note ? parseFloat(entretien.note.valeur) : 0,
     description: entretien.description,
     status: entretien.status,
     details: `entretien de la chambre ${entretien.chambre.nom} par l'employée

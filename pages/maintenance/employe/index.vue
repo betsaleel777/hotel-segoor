@@ -55,6 +55,7 @@
                   </v-toolbar>
                 </template>
                 <template #[`item.actions`]="{ item }">
+                  <show-employe :id="item.id" />
                   <edit-employe v-can="permissions.modifier" :item="item" />
                   <action-confirm
                     :item="item"
@@ -86,12 +87,14 @@ import ActionConfirm from '~/components/ActionConfirm.vue'
 import SideMaintenance from '~/components/maintenance/SideMaintenance.vue'
 import CreateEmploye from '~/components/maintenance/employe/CreateEmploye.vue'
 import EditEmploye from '~/components/maintenance/employe/EditEmploye.vue'
+import ShowEmploye from '~/components/maintenance/employe/ShowEmploye.vue'
 export default {
   components: {
     ActionConfirm,
     SideMaintenance,
     CreateEmploye,
     EditEmploye,
+    ShowEmploye,
   },
   data() {
     return {

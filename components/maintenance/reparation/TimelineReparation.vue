@@ -1,9 +1,6 @@
 <template>
   <v-timeline dense>
     <v-timeline-item v-for="(ordre, index) in ordres" :key="index">
-      <span slot="opposite">{{
-        $moment(ordre.entree).format('DD-MM-YYYY')
-      }}</span>
       <v-card class="elevation-2">
         <v-card-title class="subtitle-2 text-uppercase d-flex">
           <span>{{ ordre.provider.nom }} {{ ordre.provider.prenom }}</span>

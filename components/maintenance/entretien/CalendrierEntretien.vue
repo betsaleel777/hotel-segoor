@@ -72,6 +72,9 @@
       </v-toolbar>
     </v-sheet>
     <v-sheet height="600">
+      <v-overlay :value="overlay" absolute>
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <v-calendar
         ref="calendar"
         v-model="focus"
@@ -146,12 +149,15 @@ export default {
       shownOpen: false,
       searchChambre: null,
       searchEmploye: null,
+      overlay: false,
     }
   },
   async fetch() {
+    this.overlay = true
     await this.getEvents()
     await this.getEmployes()
     await this.getChambres()
+    this.overlay = false
   },
   computed: {
     ...mapGetters({
