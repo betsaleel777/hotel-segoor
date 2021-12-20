@@ -6,6 +6,7 @@ export const state = () => ({
   events: {},
   reparation: {},
   repairs: {},
+  incompletes: [],
 })
 export const getters = {
   reparations: (state) => {
@@ -20,15 +21,18 @@ export const getters = {
   repairs: (state) => {
     return state.repairs
   },
+  incompletes: (state) => {
+    return state.incompletes
+  },
 }
 const colorize = (event) => {
   if (moment().isBefore(event.entree, 'days')) {
     return 'info'
   } else if (moment().isSame(event.sortie, 'days')) {
     return 'primary darken-4'
-  } else if (event.reparation.status === 'complete') {
+  } else if (event.status === 'complete') {
     return 'success'
-  } else if (event.reparation.status === 'incomplete') {
+  } else if (event.status === 'incomplete') {
     return 'warning'
   } else {
     return 'error'
@@ -55,9 +59,11 @@ const organize = (reparation) => {
 const organise = (ordre) => {
   return {
     id: ordre.id,
-    status: ordre.reparation.status,
+    status: ordre.status,
+    rstatus: ordre.reparation.status,
     reparation: ordre.reparation.id,
-    name: `${ordre.reparation.nom}`,
+    name: `${ordre.reparation.nom}-${ordre.code}`,
+    nom: ordre.reparation.nom,
     start: ordre.entree.substring(0, 19),
     end: ordre.sortie.substring(0, 19),
     color: colorize(ordre),
@@ -122,11 +128,21 @@ export const actions = {
       payload
     )
     dispatch('getEvents')
+    dispatch('getIncompletes')
     return { message: requete.data.message }
   },
   async getOne({ commit }, id) {
     const requete = await this.$axios.get('maintenance/reparations/' + id)
     commit('SET_REPARATION', requete.data.reparation)
+  },
+  async getIncompletes({ commit }) {
+    const requete = await this.$axios.get(
+      'maintenance/reparations/ordres/incompletes'
+    )
+    const ordres = requete.data.ordres.filter(
+      (ordre) => ordre.reparation !== null
+    )
+    commit('SET_INCOMPLETES', reformater(ordres))
   },
   async fetchOne({ commit }, id) {
     const requete = await this.$axios.get('maintenance/reparations/' + id)
@@ -148,6 +164,7 @@ export const actions = {
       'maintenance/reparations/' + payload.id
     )
     dispatch('getTrashed')
+    dispatch('getIncompletes')
     return { message: requete.data.message }
   },
   async restorer({ dispatch }, payload) {
@@ -156,6 +173,7 @@ export const actions = {
     )
     dispatch('getTrashed')
     dispatch('getEvents')
+    dispatch('getIncompletes')
     return { message: requete.data.message }
   },
   async ajouter({ dispatch }, payload) {
@@ -199,6 +217,9 @@ export const actions = {
 export const mutations = {
   SET_REPARATIONS(state, reparations) {
     state.reparations = reparations
+  },
+  SET_INCOMPLETES(state, incompletes) {
+    state.incompletes = incompletes
   },
   SET_REPAIRS(state, repairs) {
     state.repairs = repairs

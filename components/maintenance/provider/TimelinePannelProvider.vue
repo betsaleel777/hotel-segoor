@@ -9,7 +9,7 @@
     <v-expansion-panel-content>
       <v-container>
         <v-alert
-          v-if="entretiens.length === 0"
+          v-if="ordres.length === 0"
           prominent
           color="secondary"
           dark
@@ -18,38 +18,26 @@
         >
           <v-row align="center">
             <v-col class="grow">
-              Aucun entretien trouvé pour ce critère de recherche
+              Aucune réparation trouvé pour ce critère de recherche
             </v-col>
           </v-row>
         </v-alert>
         <v-timeline v-else dense>
-          <v-timeline-item
-            v-for="(entretien, index) in entretiens"
-            :key="index"
-          >
+          <v-timeline-item v-for="(ordre, index) in ordres" :key="index">
             <v-card class="elevation-2">
               <v-card-title class="subtitle-2 text-uppercase d-flex">
-                <span>{{ $moment(entretien.entree).format('DD-MM-YYYY') }}</span
+                <span>{{ $moment(ordre.entree).format('DD-MM-YYYY') }}</span
                 ><v-spacer></v-spacer>
                 <span>
-                  {{ $moment(entretien.entree).format('HH:mm') }} -
-                  {{ $moment(entretien.sortie).format('HH:mm') }}
+                  {{ $moment(ordre.entree).format('HH:mm') }} -
+                  {{ $moment(ordre.sortie).format('HH:mm') }}
                 </span>
               </v-card-title>
-              <v-card-text>{{ entretien.description }}</v-card-text>
+              <v-card-text v-html="ordre.description"></v-card-text>
               <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-rating
-                  :value="
-                    entretien.note ? parseFloat(entretien.note.valeur) : 0
-                  "
-                  color="yellow darken-3"
-                  background-color="grey darken-1"
-                  empty-icon="$ratingFull"
-                  small
-                  readonly
-                ></v-rating>
+                {{ ordre.montant | formater }}
               </v-card-actions>
             </v-card>
           </v-timeline-item>
@@ -60,6 +48,11 @@
 </template>
 <script>
 export default {
+  filters: {
+    formater(value) {
+      return `${Intl.NumberFormat().format(value)} FCFA`
+    },
+  },
   inject: ['id'],
   props: {
     titre: {
@@ -75,20 +68,22 @@ export default {
       required: true,
     },
   },
-  data: () => ({ entretiens: [] }),
+  data: () => ({ ordres: [] }),
   created() {
     if (this.action === 'completed') {
-      this.entretiens = this.items.filter((item) => item.status !== null)
+      this.ordres = this.items.filter((item) => item.status !== 'complete')
     } else if (this.action === 'today') {
-      this.entretiens = this.items.filter((item) =>
+      this.ordres = this.items.filter((item) =>
         this.$moment().isSame(item.entree, 'days')
       )
     } else if (this.action === 'future') {
-      this.entretiens = this.items.filter((item) =>
+      this.ordres = this.items.filter((item) =>
         this.$moment().isBefore(item.entree, 'days')
       )
+    } else if (this.action === 'incompleted') {
+      this.ordres = this.items.filter((item) => item.status === 'incomplete')
     } else {
-      this.entretiens = this.items.filter(
+      this.ordres = this.items.filter(
         (item) =>
           this.$moment().isAfter(item.entree, 'days') && item.status === null
       )

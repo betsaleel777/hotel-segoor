@@ -4,6 +4,21 @@
       <v-card class="elevation-2">
         <v-card-title class="subtitle-2 text-uppercase d-flex">
           <span>{{ ordre.provider.nom }} {{ ordre.provider.prenom }}</span>
+          <v-chip
+            v-if="ordre.status === 'complete'"
+            label
+            small
+            class="mx-5 success"
+            >terminée</v-chip
+          >
+          <v-chip
+            v-else-if="ordre.status === 'incomplete'"
+            label
+            small
+            class="mx-5 warning"
+            >inachevée</v-chip
+          >
+          <v-chip v-else label small class="mx-5 error">non traitée</v-chip>
           <span class="ml-auto">{{ ordre.montant | formater }}</span>
         </v-card-title>
         <v-card-text v-html="ordre.description"></v-card-text>

@@ -34,7 +34,7 @@
               v-model="reparation.incomplete"
               :items="incompletes"
               item-value="reparation"
-              item-text="name"
+              item-text="nom"
               dense
               outlined
               label="réparations incomplètes"

@@ -109,7 +109,7 @@
               </v-chip>
             </template>
             <span class="text-center">
-              {{ event.name }}le {{ $moment(event.start).format('ll') }}, de
+              {{ event.name }} le {{ $moment(event.start).format('ll') }}, de
               {{ $moment(event.start).format('HH:mm') }}
               à {{ $moment(event.end).format('HH:mm') }}
             </span>
@@ -148,7 +148,6 @@ export default {
         week: 'Semaine',
         day: 'Jour',
       },
-      incompletes: [],
       focus: '',
       weekday: [1, 2, 3, 4, 5, 6, 0],
       selectedEvent: {},
@@ -162,9 +161,7 @@ export default {
   async fetch() {
     this.overlay = true
     await this.getEvents()
-    this.incompletes = this.events.filter(
-      (event) => event.status === 'incomplete'
-    )
+    await this.getIncompletes()
     await this.getProviders()
     await this.getChambres()
     await this.getCategories()
@@ -173,6 +170,7 @@ export default {
   computed: {
     ...mapGetters({
       events: 'maintenance/reparation/events',
+      incompletes: 'maintenance/reparation/incompletes',
       providers: 'maintenance/provider/providers',
       chambres: 'parametre/chambre/chambres',
       categories: 'parametre/categorie-reparation/categories',
@@ -182,6 +180,7 @@ export default {
     ...mapActions({
       getCategories: 'parametre/categorie-reparation/getAll',
       getEvents: 'maintenance/reparation/getEvents',
+      getIncompletes: 'maintenance/reparation/getIncompletes',
       getProviders: 'maintenance/provider/getAll',
       getChambres: 'parametre/chambre/getAll',
       getSearchProviders: 'maintenance/reparation/getSearchProviders',
@@ -199,7 +198,7 @@ export default {
         this.selectedEvent = event
         requestAnimationFrame(() =>
           requestAnimationFrame(() =>
-            event.status !== 'complete'
+            event.status === null
               ? (this.selectedOpen = true)
               : (this.shownOpen = true)
           )
