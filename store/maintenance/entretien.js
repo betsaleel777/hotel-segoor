@@ -136,6 +136,11 @@ export const actions = {
       return { message: 'Aucun entretien trouvé pour cette chambre' }
     }
   },
+  async getByRoom({ commit }, id) {
+    commit('SET_ENTRETIENS', [])
+    const requete = await this.$axios.get('maintenance/entretiens/room/' + id)
+    commit('SET_ENTRETIENS', requete.data.entretiens)
+  },
 }
 
 export const mutations = {

@@ -97,7 +97,7 @@
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                Historique de la chambre composant
+                <HistoriqueChambre :nom="chambre.nom" />
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -132,12 +132,16 @@
 <script>
 import { mapActions } from 'vuex'
 import EtatChambre from './EtatChambre.vue'
+import HistoriqueChambre from './historique/HistoriqueChambre.vue'
 export default {
-  components: { EtatChambre },
+  components: { EtatChambre, HistoriqueChambre },
   filters: {
     formater(value) {
       return `${Intl.NumberFormat().format(value)} FCFA`
     },
+  },
+  provide() {
+    return { id: this.id }
   },
   props: {
     id: {
@@ -147,6 +151,7 @@ export default {
   },
   data: () => ({
     chambre: null,
+    loading: false,
     key: false,
     dialogue: false,
     etat: [],

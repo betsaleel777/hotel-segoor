@@ -48,6 +48,7 @@ const organize = (reparation) => {
   return {
     id,
     nom,
+    ordres,
     chambre: chambre.id,
     categorie: categorie.id,
     montant: montant(ordres),
@@ -211,6 +212,11 @@ export const actions = {
     } else {
       return { message: 'Aucun reparation trouvé pour cette chambre' }
     }
+  },
+  async getByRoom({ commit }, id) {
+    commit('SET_REPARATIONS', [])
+    const requete = await this.$axios.get('maintenance/reparations/room/' + id)
+    commit('SET_REPARATIONS', requete.data.ordres)
   },
 }
 
