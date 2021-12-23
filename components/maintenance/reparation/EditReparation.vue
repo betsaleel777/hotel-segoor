@@ -276,7 +276,7 @@ export default {
         Paragraph,
       ],
       items: ['oui', 'non'],
-      statuts: ['en cours', 'incomplete', 'complete'],
+      statuts: ['incomplete', 'complete'],
       reparation: {
         nom: null,
         entree: null,
@@ -319,7 +319,7 @@ export default {
     initialisation() {
       this.future = this.$moment().isBefore(this.item.start, 'days')
       const calebasse = Object.assign({}, this.item)
-      this.reparation.nom = calebasse.name
+      this.reparation.nom = calebasse.nom
       this.reparation.status = calebasse.status
       this.reparation.description = calebasse.description
       this.reparation.montant = calebasse.montant

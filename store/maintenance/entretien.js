@@ -37,7 +37,7 @@ const organise = (entretien) => {
     employe: entretien.employe.id,
     nomChambre: entretien.chambre.nom,
     fullnameEmploye: `${entretien.employe.nom} ${entretien.employe.prenom}`,
-    note: entretien.note ? Number(entretien.note.valeur) : 0,
+    note: entretien.note ? parseFloat(entretien.note.valeur) : 0,
     description: entretien.description,
     status: entretien.status,
     details: `entretien de la chambre ${entretien.chambre.nom} par l'employée
@@ -135,6 +135,11 @@ export const actions = {
     } else {
       return { message: 'Aucun entretien trouvé pour cette chambre' }
     }
+  },
+  async getByRoom({ commit }, id) {
+    commit('SET_ENTRETIENS', [])
+    const requete = await this.$axios.get('maintenance/entretiens/room/' + id)
+    commit('SET_ENTRETIENS', requete.data.entretiens)
   },
 }
 

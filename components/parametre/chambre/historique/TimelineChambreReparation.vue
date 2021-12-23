@@ -1,6 +1,6 @@
 <template>
   <v-timeline dense>
-    <v-timeline-item v-for="(ordre, index) in ordres" :key="index">
+    <v-timeline-item v-for="(ordre, index) in reparations" :key="index">
       <v-card class="elevation-2">
         <v-card-title class="subtitle-2 text-uppercase d-flex">
           <span>{{ ordre.provider.nom }} {{ ordre.provider.prenom }}</span>
@@ -36,17 +36,25 @@
   </v-timeline>
 </template>
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
   filters: {
     formater(value) {
       return `${Intl.NumberFormat().format(value)} FCFA`
     },
   },
-  props: {
-    ordres: {
-      type: Array,
-      required: true,
-    },
+  inject: ['id'],
+  data: () => ({
+    item: null,
+  }),
+  computed: {
+    ...mapGetters('maintenance/reparation', ['reparations']),
+  },
+  created() {
+    this.getByRoom(this.id)
+  },
+  methods: {
+    ...mapActions('maintenance/reparation', ['getByRoom']),
   },
 }
 </script>

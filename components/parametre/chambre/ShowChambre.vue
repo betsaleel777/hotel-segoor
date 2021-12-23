@@ -4,6 +4,7 @@
       <v-tooltip top>
         <template #activator="{ on: tooltip }">
           <v-btn
+            :loading="loading"
             v-bind="attrs"
             color="pink"
             elevation="1"
@@ -69,7 +70,7 @@
               </div>
             </v-col>
           </v-row>
-          <v-expansion-panels v-model="panel" focusable multiple tile>
+          <v-expansion-panels class="mb-3" focusable multiple tile>
             <v-expansion-panel>
               <v-expansion-panel-header color="blue darken-4">
                 <span class="white--text">Synthèse des prix</span>
@@ -86,6 +87,8 @@
                 />
               </v-expansion-panel-content>
             </v-expansion-panel>
+          </v-expansion-panels>
+          <v-expansion-panels class="mb-3" focusable multiple tile>
             <v-expansion-panel>
               <v-expansion-panel-header color="blue darken-4">
                 <span class="white--text">Historique</span>
@@ -94,9 +97,11 @@
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                Historique de la chambre composant
+                <HistoriqueChambre :nom="chambre.nom" />
               </v-expansion-panel-content>
             </v-expansion-panel>
+          </v-expansion-panels>
+          <v-expansion-panels class="mb-3" focusable multiple tile>
             <v-expansion-panel>
               <v-expansion-panel-header color="blue darken-4">
                 <span class="white--text">Etat Actuel</span>
@@ -127,12 +132,16 @@
 <script>
 import { mapActions } from 'vuex'
 import EtatChambre from './EtatChambre.vue'
+import HistoriqueChambre from './historique/HistoriqueChambre.vue'
 export default {
-  components: { EtatChambre },
+  components: { EtatChambre, HistoriqueChambre },
   filters: {
     formater(value) {
       return `${Intl.NumberFormat().format(value)} FCFA`
     },
+  },
+  provide() {
+    return { id: this.id }
   },
   props: {
     id: {
@@ -142,9 +151,9 @@ export default {
   },
   data: () => ({
     chambre: null,
+    loading: false,
     key: false,
     dialogue: false,
-    panel: [2],
     etat: [],
     series: [
       {
@@ -189,6 +198,7 @@ export default {
   methods: {
     ...mapActions('parametre/chambre', ['getOne']),
     getItem() {
+      this.loading = true
       this.getOne(this.id).then((chambre) => {
         const { prix_list: prices, equipements, ...rest } = chambre
         this.chambre = rest
@@ -207,6 +217,7 @@ export default {
         this.series[0].data = prices.map((price) => {
           return Number(price.montant)
         })
+        this.loading = false
       })
     },
     colorize(status) {

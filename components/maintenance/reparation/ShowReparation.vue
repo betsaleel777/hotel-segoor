@@ -4,6 +4,7 @@
       <v-tooltip top>
         <template #activator="{ on: tooltip }">
           <v-btn
+            :loading="loading"
             v-bind="attrs"
             color="pink"
             elevation="1"
@@ -60,19 +61,7 @@
               </v-list>
             </v-col>
             <v-divider vertical></v-divider>
-            <v-col cols="6">
-              <!-- <div class="d-flex justify-center ma-15">
-                <v-alert
-                  :color="colorize(reparation)"
-                  prominent
-                  dense
-                  width="75%"
-                  text
-                >
-                  <h2>{{ reparation.status }}</h2>
-                </v-alert>
-              </div> -->
-            </v-col>
+            <v-col cols="6"> </v-col>
           </v-row>
           <v-expansion-panels>
             <v-expansion-panel active-class="grey lighten-3">
@@ -117,36 +106,20 @@ export default {
     ordres: [],
     reparation: null,
     dialogue: false,
+    loading: false,
   }),
-  computed: {},
   methods: {
     ...mapActions('maintenance/reparation', ['fetchOne']),
     getItem() {
+      this.loading = true
       this.fetchOne(this.id).then((reparation) => {
         this.reparation = reparation
         this.ordres = reparation.ordres.sort((a, b) =>
           this.$moment(a.entree).isAfter(b.entree)
         )
+        this.loading = false
       })
     },
-    // colorize(reparation) {
-    //   if (this.$moment().isBefore(reparation.entree, 'days')) {
-    //     this.reparation.status = 'Prévisionel'
-    //     return 'info'
-    //   } else if (this.$moment().isSame(reparation.entree, 'days')) {
-    //     this.reparation.status = "Aujourd'hui"
-    //     return 'primary darken-4'
-    //   } else if (reparation.status === 'complete') {
-    //     this.reparation.status = 'terminée'
-    //     return 'success'
-    //   } else if (reparation.status === 'incomplete') {
-    //     this.reparation.status = 'inachevée'
-    //     return 'warning'
-    //   } else {
-    //     this.reparation.status = 'non traitée'
-    //     return 'error'
-    //   }
-    // },
   },
 }
 </script>

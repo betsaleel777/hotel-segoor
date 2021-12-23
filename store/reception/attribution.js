@@ -19,12 +19,56 @@ export const getters = {
     return state.hebergements
   },
 }
-const aPayer = function (hebergement) {
-  return hebergement.remise === undefined
-    ? moment(hebergement.sortie).diff(hebergement.entree, 'days') *
-        hebergement.prix
-    : moment(hebergement.sortie).diff(hebergement.entree, 'days') *
-        Math.round(hebergement.prix * (1 - hebergement.remise / 100))
+const texteConsommation = function (consommations) {
+  if (consommations.length > 0) {
+    let texte = ''
+    consommations.forEach((conso) => {
+      const { plats, tournees, cocktails, produits } = conso
+      plats.forEach((plat) => {
+        texte += `${plat.nom}(${plat.pivot.quantite}*${
+          plat.pivot.prix_vente
+        }=<b>${plat.pivot.prix_vente * plat.pivot.quantite}</b> FCFA),`
+      })
+      cocktails.forEach((cocktail) => {
+        texte += `${cocktail.nom}(${cocktail.pivot.quantite}*${
+          cocktail.pivot.prix_vente
+        }=<b>${cocktail.pivot.prix_vente * cocktail.pivot.quantite}</b> FCFA),`
+      })
+      if (produits) {
+        produits.forEach((produit) => {
+          texte += `${produit.nom}(${produit.pivot.quantite}*${
+            produit.pivot.prix_vente
+          }=<b>${produit.pivot.prix_vente * produit.pivot.quantite}</b> FCFA),`
+        })
+      }
+      tournees.forEach((tournee) => {
+        texte += `${tournee.titre}(${tournee.pivot.quantite}*${
+          tournee.pivot.prix_vente
+        }=<b>${tournee.pivot.prix_vente * tournee.pivot.quantite}</b> FCFA),`
+      })
+      return texte
+    })
+  } else {
+    return 'Aucune consommation dans les service bar et restaurant'
+  }
+}
+const texteDescription = function ({
+  entree,
+  sortie,
+  prix,
+  remise,
+  consommations,
+}) {
+  return `nuits: ${moment(sortie).diff(entree, 'days')},
+          prix: ${prix} FCFA/nuit,
+          remise: ${Math.round(prix * (1 - remise / 100))} FCFA<br>
+          ${texteConsommation(consommations)}`
+}
+const aPayer = function ({ entree, sortie, prix, remise }) {
+  return remise === undefined
+    ? moment(sortie).diff(entree, 'days') * prix
+    : moment(sortie).diff(entree, 'days') *
+        Math.round(prix * (1 - remise / 100))
 }
 const somme = function (versements) {
   let sum = 0
@@ -46,9 +90,11 @@ const sommeConsommations = function (consommations) {
       cocktails.forEach((cocktail) => {
         sum += cocktail.pivot.prix_vente * cocktail.pivot.quantite
       })
-      produits.forEach((produit) => {
-        sum += produit.pivot.prix_vente * produit.pivot.quantite
-      })
+      if (produits) {
+        produits.forEach((produit) => {
+          sum += produit.pivot.prix_vente * produit.pivot.quantite
+        })
+      }
       tournees.forEach((tournee) => {
         sum += tournee.pivot.prix_vente * tournee.pivot.quantite
       })
@@ -145,6 +191,23 @@ export const actions = {
     const requete = await this.$axios.put('reception/attributions/free/' + id)
     dispatch('getBusy')
     return { message: requete.data.message }
+  },
+  async getByRoom({ commit }, id) {
+    commit('SET_ATTRIBUTIONS', [])
+    const requete = await this.$axios.get('reception/attributions/room/' + id)
+    const attributions = requete.data.attributions.map((attribution) => {
+      const consommation = sommeConsommations(attribution.consommations)
+      const nuitees = aPayer(attribution)
+      const description = texteDescription(attribution)
+      return {
+        ...attribution,
+        consommation,
+        nuitees,
+        total: nuitees + consommation,
+        description,
+      }
+    })
+    commit('SET_ATTRIBUTIONS', attributions)
   },
 }
 

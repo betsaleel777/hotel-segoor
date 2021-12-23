@@ -1,6 +1,6 @@
 export const state = () => ({
   providers: [],
-  provider: {},
+  provider: null,
 })
 export const getters = {
   providers: (state) => {

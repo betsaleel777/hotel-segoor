@@ -59,6 +59,7 @@
                   </v-toolbar>
                 </template>
                 <template #[`item.actions`]="{ item }">
+                  <show-provider :id="item.id" />
                   <edit-provider
                     v-can="permissions.modifier"
                     :item="item"
@@ -94,12 +95,14 @@ import ActionConfirm from '~/components/ActionConfirm.vue'
 import SideMaintenance from '~/components/maintenance/SideMaintenance.vue'
 import EditProvider from '~/components/maintenance/provider/EditProvider.vue'
 import CreateProvider from '~/components/maintenance/provider/CreateProvider.vue'
+import ShowProvider from '~/components/maintenance/provider/ShowProvider.vue'
 export default {
   components: {
     ActionConfirm,
     SideMaintenance,
     EditProvider,
     CreateProvider,
+    ShowProvider,
   },
   data() {
     return {
