@@ -246,13 +246,6 @@ export default {
     remise() {
       return ((this.item.prix * this.item.remise) / 100) * this.quantiteNuitee
     },
-    // montant() {
-    //   return (
-    //     this.item.prix *
-    //     (1 - this.item.remise / 100) *
-    //     this.$moment(this.item.sortie).diff(this.item.entree, 'days')
-    //   )
-    // },
     totalConsomme() {
       let total = 0
       if (this.consommations.length > 0) {

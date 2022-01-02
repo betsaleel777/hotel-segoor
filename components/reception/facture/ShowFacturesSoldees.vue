@@ -119,7 +119,7 @@ export default {
     this.factures = this.dateFactures.map((facture) => {
       const { attribution, reservation, versements, ...rest } = facture
       let object = {}
-      if (Object.keys(attribution).length > 0) {
+      if (attribution) {
         object = {
           ...rest,
           chambre: attribution.chambre_linked.nom,
@@ -131,7 +131,7 @@ export default {
           attribution,
           montant: somme(versements),
         }
-      } else if (Object.keys(reservation).length > 0) {
+      } else if (reservation) {
         object = {
           ...rest,
           chambre: reservation.chambre_linked.nom,

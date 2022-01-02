@@ -67,7 +67,7 @@ const organiser = function (facture) {
     ...rest
   } = facture
   let object = {}
-  if (Object.keys(attribution_linked).length > 0) {
+  if (attribution_linked) {
     object = {
       ...rest,
       chambre: attribution_linked.chambre_linked.nom,
@@ -83,7 +83,7 @@ const organiser = function (facture) {
       cheque: sommeCheque(versements),
       mobile: sommeMobile(versements),
     }
-  } else if (Object.keys(reservation_linked).length > 0) {
+  } else if (reservation_linked) {
     object = {
       ...rest,
       chambre: reservation_linked.chambre_linked.nom,
