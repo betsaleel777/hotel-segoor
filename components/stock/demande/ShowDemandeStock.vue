@@ -21,9 +21,10 @@
     <v-card>
       <v-card-title
         class="justify-center primary--text subtitle-1 grey lighten-2"
-        >{{ item.titre.toUpperCase() }}, {{ item.created_at }}
+        >{{ item.titre.toUpperCase() }},
+        {{ $moment(item.created_at).format('ll') }}
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="closeShow">
+        <v-btn color="error" icon @click="dialogue = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -80,11 +81,9 @@
             <tbody>
               <tr v-for="(article, index) in articles" :key="index" dense>
                 <td style="width: 30%">
-                  {{
-                    article.nom.charAt(0).toUpperCase() + article.nom.slice(1)
-                  }}
+                  {{ article.nom }}
                 </td>
-                <td>{{ article.pivot.demandees + article.mesure }}</td>
+                <td>{{ article.pivot.quantite + article.mesure }}</td>
                 <td>{{ '0' + article.mesure }}</td>
               </tr>
             </tbody>
@@ -93,8 +92,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="closeShow">Fermer</v-btn>
-        <v-spacer></v-spacer>
+        <v-btn color="error" text @click="dialogue = false">Fermer</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -113,14 +111,9 @@ export default {
     articles: [],
   }),
   mounted() {
-    this.articles = this.item.produits
-    if (this.item.status !== 'en cours')
-      this.articles = this.item.sortie.produits
-  },
-  methods: {
-    closeShow() {
-      this.dialogue = false
-    },
+    this.item.status !== 'en cours'
+      ? (this.articles = this.item.sortie.produits)
+      : (this.articles = this.item.produits)
   },
 }
 </script>

@@ -107,11 +107,11 @@ export default {
       headers: [
         { text: 'Description', value: 'nom' },
         { text: 'Disponible', value: 'disponible' },
+        { text: 'en cours', value: 'reste' },
       ],
     }
   },
   async fetch() {
-    // doit recuperer le departement de l'utilisateur
     let departement = null
     let requete = await this.$axios.get(
       'parametre/departements/' + 'restaurant'

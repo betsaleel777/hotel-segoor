@@ -15,9 +15,11 @@
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline grey lighten-2"
-        ><div>Demande {{ item.code }} du {{ item.created_at }}</div>
+        ><div>
+          Demande {{ item.code }} du {{ $moment(item.created_at).format('ll') }}
+        </div>
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="close">
+        <v-btn color="error" icon @click="dialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -33,7 +35,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(article, index) in articles" :key="index" dense>
+              <tr v-for="(article, index) in reponses" :key="index" dense>
                 <td style="width: 30%">{{ article.nom }}</td>
                 <td>{{ article.quantite }}</td>
                 <td>{{ article.disponible }}</td>
@@ -42,6 +44,7 @@
                     v-model="reponses[index].valeur"
                     dense
                     type="number"
+                    :suffix="article.mesure"
                     :error="quantiteCheck(index, article.disponible)"
                   >
                   </v-text-field>
@@ -53,26 +56,26 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="close">Fermer</v-btn>
+        <v-btn color="error" text @click="dialog = false">Fermer</v-btn>
         <v-btn color="warning" text @click="reject">Rejetter</v-btn>
-        <v-btn
-          :disabled="errorFound"
-          color="success"
-          text
-          @click="accept(item.id)"
+        <v-btn :disabled="errorFound" color="success" text @click="accept"
           >Valider</v-btn
         >
-        <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
       type: Object,
+      required: true,
+    },
+    disponibles: {
+      type: Array,
       required: true,
     },
   },
@@ -93,16 +96,34 @@ export default {
       return found
     },
   },
-  async mounted() {
-    const calebasse = await this.$axios.get(
-      'stock/demandes/traitement/' + this.item.id
+  mounted() {
+    const ids = this.item.produits.map((produit) => produit.id)
+    this.articles = this.disponibles.filter((disponible) =>
+      ids.find((id) => disponible.id === id)
     )
-    this.articles = calebasse.data.articles
-    this.reponses = calebasse.data.articles.map((article) => {
-      return { ...article, valeur: 0, error: false }
+    const quantiteDisponible = (id) => {
+      if (this.articles.length > 0) {
+        const articleFound = this.articles.find((article) => article.id === id)
+        return articleFound.disponible
+      }
+    }
+    this.reponses = this.item.produits.map((article) => {
+      return {
+        id: article.id,
+        nom: article.nom,
+        mesure: article.mesure ?? 'btl',
+        quantite: article.pivot.quantite,
+        disponible: quantiteDisponible(article.id),
+        valeur: 0,
+        error: false,
+      }
     })
   },
   methods: {
+    ...mapActions({
+      accepter: 'stock/demande/accept',
+      rejetter: 'stock/demande/reject',
+    }),
     quantiteCheck(index, dispo) {
       const check = this.reponses[index].valeur > parseInt(dispo)
       check
@@ -110,32 +131,19 @@ export default {
         : (this.reponses[index].error = false)
       return check
     },
-    accept(id) {
-      this.$axios
-        .put('stock/demandes/accept/' + id, { articles: this.reponses })
-        .then((result) => {
-          const { message, demande } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.close()
-          this.$emit('accepted-demande', demande)
-        })
-        .catch((err) => {
-          this.$toast.error(err.response.data.message)
-        })
+    accept() {
+      this.accepter({ id: this.item.id, articles: this.reponses }).then(
+        (result) => {
+          this.$notifier.show({ text: result.message, variant: 'success' })
+          this.dialog = false
+        }
+      )
     },
     reject() {
-      this.$axios
-        .get('stock/demandes/reject/' + this.item.id)
-        .then((result) => {
-          const { message, demande } = result.data
-          this.$notifier.show({ text: message, variant: 'success' })
-          this.close()
-          this.$emit('rejected-demande', demande)
-        })
-    },
-    close() {
-      // this.articles = Object.freeze(this.item.produits)
-      this.dialog = false
+      this.rejetter({ id: this.item.id }).then((result) => {
+        this.$notifier.show({ text: result.data.message, variant: 'success' })
+        this.dialog = false
+      })
     },
   },
 }

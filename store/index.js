@@ -4,7 +4,7 @@ export const state = () => ({
       name: 'Dashboard',
       link: {
         icon: 'mdi-gauge',
-        title: 'Dashboard',
+        title: 'Tableau de bord',
         to: '/',
         permission: 'accès dashboard general',
       },

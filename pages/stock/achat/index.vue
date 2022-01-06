@@ -65,7 +65,9 @@
                     fab
                     dark
                     x-small
-                    :to="`/stock/${item.created_at}/`"
+                    :to="`/stock/achat/${$moment(item.created_at).format(
+                      'YYYY-MM-DD'
+                    )}/`"
                   >
                     <v-icon>mdi-eye</v-icon>
                   </v-btn>

@@ -1,9 +1,13 @@
 export const state = () => ({
   articles: [],
+  disponibles: [],
 })
 export const getters = {
   articles: (state) => {
     return state.articles
+  },
+  disponibles: (state) => {
+    return state.disponibles
   },
 }
 export const actions = {
@@ -78,10 +82,17 @@ export const actions = {
     dispatch('getAll')
     return { message: requete.data.message }
   },
+  async disponible({ commit }) {
+    const requete = await this.$axios.get('stock/produits/disponibles')
+    commit('SET_DISPONIBLES', requete.data.disponibles)
+  },
 }
 
 export const mutations = {
   SET_ARTICLES(state, articles) {
     state.articles = articles
+  },
+  SET_DISPONIBLES(state, disponibles) {
+    state.disponibles = disponibles
   },
 }

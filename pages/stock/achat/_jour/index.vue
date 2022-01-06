@@ -52,12 +52,26 @@
                     ></v-text-field>
                   </v-toolbar>
                 </template>
-                <template #[`item.montant`]="{ item }">
-                  {{ item.montant | formater }}
+                <template #[`item.prix_achat`]="{ item }">
+                  {{ item.prix_achat | formater }}
                 </template>
-                <!-- <template #[`item.actions`]="{ item }">
-                  <show-depense :id="item.id" />
-                </template> -->
+                <template #[`item.quantite`]="{ item }">
+                  {{ item.quantite }}
+                  <span v-if="item.produit.mesure">{{
+                    item.produit.mesure
+                  }}</span>
+                  <span v-else>bouteilles</span>
+                </template>
+                <template #[`item.unitaire`]="{ item }">
+                  {{ (item.prix_achat / item.quantite) | formater }}/<span
+                    v-if="item.produit.mesure"
+                    >{{ item.produit.mesure }}</span
+                  >
+                  <span v-else>bouteilles</span>
+                </template>
+                <template #[`item.heure`]="{ item }">
+                  {{ $moment(item.created_at).format('HH:mm:ss') }}
+                </template>
               </v-data-table>
             </v-col>
           </v-row>
@@ -72,12 +86,10 @@
 import printjs from 'print-js'
 import { mapGetters, mapActions } from 'vuex'
 import { StockAchats } from '~/helper/permissions'
-// import ShowDepense from '~/components/depense/ShowDepenseExterne.vue'
 import SideStock from '~/components/stock/SideStock.vue'
 
 export default {
   components: {
-    // ShowDepense,
     SideStock,
   },
   filters: {
@@ -92,9 +104,12 @@ export default {
         edit: StockAchats.modifier,
       },
       headers: [
-        { text: 'Nom', value: 'nom' },
-        { text: 'Montant', value: 'montant' },
-        { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'Article', value: 'produit.nom' },
+        { text: 'Prix de revient', value: 'prix_achat' },
+        { text: 'Quantité', value: 'quantite' },
+        { text: 'Prix unitaire', value: 'unitaire' },
+        { text: 'Heure', value: 'heure' },
+        // { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
   },
@@ -115,11 +130,21 @@ export default {
   methods: {
     ...mapActions('produit', ['getProduits']),
     print() {
+      const achats = this.achats.map((achat) => {
+        return {
+          nom: achat.produit.nom,
+          quantite: achat.quantite,
+          unitaire: achat.prix_achat / achat.quantite,
+          heure: this.$moment(achat.created_at).format('HH:mm:ss'),
+        }
+      })
       printjs({
-        printable: this.achats,
+        printable: achats,
         properties: [
-          { field: 'nom', displayName: 'Libellé' },
-          { field: 'montant', displayName: 'Montant total' },
+          { field: 'nom', displayName: 'Article' },
+          { field: 'quantite', displayName: 'Quantité' },
+          { field: 'unitaire', displayName: 'Prix Unitaire' },
+          { field: 'heure', displayName: 'Heure' },
         ],
         type: 'json',
         header: `<center><h3>Liste des achats de marchandises du ${this.$moment(
