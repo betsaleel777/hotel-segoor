@@ -60,14 +60,14 @@
                   <span v-if="item.produit.mesure">{{
                     item.produit.mesure
                   }}</span>
-                  <span v-else>bouteilles</span>
+                  <span v-else>unités</span>
                 </template>
                 <template #[`item.unitaire`]="{ item }">
                   {{ (item.prix_achat / item.quantite) | formater }}/<span
                     v-if="item.produit.mesure"
                     >{{ item.produit.mesure }}</span
                   >
-                  <span v-else>bouteilles</span>
+                  <span v-else>l'unité</span>
                 </template>
                 <template #[`item.heure`]="{ item }">
                   {{ $moment(item.created_at).format('HH:mm:ss') }}

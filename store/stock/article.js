@@ -82,8 +82,10 @@ export const actions = {
     dispatch('getAll')
     return { message: requete.data.message }
   },
-  async disponible({ commit }) {
-    const requete = await this.$axios.get('stock/produits/disponibles')
+  async disponible({ commit }, id) {
+    let requete = null
+    if (id) requete = await this.$axios.get('stock/produits/disponibles/' + id)
+    else requete = await this.$axios.get('stock/produits/disponibles')
     commit('SET_DISPONIBLES', requete.data.disponibles)
   },
 }
