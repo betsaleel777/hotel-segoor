@@ -98,18 +98,7 @@ export default {
       const boissons = this.articles.filter(
         (article) => article.genre === 'boissons'
       )
-      const cocktails = this.articles.filter(
-        (article) => article.genre === 'cocktails'
-      )
-      const tournees = this.articles.filter(
-        (article) => article.genre === 'tournees'
-      )
-      if (
-        boissons.length === 0 &&
-        cocktails.length === 0 &&
-        tournees.length === 0 &&
-        plats.length === 0
-      ) {
+      if (boissons.length === 0 && plats.length === 0) {
         this.$notifier.show({
           text: "Aucun article n'as encore été selectioné.",
           variant: 'warning',
@@ -119,8 +108,6 @@ export default {
           ...this.encaissement,
           plats,
           boissons,
-          cocktails,
-          tournees,
         }).then((result) => {
           this.$notifier.show({ text: result.message, variant: 'success' })
           this.reinitialise()

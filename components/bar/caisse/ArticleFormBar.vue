@@ -4,7 +4,7 @@
       <v-autocomplete
         v-model="article"
         :items="produits"
-        item-value="id"
+        item-value="code"
         item-text="nom"
         return-object
         dense
@@ -94,7 +94,7 @@ export default {
         const article = Object.assign({}, this.article)
         article.valeur = this.valeur
         const index = this.reponses.findIndex(
-          (element) => element.id === this.article.id
+          (element) => element.code === this.article.code
         )
         index === -1
           ? this.reponses.push(article)
@@ -106,7 +106,7 @@ export default {
     },
     removeArticle(reponse) {
       const index = this.reponses.findIndex(
-        (element) => element.id === reponse.id
+        (element) => element.code === reponse.code
       )
       this.reponses.splice(index, 1)
       this.cle = !this.cle

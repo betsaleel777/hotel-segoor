@@ -23,7 +23,7 @@
         class="justify-center primary--text subtitle-1 grey lighten-2"
         >{{ item.titre.toUpperCase() }}, {{ item.created_at }}
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="closeShow">
+        <v-btn color="error" icon @click="dialogue = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -71,8 +71,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="closeShow">Fermer</v-btn>
-        <v-spacer></v-spacer>
+        <v-btn color="error" text @click="dialogue = false">Fermer</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -92,12 +91,8 @@ export default {
   }),
   mounted() {
     this.articles = this.item.produits
-    if (this.item.status === 'livrée') this.articles = this.item.sortie.produits
-  },
-  methods: {
-    closeShow() {
-      this.dialogue = false
-    },
+    if (this.item.status !== 'en cours')
+      this.articles = this.item.sortie.produits
   },
 }
 </script>

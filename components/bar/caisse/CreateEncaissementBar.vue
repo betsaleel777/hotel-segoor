@@ -76,7 +76,7 @@ export default {
   data() {
     const defaultForm = Object.freeze({
       attribution: null,
-      departement: 1,
+      departement: 2,
       zone: null,
     })
     return {
@@ -94,7 +94,6 @@ export default {
       this.dialog = false
     },
     save() {
-      const plats = this.articles.filter((article) => article.genre === 'plats')
       const boissons = this.articles.filter(
         (article) => article.genre === 'boissons'
       )
@@ -107,8 +106,7 @@ export default {
       if (
         boissons.length === 0 &&
         cocktails.length === 0 &&
-        tournees.length === 0 &&
-        plats.length === 0
+        tournees.length === 0
       ) {
         this.$notifier.show({
           text: "Aucun article n'as encore été selectioné.",
@@ -117,7 +115,6 @@ export default {
       } else {
         this.ajouter({
           ...this.encaissement,
-          plats,
           boissons,
           cocktails,
           tournees,

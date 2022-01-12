@@ -1,20 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template #activator="{ on, attrs }">
-      <v-btn
-        v-if="floating"
-        v-bind="attrs"
-        color="primary"
-        dark
-        absolute
-        bottom
-        right
-        fab
-        v-on="on"
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn v-else v-bind="attrs" dark color="primary" v-on="on">
+      <v-btn v-bind="attrs" dark color="primary" v-on="on">
         <v-icon left>mdi-plus-thick</v-icon>
         AJOUTER
       </v-btn>
@@ -63,7 +50,8 @@
 </template>
 
 <script>
-import ArticleList from './ArticleList'
+import { mapActions } from 'vuex'
+import ArticleList from '~/components/restaurant/demande/ArticleList.vue'
 import {
   errorsInitialise,
   errorsWriting,
@@ -72,12 +60,8 @@ import {
 export default {
   components: { ArticleList },
   props: {
-    floating: {
-      type: Boolean,
-      default: true,
-    },
-    from: {
-      type: String,
+    departement: {
+      type: Number,
       required: true,
     },
   },
@@ -85,41 +69,34 @@ export default {
     return {
       dialog: false,
       articles: [],
-      departement: null,
       titre: null,
       errors: {
         titre: { exist: false, message: null },
       },
     }
   },
-  mounted() {
-    // doit recuperer le departement de l'utilisateur
-    this.$axios.get('parametre/departements/' + this.from).then((result) => {
-      this.departement = result.data.departement.id
-    })
-  },
   methods: {
+    ...mapActions('stock/demande', ['ajouter']),
     reinitialise() {
       this.$refs.form.reset()
       this.articles.splice(0)
-      errorsInitialise(this.errors)
       this.dialog = false
+      errorsInitialise(this.errors)
     },
     save() {
       const articles = this.articles
       if (articles.length > 0) {
-        this.$axios
-          .post('stock/demandes/new', {
-            articles,
-            departement: this.departement,
-            titre: this.titre,
-            user: this.user.id,
-          })
+        this.ajouter({
+          articles,
+          departement: this.departement,
+          titre: this.titre,
+        })
           .then((result) => {
-            const { message, demande } = result.data
-            this.$notifier.show({ text: message, variant: 'success' })
-            this.$emit('new-demande', demande)
             this.reinitialise()
+            this.$notifier.show({
+              text: result.data.message,
+              variant: 'success',
+            })
           })
           .catch((err) => {
             const { data } = err.response
@@ -129,7 +106,7 @@ export default {
             }
           })
       } else {
-        const message = 'la demande doit contenir au moins un article'
+        const message = 'La demande doit contenir au moins un article.'
         this.$notifier.show({ text: message, variant: 'warning' })
       }
     },

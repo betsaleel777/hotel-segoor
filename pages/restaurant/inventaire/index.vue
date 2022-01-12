@@ -20,7 +20,7 @@
                     :loading="$fetchState.pending"
                     loading-text="En chargement ..."
                     :headers="headers"
-                    :items="lignes"
+                    :items="disponibles"
                     :search="search"
                     :items-per-page="10"
                   >
@@ -28,7 +28,7 @@
                       <v-toolbar flat>
                         <v-btn
                           class="ml-2"
-                          :disabled="lignes.length === 0"
+                          :disabled="disponibles.length === 0"
                           dark
                           color="primary"
                           @click="print"
@@ -47,14 +47,14 @@
                       </v-toolbar>
                     </template>
                     <template #item="{ item, expand, isExpanded }">
-                      <tr :class="colorize(item)">
+                      <tr>
                         <td>
                           {{ item.nom }}
                         </td>
                         <td>
                           {{ item.disponible.toFixed(2) + ' ' }}
-                          <span v-if="!item.contenance">{{ item.mesure }}</span>
-                          <span v-else>Bouteilles</span>
+                          <span v-if="item.mesure">{{ item.mesure }}</span>
+                          <span v-else>Unités</span>
                         </td>
                         <td>
                           <v-tooltip right>
@@ -94,6 +94,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import printjs from 'print-js'
 import SideRestaurant from '~/components/restaurant/SideRestaurant.vue'
 export default {
@@ -103,39 +104,21 @@ export default {
   data() {
     return {
       search: '',
-      lignes: [],
       headers: [
         { text: 'Description', value: 'nom' },
         { text: 'Disponible', value: 'disponible' },
+        { text: 'en cours', value: 'reste' },
       ],
     }
   },
   async fetch() {
-    // doit recuperer le departement de l'utilisateur
-    let departement = null
-    let requete = await this.$axios.get(
-      'parametre/departements/' + 'restaurant'
-    )
-    departement = requete.data.departement
-    requete = await this.$axios.get(
-      'stock/demandes/inventaire/' + departement.id
-    )
-    const lignes = requete.data.inventaire.map((ligne) => {
-      return {
-        id: ligne.id,
-        nom: ligne.nom,
-        code: ligne.code,
-        disponible: ligne.disponible,
-        contenance: ligne.contenance,
-        mesure: ligne.mesure,
-      }
-    })
-    this.lignes = lignes
+    await this.disponible(1)
+  },
+  computed: {
+    ...mapGetters('stock/article', ['disponibles']),
   },
   methods: {
-    colorize(item) {
-      return item.deleted_at ? 'archive-style' : null
-    },
+    ...mapActions('stock/article', ['disponible']),
     print() {
       const inventaire = this.lignes.map((inventaire) => {
         return {

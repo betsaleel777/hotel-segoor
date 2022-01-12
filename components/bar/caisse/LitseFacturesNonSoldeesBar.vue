@@ -12,7 +12,7 @@
       <v-toolbar flat>
         <create-encaissement
           v-can="'creation facture restau'"
-          :produits="allProducts"
+          :produits="childs"
           :attributions="attributionsSansFactures"
         />
         <v-spacer></v-spacer>
@@ -56,7 +56,7 @@
         v-if="item.status === 'impayé'"
         v-can="'modification facture restau'"
         :item="item"
-        :produits="allProducts"
+        :produits="childs"
       />
     </template>
   </v-data-table>
@@ -86,7 +86,6 @@ export default {
       search: '',
       loading: false,
       dialog1: false,
-      allProducts: [],
       attributionsSansFactures: [],
       headers: [
         { text: 'Client', value: 'client', align: 'left', sortable: false },
@@ -101,26 +100,16 @@ export default {
   },
   computed: {
     ...mapGetters({
-      produits: 'stock/article/articles',
       encaissements: 'caisse/encaissement/encaissements',
       attributions: 'reception/attribution/attributionsEnCours',
-      plats: 'stock/plat/plats',
-      tournees: 'stock/tournee/tournees',
-      cocktails: 'stock/cocktail/cocktails',
+      childs: 'stock/article/childs',
       moyensDepaiement: 'moyen/moyens',
     }),
   },
   async mounted() {
     this.loading = true
-    await this.getProduits(2)
-    await this.getPlats()
-    await this.getTournees()
-    await this.getCocktails()
+    await this.getChilds()
     await this.getMoyens()
-    this.allProducts.push(...this.produits)
-    this.allProducts.push(...this.plats)
-    this.allProducts.push(...this.tournees)
-    this.allProducts.push(...this.cocktails)
     await this.getAttributions()
     await this.getEncaissements(2).then(() => {
       const dejaSurListe = (attribution) => {
@@ -135,12 +124,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      getProduits: 'stock/article/getArticlesDepartement',
       getEncaissements: 'caisse/encaissement/getEncaissements',
       getAttributions: 'reception/attribution/getEnCours',
-      getPlats: 'stock/plat/getPlats',
-      getTournees: 'stock/tournee/getTourneesCaisse',
-      getCocktails: 'stock/cocktail/getCocktails',
+      getChilds: 'stock/article/getChildsBarArticles',
       getMoyens: 'moyen/getAll',
     }),
     getColor(status) {

@@ -1,9 +1,17 @@
 export const state = () => ({
   articles: [],
+  disponibles: [],
+  childs: [],
 })
 export const getters = {
   articles: (state) => {
     return state.articles
+  },
+  childs: (state) => {
+    return state.childs
+  },
+  disponibles: (state) => {
+    return state.disponibles
   },
 }
 export const actions = {
@@ -48,17 +56,27 @@ export const actions = {
   },
   async getArticlesDepartement({ commit }, departement) {
     commit('SET_ARTICLES', [])
-    const requete = await this.$axios.get(
-      'stock/demandes/inventaire/' + departement
-    )
-    let articles = requete.data.inventaire.filter(
-      (article) => article.pour_plat !== 1
-    )
-    articles = articles.map((article) => {
-      const { produit, ...rest } = article
-      return { ...rest, id: produit, genre: 'boissons', valeur: 0 }
+    const requete = await this.$axios.get('stock/produits/' + departement)
+    const articles = requete.data.articles.map((article) => {
+      return { ...article, genre: 'boissons', valeur: 0 }
     })
     commit('SET_ARTICLES', articles)
+  },
+  async getChildsBarArticles({ commit }) {
+    commit('SET_CHILDS', [])
+    const requete = await this.$axios.get('stock/produits/bar-childs')
+    const articles = requete.data.articles.map((article) => {
+      return { ...article, valeur: 0 }
+    })
+    commit('SET_CHILDS', articles)
+  },
+  async getChildsRestoArticles({ commit }) {
+    commit('SET_CHILDS', [])
+    const requete = await this.$axios.get('stock/produits/resto-childs')
+    const articles = requete.data.articles.map((article) => {
+      return { ...article, valeur: 0 }
+    })
+    commit('SET_CHILDS', articles)
   },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
@@ -78,10 +96,28 @@ export const actions = {
     dispatch('getAll')
     return { message: requete.data.message }
   },
+  async disponible({ commit }, id) {
+    let requete = null
+    if (id) requete = await this.$axios.get('stock/produits/disponibles/' + id)
+    else
+      requete = await this.$axios.get('stock/produits/disponibles/departements')
+    commit('SET_DISPONIBLES', requete.data.disponibles)
+  },
+  async getDisponibleStock({ commit }) {
+    commit('SET_DISPONIBLES', [])
+    const requete = await this.$axios.get('stock/produits/disponibles')
+    commit('SET_DISPONIBLES', requete.data.disponibles)
+  },
 }
 
 export const mutations = {
   SET_ARTICLES(state, articles) {
     state.articles = articles
+  },
+  SET_CHILDS(state, childs) {
+    state.childs = childs
+  },
+  SET_DISPONIBLES(state, disponibles) {
+    state.disponibles = disponibles
   },
 }

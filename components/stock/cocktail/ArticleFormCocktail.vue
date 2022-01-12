@@ -40,13 +40,6 @@
     <v-row>
       <v-col v-if="liste.length > 0" cols="12">
         <v-list-item v-for="(ligne, index) in liste" :key="index" dense>
-          <!-- <v-list-item-avatar>
-          <v-btn icon>
-            <v-icon color="primary lighten-1" @click="show = true"
-              >mdi-information</v-icon
-            >
-          </v-btn>
-        </v-list-item-avatar> -->
           <v-list-item-content>
             <v-list-item-title
               >{{ ligne.titre + ' '
@@ -56,9 +49,6 @@
             >
             <v-divider></v-divider>
           </v-list-item-content>
-          <!-- <v-tooltip v-model="show" top>
-          <span>{{ liste.description }}</span>
-        </v-tooltip> -->
           <v-list-item-action>
             <v-btn icon>
               <v-icon color="error lighten-1" @click="retirer(ligne)"
@@ -99,12 +89,14 @@ export default {
             id: this.tournee.id,
             quantite: this.quantite,
           })
+          console.log(this.liste)
         } else {
-          this.liste.splice(index, 1, {
+          this.liste[index] = {
             titre: this.tournee.titre,
             id: this.tournee.id,
             quantite: this.quantite,
-          })
+          }
+          console.log(this.liste)
         }
         this.tournee = {}
         this.quantite = 0

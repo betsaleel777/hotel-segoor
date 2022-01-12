@@ -94,7 +94,6 @@ import { mapActions } from 'vuex'
 import ArticleFormCocktail from './ArticleFormCocktail.vue'
 import {
   errorsInitialise,
-  // eslint-disable-next-line no-unused-vars
   errorsWriting,
 } from '~/components/helper/errorsHandle'
 
@@ -147,7 +146,8 @@ export default {
         })
     },
     listeUpdate(element) {
-      this.ingredients.push(...element)
+      this.ingredients = element
+      console.log(this.ingredients)
     },
   },
 }

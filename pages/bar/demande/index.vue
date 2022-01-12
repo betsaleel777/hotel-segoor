@@ -13,7 +13,7 @@
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
-                no-data-text="Aucun Demande"
+                no-data-text="Aucune Demande"
                 :loading="$fetchState.pending"
                 loading-text="En chargement ..."
                 :headers="headers"
@@ -25,9 +25,7 @@
                   <v-toolbar flat>
                     <create-demande
                       v-can="'creation demande bar'"
-                      :from="'bar'"
-                      :floating="false"
-                      @new-demande="pushDemande"
+                      :departement="2"
                     />
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -44,32 +42,28 @@
                     {{ item.status }}
                   </v-chip>
                 </template>
+                <template #[`item.created_at`]="{ item }">
+                  {{ $moment(item.created_at).format('ll') }}
+                </template>
                 <template #[`item.actions`]="{ item }">
                   <show-demande-stock :item="item" />
                   <reception-demande
                     v-if="item.status === 'livrée'"
                     :item="item"
-                    @confirmed="onConfirmed"
                   />
                 </template>
               </v-data-table>
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <create-demande
-            v-can="'creation demande bar'"
-            :from="'bar'"
-            @new-demande="pushDemande"
-          />
-        </v-card-actions>
+        <v-card-actions> </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
 </template>
 
 <script>
-/* eslint-disable camelcase */
+import { mapGetters, mapActions } from 'vuex'
 import SideGestionBar from '~/components/bar/SideGestionBar.vue'
 import CreateDemande from '~/components/restaurant/demande/CreateDemande.vue'
 import ReceptionDemande from '~/components/stock/demande/ReceptionDemande.vue'
@@ -85,7 +79,6 @@ export default {
   data() {
     return {
       search: '',
-      demandes: [],
       headers: [
         { text: 'Titre', value: 'titre', sortable: false },
         { text: 'Statut', value: 'status', align: 'center', sortable: false },
@@ -95,36 +88,13 @@ export default {
     }
   },
   async fetch() {
-    // récuperer uniquement les demandes du département en question
-    let departement = null
-    let calebasse = await this.$axios.get('parametre/departements/' + 'bar')
-    departement = calebasse.data.departement.id
-    calebasse = await this.$axios.get('stock/demandes/' + departement)
-    const demandes = calebasse.data.demandes.map((demande) => {
-      const {
-        code,
-        titre,
-        status,
-        created_at,
-        id,
-        departement_linked,
-        produits,
-        sortie,
-      } = demande
-      return {
-        id,
-        titre,
-        code,
-        status,
-        created_at: this.$moment(created_at).format('ll'),
-        produits,
-        departement: departement_linked.id,
-        sortie,
-      }
-    })
-    this.demandes = demandes
+    await this.getDemandeBar()
+  },
+  computed: {
+    ...mapGetters('stock/demande', ['demandes']),
   },
   methods: {
+    ...mapActions('stock/demande', ['getDemandeBar']),
     getColor(status) {
       if (status === 'en cours') {
         return 'blue'
@@ -135,13 +105,6 @@ export default {
       } else {
         return 'pink'
       }
-    },
-    pushDemande(demande) {
-      demande.created_at = this.$moment(demande.created_at).format('ll')
-      this.demandes.push(demande)
-    },
-    onConfirmed(sortie) {
-      // edit demande status to confirmed
     },
   },
 }

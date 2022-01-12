@@ -13,7 +13,7 @@
             </v-col>
             <v-col cols="12" sm="6" md="9">
               <v-data-table
-                no-data-text="Aucun Demande"
+                no-data-text="Aucune Demande"
                 :loading="$fetchState.pending"
                 loading-text="En chargement ..."
                 :headers="headers"
@@ -30,21 +30,24 @@
                     hide-details
                   ></v-text-field>
                 </template>
-                <template #[`item.departement.nom`]="{ item }">
-                  <b>{{ item.departement.nom }}</b>
+                <template #[`item.departement_linked.nom`]="{ item }">
+                  <b>{{ item.departement_linked.nom }}</b>
                 </template>
                 <template #[`item.status`]="{ item }">
                   <v-chip small outlined :color="getColor(item.status)" dark>
                     {{ item.status }}
                   </v-chip>
                 </template>
+                <template #[`item.created_at`]="{ item }">
+                  {{ $moment(item.created_at).format('ll') }}
+                </template>
                 <template #[`item.actions`]="{ item }">
                   <show-demande-stock :item="item" />
                   <process-demande
                     v-if="item.status === 'en cours'"
+                    :key="key"
                     :item="item"
-                    @accepted-demande="demandeChanged"
-                    @rejected-demande="demandeChanged"
+                    :disponibles="disponibles"
                   />
                 </template>
               </v-data-table>
@@ -58,7 +61,7 @@
 </template>
 
 <script>
-/* eslint-disable camelcase */
+import { mapActions, mapGetters } from 'vuex'
 import SideStock from '~/components/stock/SideStock.vue'
 import ProcessDemande from '~/components/stock/demande/ProcessDemande'
 import ShowDemandeStock from '~/components/stock/demande/ShowDemandeStock.vue'
@@ -72,10 +75,14 @@ export default {
   data() {
     return {
       search: '',
-      demandes: [],
+      key: false,
       headers: [
         { text: 'Titre', value: 'titre', sortable: false },
-        { text: 'Département', value: 'departement.nom', sortable: false },
+        {
+          text: 'Département',
+          value: 'departement_linked.nom',
+          sortable: false,
+        },
         { text: 'Statut', value: 'status', sortable: false },
         { text: 'Date', value: 'created_at' },
         { text: 'Actions', value: 'actions', sortable: false },
@@ -83,32 +90,19 @@ export default {
     }
   },
   async fetch() {
-    const calebasse = await this.$axios.get('stock/demandes')
-    const demandes = calebasse.data.demandes.map((demande) => {
-      const {
-        code,
-        titre,
-        status,
-        created_at,
-        id,
-        departement_linked,
-        produits,
-        sortie,
-      } = demande
-      return {
-        id,
-        titre,
-        code,
-        status,
-        created_at: this.$moment(created_at).format('ll'),
-        produits,
-        departement: { id: departement_linked.id, nom: departement_linked.nom },
-        sortie,
-      }
-    })
-    this.demandes = demandes
+    await this.getAll()
+    await this.getDisponiblesArticles()
+    this.key = !this.key
+  },
+  computed: {
+    ...mapGetters('stock/demande', ['demandes']),
+    ...mapGetters('stock/article', ['disponibles']),
   },
   methods: {
+    ...mapActions({
+      getAll: 'stock/demande/getAll',
+      getDisponiblesArticles: 'stock/article/disponible',
+    }),
     getColor(status) {
       if (status === 'en cours') {
         return 'blue'
@@ -121,17 +115,6 @@ export default {
       } else {
         return 'deep-orange'
       }
-    },
-    pushDemande(demande) {
-      demande.created_at = this.$moment(demande.created_at).format('ll')
-      this.demandes.push(demande)
-    },
-    demandeChanged(demande) {
-      demande.created_at = this.$moment(demande.created_at).format('ll')
-      const index = this.demandes.findIndex(
-        (element) => element.id === demande.id
-      )
-      this.demandes.splice(index, 1, demande)
     },
   },
 }

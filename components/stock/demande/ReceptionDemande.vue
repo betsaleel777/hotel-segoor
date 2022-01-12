@@ -15,9 +15,9 @@
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline grey lighten-2"
-        ><div>Demande du {{ item.created_at }}</div>
+        ><div>Demande du {{ $moment(item.created_at).format('ll') }}</div>
         <v-spacer></v-spacer>
-        <v-btn color="error" icon @click="close">
+        <v-btn color="error" icon @click="dialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -33,7 +33,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(article, index) in articles" :key="index" dense>
+              <tr v-for="(article, index) in reponses" :key="index" dense>
                 <td style="width: 30%">{{ article.nom }}</td>
                 <td>{{ article.pivot.demandees + article.mesure }}</td>
                 <td>{{ article.pivot.quantite + article.mesure }}</td>
@@ -52,17 +52,17 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" text @click="close">Fermer</v-btn>
-        <v-btn :disabled="errorFound" color="success" text @click="accept"
+        <v-btn color="error" text @click="dialog = false">Fermer</v-btn>
+        <v-btn :disabled="errorFound" color="success" text @click="confirmer"
           >Confirmer</v-btn
         >
-        <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   props: {
     item: {
@@ -87,28 +87,21 @@ export default {
       return found
     },
   },
-  async mounted() {
-    // recupérer la sortie de cette demande
-    const calebasse = await this.$axios.get(
-      'stock/sorties/from/' + this.item.id
-    )
-    this.articles = calebasse.data.sortie.produits
-    this.reponses = calebasse.data.sortie.produits.map((article) => {
+  mounted() {
+    this.reponses = this.item.sortie.produits.map((article) => {
       return { ...article, valeur: 0, error: false }
     })
   },
   methods: {
-    accept() {
-      this.$axios
-        .put('stock/sorties/confirm/' + this.item.id, {
-          articles: this.reponses,
-        })
-        .then((result) => {
-          location.reload()
-        })
-    },
-    close() {
-      this.dialog = false
+    ...mapActions('stock/demande', ['confirm']),
+    confirmer() {
+      this.confirm({
+        id: this.item.id,
+        departement: this.item.departement,
+        articles: this.reponses,
+      }).then((result) => {
+        this.$notifier.show({ text: result.message, variant: 'success' })
+      })
     },
   },
 }

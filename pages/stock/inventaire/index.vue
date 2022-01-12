@@ -20,7 +20,7 @@
                     :loading="$fetchState.pending"
                     loading-text="En chargement ..."
                     :headers="headers"
-                    :items="lignes"
+                    :items="disponibles"
                     :search="search"
                     :items-per-page="10"
                   >
@@ -28,7 +28,7 @@
                       <v-toolbar flat>
                         <v-btn
                           class="ml-2"
-                          :disabled="lignes.length === 0"
+                          :disabled="disponibles.length === 0"
                           dark
                           color="primary"
                           @click="print"
@@ -46,39 +46,8 @@
                         ></v-text-field>
                       </v-toolbar>
                     </template>
-                    <template #item="{ item, expand, isExpanded }">
-                      <tr :class="colorize(item)">
-                        <td>
-                          {{ item.nom }}
-                        </td>
-                        <td>
-                          {{ item.disponible.toFixed(2) + ' ' }}
-                          <span v-if="!item.contenance">{{ item.mesure }}</span>
-                          <span v-else>Bouteilles</span>
-                        </td>
-                        <td>
-                          <v-tooltip right>
-                            <template #activator="{ on: tooltip }">
-                              <v-btn
-                                v-if="item.reste !== 0"
-                                small
-                                v-on="{ tooltip }"
-                                @click="expand(!isExpanded)"
-                                ><v-icon left>mdi-information</v-icon
-                                >détails</v-btn
-                              >
-                            </template>
-                            <span>modifier</span>
-                          </v-tooltip>
-                        </td>
-                      </tr>
-                    </template>
-                    <template #[`expanded-item`]="{ item }">
-                      <td v-if="item.reste !== 0" :colspan="headers.length">
-                        <p class="text-right primary--text">
-                          quantité encore en bouteille {{ item.reste + '%' }}
-                        </p>
-                      </td>
+                    <template #[`item.disponible`]="{ item }">
+                      {{ item.disponible + ' ' + item.mesure }}
                     </template>
                   </v-data-table>
                 </v-col>
@@ -94,6 +63,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import printjs from 'print-js'
 import SideStock from '~/components/stock/SideStock.vue'
 export default {
@@ -103,39 +73,25 @@ export default {
   data() {
     return {
       search: '',
-      lignes: [],
       headers: [
         { text: 'Description', value: 'nom' },
         { text: 'Disponible', value: 'disponible' },
-        { text: 'En cours', value: 'reste' },
       ],
     }
   },
-  async fetch() {
-    const requete = await this.$axios.get('stock/produits/inventaire')
-    const lignes = requete.data.inventaire.map((ligne) => {
-      return {
-        id: ligne.id,
-        nom: ligne.nom,
-        code: ligne.code,
-        disponible: ligne.disponible,
-        contenance: ligne.contenance,
-        reste: ligne.reste ?? 0,
-        mesure: ligne.mesure,
-      }
-    })
-    this.lignes = lignes
+  fetch() {
+    this.getInventaire()
+  },
+  computed: {
+    ...mapGetters('stock/article', ['disponibles']),
   },
   methods: {
-    colorize(item) {
-      return item.deleted_at ? 'archive-style' : null
-    },
+    ...mapActions({ getInventaire: 'stock/article/getDisponibleStock' }),
     print() {
-      const inventaire = this.lignes.map((inventaire) => {
+      const inventaire = this.disponibles.map((inventaire) => {
         return {
           nom: inventaire.nom,
-          disponible: inventaire.disponible,
-          reste: inventaire.reste,
+          disponible: inventaire.disponible + inventaire.mesure,
         }
       })
       printjs({
@@ -143,7 +99,6 @@ export default {
         properties: [
           { field: 'nom', displayName: 'Description' },
           { field: 'disponible', displayName: 'Disponible' },
-          { field: 'reste', displayName: 'En cours' },
         ],
         type: 'json',
         header: `<center><h3>Inventaire de stock</h3>${this.$moment().format(
@@ -159,10 +114,4 @@ export default {
 }
 </script>
 
-<style>
-.archive-style {
-  /* background-color: darkgray; */
-  background-color: rgba(223, 216, 216, 0.681);
-  color: rgba(110, 107, 107, 0.329);
-}
-</style>
+<style></style>
