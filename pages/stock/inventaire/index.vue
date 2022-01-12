@@ -86,7 +86,7 @@ export default {
     ...mapGetters('stock/article', ['disponibles']),
   },
   methods: {
-    ...mapActions({ getInventaire: 'stock/article/disponible' }),
+    ...mapActions({ getInventaire: 'stock/article/getDisponibleStock' }),
     print() {
       const inventaire = this.disponibles.map((inventaire) => {
         return {
