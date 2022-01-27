@@ -319,6 +319,8 @@ module.exports = {
   restaurant,
   parametre,
   maintenance,
+  externe,
+  AccesExterne: externe.acceder,
   MaintenanceReparation: maintenance.reparation,
   MaintenanceEntretien: maintenance.entretien,
   MaintenanceEquipement: maintenance.fourniture,

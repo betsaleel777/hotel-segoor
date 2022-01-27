@@ -1,9 +1,9 @@
 <template>
-  <img class="SegoorLogo" alt="Segoor Logo" src="/segoor.jpg" />
+  <img class="logo" alt="Hotel logo" src="/logo.jpg" />
 </template>
 
 <style>
-.SegoorLogo {
+.logo {
   height: 380px;
   width: 380px;
   transform: rotateY(560deg);

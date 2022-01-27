@@ -56,6 +56,7 @@ export default {
   auth: {
     strategies: {
       laravelJWT: {
+        scheme: 'refresh',
         provider: 'laravel/jwt',
         url: '/',
         endpoints: {
@@ -69,9 +70,17 @@ export default {
           maxAge: 60 * 60,
         },
         refreshToken: {
-          maxAge: 20160 * 60,
+          maxAge: 60 * 60 * 24 * 30,
+          property: 'refresh_token',
+          data: 'refresh_token',
         },
       },
+    },
+    redirect: {
+      login: '/login',
+      logout: '/login',
+      callback: false,
+      home: '/',
     },
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

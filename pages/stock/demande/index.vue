@@ -101,7 +101,7 @@ export default {
   methods: {
     ...mapActions({
       getAll: 'stock/demande/getAll',
-      getDisponiblesArticles: 'stock/article/disponible',
+      getDisponiblesArticles: 'stock/article/getDisponibleStock',
     }),
     getColor(status) {
       if (status === 'en cours') {
