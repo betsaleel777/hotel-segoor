@@ -35,8 +35,13 @@
       {{ item.fullname | upper }}
     </template>
     <template #[`item.status`]="{ item }">
-      <v-chip small outlined :color="getColor(item.status)" dark>
+      <v-chip small outlined :color="colorStatus(item.status)" dark>
         {{ item.status }}
+      </v-chip>
+    </template>
+    <template #[`item.type`]="{ item }">
+      <v-chip label small outlined :color="colorType(item.type)" dark>
+        {{ item.type }}
       </v-chip>
     </template>
     <template #[`item.actions`]="{ item }">
@@ -73,8 +78,9 @@ export default {
       search: '',
       loading: false,
       headers: [
-        { text: 'Nom complet', value: 'fullname' },
-        { text: 'Contact', value: 'contact', sortable: false },
+        { text: 'Nom complet', value: 'fullname', align: 'left' },
+        { text: 'Type de client', value: 'type', align: 'center' },
+        { text: 'Contact', value: 'contact', sortable: false, align: 'center' },
         { text: 'Dossier client', value: 'status', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false, align: 'right' },
       ],
@@ -91,14 +97,18 @@ export default {
   },
   methods: {
     ...mapActions('reception/client', ['getAll']),
-    getColor(status) {
-      return status === 'complet' ? 'green' : 'red'
+    colorStatus(val) {
+      return val === 'complet' ? 'green' : 'red'
+    },
+    colorType(val) {
+      return val === 'client' ? 'amber darken-3' : 'secondary'
     },
     print() {
       const clients = this.clients.map((client) => {
         return {
           fullname:
             client.nom.toUpperCase() + ' ' + client.prenom.toUpperCase(),
+          type: client.type,
           telephone: client.contact ?? 'Non pourvu',
           email: client.email ?? 'Non pourvu',
           profession: client.profession ?? 'Non pourvu',
@@ -108,6 +118,7 @@ export default {
         printable: clients,
         properties: [
           { field: 'fullname', displayName: 'Nom complet' },
+          { field: 'type', displayName: 'Type de client' },
           { field: 'telephone', displayName: 'Téléphone' },
           { field: 'email', displayName: 'E-mail' },
           { field: 'profession', displayName: 'Profession' },

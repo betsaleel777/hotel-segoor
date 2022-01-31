@@ -21,9 +21,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="headline primary--text"
-          >Modifier réservation chambre {{ item.chambre_linked.nom }}</span
-        >
+        <span class="headline primary--text">Modifier réservation chambre</span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">
@@ -100,6 +98,7 @@
                 <v-tooltip color="indigo" top>
                   <template #activator="{ on, attrs }">
                     <v-btn
+                      :disabled="!filtrable"
                       v-bind="attrs"
                       color="indigo"
                       text
@@ -181,6 +180,7 @@ export default {
       messageChambre: '',
       openClient: false,
       newClient: false,
+      filtrable: true,
       reservation: {
         entree: null,
         sortie: null,
@@ -200,9 +200,15 @@ export default {
   },
   mounted() {
     this.initialisation()
+    if (this.reservation.status === 'par site') {
+      this.filtrable = false
+      this.chambresLocales = this.chambres.filter(
+        (chambre) => chambre.categorie === this.reservation.categorie
+      )
+    }
   },
   methods: {
-    ...mapActions('reception/reservation', ['modifier']),
+    ...mapActions({ modifier: 'reception/reservation/modifier' }),
     initialisation() {
       const { entree, sortie, ...rest } = this.item
       const object = {

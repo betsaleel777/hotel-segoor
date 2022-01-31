@@ -12,13 +12,10 @@
 </template>
 
 <script>
-import SegoorLogo from '~/components/segoor'
+import SegoorLogo from '~/components/segoor.vue'
 export default {
   components: {
     SegoorLogo,
-  },
-  created() {
-    this.$gates.setPermissions(this.user.permissions)
   },
 }
 </script>

@@ -74,7 +74,6 @@
 
 <script>
 export default {
-  auth: false,
   layout: 'login',
   data: () => ({
     email: '',
@@ -92,7 +91,8 @@ export default {
           data: { email: this.email, password: this.password },
         })
         .then(() => {
-          this.$router.push('/')
+          this.$gates.setPermissions(this.user.permissions)
+          this.$gates.setRoles(this.user.roles)
         })
         .catch((err) => {
           this.$notifier.show({

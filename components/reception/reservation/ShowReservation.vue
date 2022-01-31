@@ -21,9 +21,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="headline primary--text"
-          >Détails réservation chambre {{ item.chambre_linked.nom }}</span
-        >
+        <span class="headline primary--text">Détails réservation</span>
       </v-card-title>
       <v-card-text>
         <v-form ref="form">

@@ -34,6 +34,14 @@ export const actions = {
     })
     commit('SET_RESOURCES', resources)
   },
+  async getChambresByCategorie({ commit }, categorie) {
+    const requete = await this.$axios.get(
+      'gestion-chambre/chambres/categorie/' + categorie
+    )
+    return requete.data.chambres.map(({ nom, id, prixVente }) => {
+      return { id, nom, prixVente }
+    })
+  },
   async modifier({ dispatch }, payload) {
     const requete = await this.$axios.put(
       'gestion-chambre/chambres/' + payload.id,

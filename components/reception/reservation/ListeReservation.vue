@@ -37,8 +37,10 @@
       </v-toolbar>
     </template>
     <template #[`item.fullname`]="{ item }">
-      {{ item.client_linked.nom | upper }}
-      {{ item.client_linked.prenom | upper }}
+      <div class="text-truncate">
+        {{ item.client_linked.nom | upper }}
+        {{ item.client_linked.prenom | upper }}
+      </div>
     </template>
     <template #[`item.status`]="{ item }">
       <v-chip small outlined :color="getColor(item.status)" dark>
@@ -61,7 +63,7 @@
     <template #[`item.actions`]="{ item }">
       <show-reservation v-if="item.status !== 'reservée'" :item="item" />
       <edit-reservation
-        v-if="item.status === 'reservée'"
+        v-if="item.status === 'reservée' || item.status === 'par site'"
         :item="item"
         :hebergements="hebergements"
         :chambres="chambres"
@@ -105,7 +107,7 @@ export default {
       loading: false,
       headers: [
         { text: 'Client', value: 'fullname', sortable: false },
-        { text: 'Chambre', value: 'chambre_linked.nom', sortable: false },
+        { text: 'Chambre', value: 'chambre_linked?.nom', sortable: false },
         { text: 'Debut', value: 'entree' },
         { text: 'Fin', value: 'sortie' },
         { text: 'statut', value: 'status' },

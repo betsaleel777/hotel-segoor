@@ -24,8 +24,7 @@
       </v-card-title>
       <v-card-text justify="center" align="center">
         Voulez vous supprimer la réservation de la chambre
-        <b>{{ item.chambre_linked.nom.toUpperCase() }}</b
-        ><br />
+        <br />
         pour le client: <b>{{ item.client_linked.nom }}</b> ?
       </v-card-text>
       <v-card-actions>

@@ -104,7 +104,8 @@ export default {
     const quantiteDisponible = (id) => {
       if (this.articles.length > 0) {
         const articleFound = this.articles.find((article) => article.id === id)
-        return articleFound.disponible
+        if (articleFound) return articleFound.disponible
+        else return 0
       }
     }
     this.reponses = this.item.produits.map((article) => {

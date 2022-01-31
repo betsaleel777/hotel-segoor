@@ -24,7 +24,7 @@
             <v-list-item-title v-text="module.title" />
           </v-list-item-content>
         </v-list-item>
-        <v-list-group>
+        <v-list-group v-can="externe">
           <template #activator>
             <v-list-item-action>
               <v-icon color="blue darken-4">mdi-food-fork-drink</v-icon>
@@ -92,9 +92,7 @@
 
                 <v-list-item-content>
                   <v-list-item-title>{{ user.name }}</v-list-item-title>
-                  <v-list-item-subtitle>{{
-                    user.roles[0].name
-                  }}</v-list-item-subtitle>
+                  <v-list-item-subtitle></v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-tooltip bottom>
@@ -155,6 +153,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { AccesExterne } from '~/helper/permissions'
 import AlertComponent from '~/components/AlertComponent'
 import SnackbarComponent from '~/components/SnackbarComponent'
 import CreateRestaurant from '~/components/externe/restaurant/CreateRestaurantExterne'
@@ -177,6 +176,7 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Krinjabo Hotel',
+      externe: AccesExterne,
     }
   },
   computed: {
@@ -184,15 +184,13 @@ export default {
     ...mapGetters('externe/restaurant', ['restaurants']),
   },
   mounted() {
-    this.$gates.setPermissions(this.user.permissions)
-    this.getAll()
+    if (this.$gates.hasPermission(AccesExterne)) this.getAll()
   },
   methods: {
     ...mapActions('externe/restaurant', ['getAll']),
     logout() {
       this.$auth.logout('laravelJWT').then(() => {
         localStorage.clear()
-        location.reload()
       })
     },
   },
