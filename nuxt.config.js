@@ -18,7 +18,84 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/materialize.min.css',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/icons.min.css',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/main.css',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/responsive.css',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/responsive.css',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/color-schemes/color1.css',
+        title: 'color1',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/color-schemes/color2.css',
+        title: 'color2',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/color-schemes/color3.css',
+        title: 'color3',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/color-schemes/color4.css',
+        title: 'color4',
+      },
+      {
+        rel: 'stylesheet',
+        type: 'text/css',
+        href: '/css/color-schemes/color5.css',
+        title: 'color5',
+      },
+    ],
+    script: [
+      { src: '/js/jquery.min.js', body: 'true' },
+      { src: '/js/materialize.min.js', body: 'true' },
+      { src: '/js/slick.min.js', body: 'true' },
+      { src: '/js/isotope.min.js', body: 'true' },
+      { src: '/js/isotope-int.js', body: 'true' },
+      { src: '/js/jquery.counterup.js', body: 'true' },
+      { src: '/js/waypoints.min.js', body: 'true' },
+      { src: '/js/highcharts.js', body: 'true' },
+      { src: '/js/exporting.js', body: 'true' },
+      { src: '/js/highcharts-more.js', body: 'true' },
+      { src: '/js/jquery.circliful.min.js', body: 'true' },
+      { src: '/js/jquery.bootstrap-touchspin.min.js', body: 'true' },
+      { src: '/js/jquery.formtowizard.js', body: 'true' },
+      { src: '/js/form-validator.min.js', body: 'true' },
+      { src: '/js/cropbox-min.js', body: 'true' },
+      { src: '/js/jquery.slimscroll.min.js', body: 'true' },
+      { src: '/js/jquery.poptrox.min.js', body: 'true' },
+      { src: '/js/main.js', body: 'true' },
+    ],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -77,8 +154,8 @@ export default {
       },
     },
     redirect: {
-      login: '/login',
-      logout: '/login',
+      login: '/auth/login',
+      logout: '/auth/login',
       callback: false,
       home: '/',
     },
@@ -100,13 +177,15 @@ export default {
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
-    customVariables: ['~/assets/variables.scss'],
     locale: {
       defaultLocale: 'fr',
       fallbackLocale: 'fr',
       messages: { fr },
     },
     theme: {
+      options: {
+        customProperties: true,
+      },
       dark: false,
       light: true,
       themes: {
@@ -120,6 +199,7 @@ export default {
           success: colors.green.accent3,
         },
         light: {
+          background: '#f3f3f3',
           primary: '#1976D2',
           secondary: '#424242',
           accent: '#82B1FF',

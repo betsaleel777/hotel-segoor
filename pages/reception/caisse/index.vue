@@ -1,67 +1,63 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="12" md="12">
-      <v-card elevation="2" shaped tile>
-        <v-card-title class="headline grey lighten-1 primary--text">
-          Caisse
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <side-reception />
-            </v-col>
-            <v-col cols="12" sm="6" md="9">
-              <v-data-table
-                no-data-text="Aucune Donnée"
-                :loading="$fetchState.pending"
-                loading-text="En chargement ..."
-                :headers="headers"
-                :items="encaissements"
-                :search="search"
-                :items-per-page="10"
-              >
-                <template #[`top`]>
-                  <v-toolbar flat>
-                    <create-versement
-                      :attributions="attributions"
-                      :reservations="reservations"
-                      :floating="false"
-                      @new-encaissement="pushEncaissement"
-                    />
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                      v-model="search"
-                      append-icon="mdi-magnify"
-                      label="recherche ..."
-                      single-line
-                      hide-details
-                    ></v-text-field>
-                  </v-toolbar>
-                </template>
-                <template #[`item.status`]="{ item }">
-                  <v-chip outlined small :color="getColor(item.status)" dark>
-                    {{ item.status }}
-                  </v-chip>
-                </template>
-                <template #[`item.actions`]="{ item }">
-                  <show-versement :item="item" />
-                  <!-- <complete-versement :item="item" /> -->
-                </template>
-              </v-data-table>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <create-versement
-            :attributions="attributions"
-            :reservations="reservations"
-            @new-encaissement="pushEncaissement"
-          />
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-card elevation="2" shaped tile>
+    <v-card-title class="headline grey lighten-1 primary--text">
+      Caisse
+    </v-card-title>
+    <v-divider></v-divider>
+    <v-card-text>
+      <v-row>
+        <v-col cols="12" sm="6" md="3">
+          <side-reception />
+        </v-col>
+        <v-col cols="12" sm="6" md="9">
+          <v-data-table
+            no-data-text="Aucune Donnée"
+            :loading="$fetchState.pending"
+            loading-text="En chargement ..."
+            :headers="headers"
+            :items="encaissements"
+            :search="search"
+            :items-per-page="10"
+          >
+            <template #[`top`]>
+              <v-toolbar flat>
+                <create-versement
+                  :attributions="attributions"
+                  :reservations="reservations"
+                  :floating="false"
+                  @new-encaissement="pushEncaissement"
+                />
+                <v-spacer></v-spacer>
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="recherche ..."
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-toolbar>
+            </template>
+            <template #[`item.status`]="{ item }">
+              <v-chip outlined small :color="getColor(item.status)" dark>
+                {{ item.status }}
+              </v-chip>
+            </template>
+            <template #[`item.actions`]="{ item }">
+              <show-versement :item="item" />
+              <!-- <complete-versement :item="item" /> -->
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions>
+      <create-versement
+        :attributions="attributions"
+        :reservations="reservations"
+        @new-encaissement="pushEncaissement"
+      />
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>

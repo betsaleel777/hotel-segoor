@@ -1,19 +1,17 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12">
-      <full-calendar ref="calendrier" :options="calendarOptions">
-        <template #eventContent="{ event }">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <div v-bind="attrs" class="text-truncate text-center" v-on="on">
-                {{ event.title }}
-              </div>
-            </template>
-            <span>Contact du client: {{ event.extendedProps.contact }}</span>
-          </v-tooltip>
-        </template>
-      </full-calendar>
-    </v-col>
+  <v-container fluid>
+    <full-calendar ref="calendrier" :options="calendarOptions">
+      <template #eventContent="{ event }">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <div v-bind="attrs" class="text-truncate text-center" v-on="on">
+              {{ event.title }}
+            </div>
+          </template>
+          <span>Contact du client: {{ event.extendedProps.contact }}</span>
+        </v-tooltip>
+      </template>
+    </full-calendar>
     <v-dialog v-model="dialog" max-width="300">
       <v-card>
         <v-card-title class="headline">
@@ -63,7 +61,7 @@
       :item="evenement"
       @edit-closed="onEditEvent"
     />
-  </v-row>
+  </v-container>
 </template>
 
 <script>

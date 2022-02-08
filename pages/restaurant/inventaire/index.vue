@@ -1,96 +1,85 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="12" md="12">
-      <v-card elevation="2" shaped tile>
-        <v-card-title class="headline grey lighten-1 primary--text">
-          Inventaire du Restaurant
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <side-restaurant />
-            </v-col>
-            <v-col cols="9">
-              <v-row>
-                <v-col cols="1"></v-col>
-                <v-col cols="10">
-                  <v-data-table
-                    no-data-text="Inventaire vide"
-                    :loading="$fetchState.pending"
-                    loading-text="En chargement ..."
-                    :headers="headers"
-                    :items="disponibles"
-                    :search="search"
-                    :items-per-page="10"
-                  >
-                    <template #[`top`]>
-                      <v-toolbar flat>
-                        <v-btn
-                          class="ml-2"
-                          :disabled="disponibles.length === 0"
-                          dark
-                          color="primary"
-                          @click="print"
-                        >
-                          <v-icon left>mdi-printer</v-icon>
-                          IMPRIMER
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                        <v-text-field
-                          v-model="search"
-                          append-icon="mdi-magnify"
-                          label="recherche ..."
-                          single-line
-                          hide-details
-                        ></v-text-field>
-                      </v-toolbar>
+  <v-card elevation="2" shaped tile>
+    <v-card-title class="headline grey lighten-1 primary--text">
+      Inventaire du Restaurant
+    </v-card-title>
+    <v-divider></v-divider>
+    <v-card-text>
+      <v-row>
+        <v-col cols="12" sm="6" md="3">
+          <side-restaurant />
+        </v-col>
+        <v-col cols="12" sm="6" md="9">
+          <v-data-table
+            no-data-text="Inventaire vide"
+            :loading="$fetchState.pending"
+            loading-text="En chargement ..."
+            :headers="headers"
+            :items="disponibles"
+            :search="search"
+            :items-per-page="10"
+          >
+            <template #[`top`]>
+              <v-toolbar flat>
+                <v-btn
+                  class="ml-2"
+                  :disabled="disponibles.length === 0"
+                  dark
+                  color="primary"
+                  @click="print"
+                >
+                  <v-icon left>mdi-printer</v-icon>
+                  IMPRIMER
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="recherche ..."
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-toolbar>
+            </template>
+            <template #item="{ item, expand, isExpanded }">
+              <tr>
+                <td>
+                  {{ item.nom }}
+                </td>
+                <td>
+                  {{ item.disponible.toFixed(2) + ' ' }}
+                  <span v-if="item.mesure">{{ item.mesure }}</span>
+                  <span v-else>Unités</span>
+                </td>
+                <td>
+                  <v-tooltip right>
+                    <template #activator="{ on: tooltip }">
+                      <v-btn
+                        v-if="item.reste !== 0"
+                        small
+                        v-on="{ tooltip }"
+                        @click="expand(!isExpanded)"
+                        ><v-icon left>mdi-information</v-icon>détails</v-btn
+                      >
                     </template>
-                    <template #item="{ item, expand, isExpanded }">
-                      <tr>
-                        <td>
-                          {{ item.nom }}
-                        </td>
-                        <td>
-                          {{ item.disponible.toFixed(2) + ' ' }}
-                          <span v-if="item.mesure">{{ item.mesure }}</span>
-                          <span v-else>Unités</span>
-                        </td>
-                        <td>
-                          <v-tooltip right>
-                            <template #activator="{ on: tooltip }">
-                              <v-btn
-                                v-if="item.reste !== 0"
-                                small
-                                v-on="{ tooltip }"
-                                @click="expand(!isExpanded)"
-                                ><v-icon left>mdi-information</v-icon
-                                >détails</v-btn
-                              >
-                            </template>
-                            <span>modifier</span>
-                          </v-tooltip>
-                        </td>
-                      </tr>
-                    </template>
-                    <template #[`expanded-item`]="{ item }">
-                      <td v-if="item.reste !== 0" :colspan="headers.length">
-                        <p class="text-right primary--text">
-                          quantité encore en bouteille {{ item.reste + '%' }}
-                        </p>
-                      </td>
-                    </template>
-                  </v-data-table>
-                </v-col>
-                <v-col cols="1"></v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions> </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+                    <span>modifier</span>
+                  </v-tooltip>
+                </td>
+              </tr>
+            </template>
+            <template #[`expanded-item`]="{ item }">
+              <td v-if="item.reste !== 0" :colspan="headers.length">
+                <p class="text-right primary--text">
+                  quantité encore en bouteille {{ item.reste + '%' }}
+                </p>
+              </td>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions> </v-card-actions>
+  </v-card>
 </template>
 
 <script>

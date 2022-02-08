@@ -30,13 +30,13 @@
               label="Mot de passe"
               type="password"
             ></v-text-field>
-            <v-checkbox
+            <!-- <v-checkbox
               v-if="options.isLoggingIn"
               v-model="options.shouldStayLoggedIn"
               light="light"
               label="Rester connecté ?"
               hide-details="hide-details"
-            ></v-checkbox>
+            ></v-checkbox> -->
             <v-btn
               v-if="options.isLoggingIn"
               class="mt-3"
@@ -70,7 +70,6 @@
 <script>
 export default {
   layout: 'login',
-  auth: false,
   data: () => ({
     email: '',
     password: '',
@@ -78,7 +77,6 @@ export default {
       isLoggingIn: true,
       shouldStayLoggedIn: false,
     },
-    errors: [],
   }),
   methods: {
     async login() {
@@ -87,7 +85,8 @@ export default {
           data: { email: this.email, password: this.password },
         })
         .then(() => {
-          this.$router.push('/')
+          this.$gates.setPermissions(this.user.permissions)
+          this.$gates.setRoles(this.user.roles)
         })
         .catch((err) => {
           this.$notifier.show({
@@ -99,4 +98,3 @@ export default {
   },
 }
 </script>
-<style lang=""></style>

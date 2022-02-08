@@ -1,193 +1,36 @@
 <template>
   <v-app>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-item
-          v-for="(module, i) in modules"
-          :key="i"
-          v-can="module.permission"
-          :to="module.to"
-          router
-          exact
-          @click="title = module.title"
-        >
-          <v-list-item-action>
-            <v-icon color="blue darken-4">{{ module.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="module.title" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-group v-can="externe">
-          <template #activator>
-            <v-list-item-action>
-              <v-icon color="blue darken-4">mdi-food-fork-drink</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>Restaurants externes</v-list-item-title>
-            </v-list-item-content>
-          </template>
-          <v-list-item
-            v-for="(restaurant, index) in restaurants"
-            :key="index"
-            :to="'/externe/' + restaurant.id"
-            router
-            exact
-            @click="title = 'Restaurants Externes'"
-          >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ restaurant.nom }}
-              </v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-icon>
-              <edit-restaurant :item="restaurant" />
-            </v-list-item-icon>
-          </v-list-item>
-          <v-list-item>
-            <create-restaurant />
-          </v-list-item>
-        </v-list-group>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <!-- <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn> -->
-      <v-toolbar-title v-text="title" />
-      <v-spacer />
-      <div v-if="isAuthenticated" class="text-center">
-        <v-menu
-          v-model="menu"
-          :close-on-content-click="false"
-          :nudge-width="100"
-          open-on-hover
-          offset-y
-        >
-          <template #activator="{ on, attrs }">
-            <v-btn color="indigo" text dark v-bind="attrs" v-on="on">
-              connecté
-            </v-btn>
-          </template>
-
-          <v-card>
-            <v-list>
-              <v-list-item>
-                <v-list-item-avatar>
-                  <img src="/segoor.jpg" :alt="'utilisateur'" />
-                </v-list-item-avatar>
-
-                <v-list-item-content>
-                  <v-list-item-title>{{ user.name }}</v-list-item-title>
-                  <v-list-item-subtitle></v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <v-tooltip bottom>
-                    <template #activator="{ on, attrs }">
-                      <v-btn
-                        class="red--text"
-                        icon
-                        v-bind="attrs"
-                        @click="logout"
-                        v-on="on"
-                      >
-                        <v-icon>mdi-logout-variant</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>déconnexion</span>
-                  </v-tooltip>
-                </v-list-item-action>
-              </v-list-item>
-            </v-list>
-          </v-card>
-        </v-menu>
-      </div>
-      <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>mdi-menu</v-icon>
-      </v-btn> -->
-    </v-app-bar>
-    <v-main>
-      <v-container fluid>
-        <alert-component />
-        <nuxt />
-        <snackbar-component />
-      </v-container>
-    </v-main>
-    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light> mdi-repeat </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer :absolute="!fixed" app>
-      <span>
-        lovely designed by
-        <a
-          href="http://www.segoor.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          >segoor</a
-        >
-        &copy; {{ new Date().getFullYear() }}
+    <TopBar />
+    <Header />
+    <nuxt />
+    <snackbar-component />
+    <footer>
+      <span class="ml-2">
+        <a href="https://segoor.net" target="_blank">
+          <img src="/segoor-favi.png" /> Segoor
+        </a>
       </span>
-    </v-footer>
+      <span>Powered by</span>
+    </footer>
   </v-app>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { AccesExterne } from '~/helper/permissions'
-import AlertComponent from '~/components/AlertComponent'
-import SnackbarComponent from '~/components/SnackbarComponent'
-import CreateRestaurant from '~/components/externe/restaurant/CreateRestaurantExterne'
-import EditRestaurant from '~/components/externe/restaurant/EditRestaurantExterne.vue'
+import TopBar from '~/components/partials/TopBar.vue'
+import Header from '~/components/partials/Header.vue'
+import SnackbarComponent from '~/components/SnackbarComponent.vue'
 export default {
   components: {
     SnackbarComponent,
-    AlertComponent,
-    CreateRestaurant,
-    EditRestaurant,
+    TopBar,
+    Header,
   },
-  data() {
-    return {
-      menu: false,
-      dialog: false,
-      clipped: false,
-      drawer: true,
-      fixed: false,
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Krinjabo Hotel',
-      externe: AccesExterne,
-    }
-  },
-  computed: {
-    ...mapGetters(['modules']),
-    ...mapGetters('externe/restaurant', ['restaurants']),
-  },
-  mounted() {
-    if (this.$gates.hasPermission(AccesExterne)) this.getAll()
-  },
+  head: () => ({
+    bodyAttrs: {
+      class: 'panel-data expand-data',
+    },
+  }),
   methods: {
-    ...mapActions('externe/restaurant', ['getAll']),
     logout() {
       this.$auth.logout('laravelJWT').then(() => {
         localStorage.clear()
@@ -196,3 +39,8 @@ export default {
   },
 }
 </script>
+<style scoped>
+.theme--light.v-application {
+  background-color: var(--v-background-base, #f3f3f3) !important;
+}
+</style>

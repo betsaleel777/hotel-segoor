@@ -1,96 +1,92 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="12" md="12">
-      <v-card elevation="2" shaped tile>
-        <v-card-title class="headline grey lighten-1 primary--text">
-          Approvisionements
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <side-externe :restaurant="restaurant" />
-            </v-col>
-            <v-col cols="12" sm="6" md="9">
-              <v-data-table
-                no-data-text="Aucune dépense"
-                :loading="$fetchState.pending"
-                loading-text="En chargement ..."
-                :headers="headers"
-                :items="founds"
-                :items-per-page="10"
+  <v-card elevation="2" shaped tile>
+    <v-card-title class="headline grey lighten-1 primary--text">
+      Approvisionements
+    </v-card-title>
+    <v-divider></v-divider>
+    <v-card-text>
+      <v-row>
+        <v-col cols="12" sm="6" md="3">
+          <side-externe :restaurant="restaurant" />
+        </v-col>
+        <v-col cols="12" sm="6" md="9">
+          <v-data-table
+            no-data-text="Aucune dépense"
+            :loading="$fetchState.pending"
+            loading-text="En chargement ..."
+            :headers="headers"
+            :items="founds"
+            :items-per-page="10"
+          >
+            <template #[`top`]>
+              <v-toolbar flat>
+                <create-depense
+                  v-can="permissions.create"
+                  :articles="articles"
+                  :restaurant="restaurant"
+                  @new-depense="update"
+                />
+                <v-btn
+                  class="ml-2 mr-2"
+                  :disabled="depenses.length === 0"
+                  dark
+                  color="primary"
+                  @click="print"
+                >
+                  <v-icon left>mdi-printer</v-icon>
+                  IMPRIMER
+                </v-btn>
+                <dialog-date-picker
+                  v-model="days"
+                  label="Intervalle de jour"
+                  :range="true"
+                />
+                <dialog-date-picker
+                  v-model="day"
+                  label="Pour un jour"
+                  :range="false"
+                />
+                <v-spacer></v-spacer>
+              </v-toolbar>
+            </template>
+            <template #[`item.montant`]="{ item }">
+              {{ item.montant | formater }}
+            </template>
+            <template #[`item.jour`]="{ item }">
+              {{ $moment(item.jour).format('ll') }}
+            </template>
+            <template #[`item.actions`]="{ item }">
+              <v-btn
+                elevation="1"
+                color="pink"
+                icon
+                fab
+                dark
+                x-small
+                :to="`/externe/${restaurant}/depense/${item.jour}/`"
               >
-                <template #[`top`]>
-                  <v-toolbar flat>
-                    <create-depense
-                      v-can="permissions.create"
-                      :articles="articles"
-                      :restaurant="restaurant"
-                      @new-depense="update"
-                    />
-                    <v-btn
-                      class="ml-2 mr-2"
-                      :disabled="depenses.length === 0"
-                      dark
-                      color="primary"
-                      @click="print"
+                <v-icon>mdi-eye</v-icon>
+              </v-btn>
+            </template>
+            <template #[`footer`]>
+              <div v-if="displayFooter">
+                <v-divider></v-divider>
+                <center>
+                  <div class="pt-1 pb-1">
+                    <v-btn color="indigo" text
+                      ><v-icon left>mdi-cash</v-icon>Total:
+                      {{ total | formater }}</v-btn
                     >
-                      <v-icon left>mdi-printer</v-icon>
-                      IMPRIMER
-                    </v-btn>
-                    <dialog-date-picker
-                      v-model="days"
-                      label="Intervalle de jour"
-                      :range="true"
-                    />
-                    <dialog-date-picker
-                      v-model="day"
-                      label="Pour un jour"
-                      :range="false"
-                    />
-                    <v-spacer></v-spacer>
-                  </v-toolbar>
-                </template>
-                <template #[`item.montant`]="{ item }">
-                  {{ item.montant | formater }}
-                </template>
-                <template #[`item.jour`]="{ item }">
-                  {{ $moment(item.jour).format('ll') }}
-                </template>
-                <template #[`item.actions`]="{ item }">
-                  <v-btn
-                    elevation="1"
-                    color="pink"
-                    icon
-                    fab
-                    dark
-                    x-small
-                    :to="`/externe/${restaurant}/depense/${item.jour}/`"
-                  >
-                    <v-icon>mdi-eye</v-icon>
-                  </v-btn>
-                </template>
-                <template #[`footer`]>
-                  <div v-if="displayFooter">
-                    <v-divider></v-divider>
-                    <center>
-                      <div class="pt-1 pb-1">
-                        <v-btn color="indigo" text
-                          ><v-icon left>mdi-cash</v-icon>Total:
-                          {{ total | formater }}</v-btn
-                        >
-                      </div>
-                    </center>
                   </div>
-                </template>
-              </v-data-table>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions></v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+                </center>
+              </div>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions></v-card-actions>
+  </v-card>
 </template>
 
 <script>

@@ -1,98 +1,94 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="12" md="12">
-      <v-card elevation="2" shaped tile>
-        <v-card-title class="headline grey lighten-1 primary--text">
-          Tournées
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <side-externe :restaurant="restaurant" />
-            </v-col>
-            <v-col cols="12" sm="6" md="9">
-              <v-data-table
-                no-data-text="Aucune Tournee"
-                :loading="$fetchState.pending"
-                loading-text="En chargement ..."
-                :headers="headers"
-                :items="tournees"
-                :search="search"
-                :items-per-page="10"
+  <v-card elevation="2" shaped tile>
+    <v-card-title class="headline grey lighten-1 primary--text">
+      Tournées
+    </v-card-title>
+    <v-divider></v-divider>
+    <v-card-text>
+      <v-row>
+        <v-col cols="12" sm="6" md="3">
+          <side-externe :restaurant="restaurant" />
+        </v-col>
+        <v-col cols="12" sm="6" md="9">
+          <v-data-table
+            no-data-text="Aucune Tournee"
+            :loading="$fetchState.pending"
+            loading-text="En chargement ..."
+            :headers="headers"
+            :items="tournees"
+            :search="search"
+            :items-per-page="10"
+          >
+            <template #[`top`]>
+              <v-toolbar flat>
+                <create-tournee
+                  v-can="permissions.create"
+                  :articles="articles"
+                  :categories="categories"
+                  :restaurant="restaurant"
+                />
+                <v-btn
+                  class="ml-2"
+                  color="primary"
+                  dark
+                  :to="`/externe/${restaurant}/tournee/archive/`"
+                >
+                  <v-icon left>mdi-archive</v-icon>
+                  archives
+                </v-btn>
+                <v-btn
+                  class="ml-2"
+                  :disabled="tournees.length === 0"
+                  dark
+                  color="primary"
+                  @click="print"
+                >
+                  <v-icon left>mdi-printer</v-icon>
+                  IMPRIMER
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="recherche ..."
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-toolbar>
+            </template>
+            <template #[`item.nombre`]="{ item }">
+              {{ item.nombre + ' ballons' }}
+            </template>
+            <template #[`item.prix_vente`]="{ item }">
+              {{ item.prix_vente | formater }}
+            </template>
+            <template #[`item.actions`]="{ item }">
+              <edit-tournee
+                v-can="permissions.edit"
+                :articles="articles"
+                :categories="categories"
+                :restaurant="restaurant"
+                :item="item"
+              />
+              <action-confirm
+                :restaurant="restaurant"
+                :item="item"
+                tip="archiver"
+                titre="Confirmer l'archivage"
+                icon="archive-plus"
+                color="error"
+                action="externe/tournee/archiver"
               >
-                <template #[`top`]>
-                  <v-toolbar flat>
-                    <create-tournee
-                      v-can="permissions.create"
-                      :articles="articles"
-                      :categories="categories"
-                      :restaurant="restaurant"
-                    />
-                    <v-btn
-                      class="ml-2"
-                      color="primary"
-                      dark
-                      :to="`/externe/${restaurant}/tournee/archive/`"
-                    >
-                      <v-icon left>mdi-archive</v-icon>
-                      archives
-                    </v-btn>
-                    <v-btn
-                      class="ml-2"
-                      :disabled="tournees.length === 0"
-                      dark
-                      color="primary"
-                      @click="print"
-                    >
-                      <v-icon left>mdi-printer</v-icon>
-                      IMPRIMER
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                      v-model="search"
-                      append-icon="mdi-magnify"
-                      label="recherche ..."
-                      single-line
-                      hide-details
-                    ></v-text-field>
-                  </v-toolbar>
-                </template>
-                <template #[`item.nombre`]="{ item }">
-                  {{ item.nombre + ' ballons' }}
-                </template>
-                <template #[`item.prix_vente`]="{ item }">
-                  {{ item.prix_vente | formater }}
-                </template>
-                <template #[`item.actions`]="{ item }">
-                  <edit-tournee
-                    v-can="permissions.edit"
-                    :articles="articles"
-                    :categories="categories"
-                    :restaurant="restaurant"
-                    :item="item"
-                  />
-                  <action-confirm
-                    :restaurant="restaurant"
-                    :item="item"
-                    tip="archiver"
-                    titre="Confirmer l'archivage"
-                    icon="archive-plus"
-                    color="error"
-                    action="externe/tournee/archiver"
-                  >
-                    Voulez vous archiver la tournee
-                    <b>{{ item.nom.toUpperCase() }}</b>
-                  </action-confirm>
-                </template>
-              </v-data-table>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions></v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+                Voulez vous archiver la tournee
+                <b>{{ item.nom.toUpperCase() }}</b>
+              </action-confirm>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions></v-card-actions>
+  </v-card>
 </template>
 
 <script>

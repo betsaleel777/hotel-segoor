@@ -1,64 +1,60 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="12" md="12">
-      <v-card elevation="2" shaped tile>
-        <v-card-title class="headline grey lighten-1 primary--text">
-          Clientelle
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          <v-row>
-            <v-toolbar flat>
-              <side-reception />
-              <v-spacer></v-spacer>
-              <v-btn text dark color="primary" nuxt to="/reception">
-                <v-icon left>mdi-arrow-left</v-icon>
-                Acceuil
-              </v-btn>
-            </v-toolbar>
-            <v-col cols="12" sm="6" md="12">
-              <v-data-table
-                no-data-text="Aucun client"
-                :loading="$fetchState.pending"
-                loading-text="En chargement ..."
-                :headers="headers"
-                :items="clients"
-                :search="search"
-                :items-per-page="10"
-              >
-                <template #[`top`]>
-                  <v-toolbar flat>
-                    <create-client :floating-button="false" />
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                      v-model="search"
-                      append-icon="mdi-magnify"
-                      label="recherche ..."
-                      single-line
-                      hide-details
-                    ></v-text-field>
-                  </v-toolbar>
-                </template>
-                <template #[`item.status`]="{ item }">
-                  <v-chip small outlined :color="getColor(item.status)" dark>
-                    {{ item.status }}
-                  </v-chip>
-                </template>
-                <template #[`item.actions`]="{ item }">
-                  <show-client :item="item" />
-                  <edit-client :item="item" />
-                  <delete-client :item="item" />
-                </template>
-              </v-data-table>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <create-client :floating-button="true" />
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-card elevation="2" shaped tile>
+    <v-card-title class="headline grey lighten-1 primary--text">
+      Clientelle
+    </v-card-title>
+    <v-divider></v-divider>
+    <v-card-text>
+      <v-row>
+        <v-toolbar flat>
+          <side-reception />
+          <v-spacer></v-spacer>
+          <v-btn text dark color="primary" nuxt to="/reception">
+            <v-icon left>mdi-arrow-left</v-icon>
+            Acceuil
+          </v-btn>
+        </v-toolbar>
+        <v-col cols="12" sm="6" md="12">
+          <v-data-table
+            no-data-text="Aucun client"
+            :loading="$fetchState.pending"
+            loading-text="En chargement ..."
+            :headers="headers"
+            :items="clients"
+            :search="search"
+            :items-per-page="10"
+          >
+            <template #[`top`]>
+              <v-toolbar flat>
+                <create-client :floating-button="false" />
+                <v-spacer></v-spacer>
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="recherche ..."
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-toolbar>
+            </template>
+            <template #[`item.status`]="{ item }">
+              <v-chip small outlined :color="getColor(item.status)" dark>
+                {{ item.status }}
+              </v-chip>
+            </template>
+            <template #[`item.actions`]="{ item }">
+              <show-client :item="item" />
+              <edit-client :item="item" />
+              <delete-client :item="item" />
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions>
+      <create-client :floating-button="true" />
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>

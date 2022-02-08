@@ -1,89 +1,85 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="12" md="12">
-      <v-card elevation="2" shaped tile>
-        <v-card-title class="headline grey lighten-1 primary--text">
-          Articles
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <side-externe :restaurant="restaurant" />
-            </v-col>
-            <v-col cols="12" sm="6" md="9">
-              <v-data-table
-                no-data-text="Aucun article"
-                :loading="$fetchState.pending"
-                loading-text="En chargement ..."
-                :headers="headers"
-                :items="articles"
-                :search="search"
-                :items-per-page="10"
-                ><template #[`top`]>
-                  <v-toolbar flat>
-                    <create-article
-                      v-can="permissions.create"
-                      :categories="categories"
-                      :restaurant="restaurant"
-                    />
-                    <v-btn
-                      class="ml-2"
-                      color="primary"
-                      dark
-                      :to="`/externe/${restaurant}/article/archive/`"
-                    >
-                      <v-icon left>mdi-archive</v-icon>
-                      archives
-                    </v-btn>
-                    <v-btn
-                      class="ml-2"
-                      :disabled="articles.length === 0"
-                      color="primary"
-                      dark
-                      @click="print"
-                    >
-                      <v-icon left>mdi-printer</v-icon>
-                      IMPRIMER
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                      v-model="search"
-                      append-icon="mdi-magnify"
-                      label="recherche ..."
-                      single-line
-                      hide-details
-                    ></v-text-field>
-                  </v-toolbar>
-                </template>
-                <template #[`item.actions`]="{ item }">
-                  <edit-article
-                    v-can="permissions.edit"
-                    :categories="categories"
-                    :restaurant="restaurant"
-                    :item="item"
-                  />
-                  <action-confirm
-                    :restaurant="restaurant"
-                    :item="item"
-                    tip="archiver"
-                    titre="Confirmer l'archivage"
-                    icon="archive-plus"
-                    color="error"
-                    action="externe/article/archiver"
-                  >
-                    Voulez vous archiver l'article
-                    <b>{{ item.nom.toUpperCase() }}</b>
-                  </action-confirm>
-                </template>
-              </v-data-table>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions></v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-card elevation="2" shaped tile>
+    <v-card-title class="headline grey lighten-1 primary--text">
+      Articles
+    </v-card-title>
+    <v-divider></v-divider>
+    <v-card-text>
+      <v-row>
+        <v-col cols="12" sm="6" md="3">
+          <side-externe :restaurant="restaurant" />
+        </v-col>
+        <v-col cols="12" sm="6" md="9">
+          <v-data-table
+            no-data-text="Aucun article"
+            :loading="$fetchState.pending"
+            loading-text="En chargement ..."
+            :headers="headers"
+            :items="articles"
+            :search="search"
+            :items-per-page="10"
+            ><template #[`top`]>
+              <v-toolbar flat>
+                <create-article
+                  v-can="permissions.create"
+                  :categories="categories"
+                  :restaurant="restaurant"
+                />
+                <v-btn
+                  class="ml-2"
+                  color="primary"
+                  dark
+                  :to="`/externe/${restaurant}/article/archive/`"
+                >
+                  <v-icon left>mdi-archive</v-icon>
+                  archives
+                </v-btn>
+                <v-btn
+                  class="ml-2"
+                  :disabled="articles.length === 0"
+                  color="primary"
+                  dark
+                  @click="print"
+                >
+                  <v-icon left>mdi-printer</v-icon>
+                  IMPRIMER
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="recherche ..."
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-toolbar>
+            </template>
+            <template #[`item.actions`]="{ item }">
+              <edit-article
+                v-can="permissions.edit"
+                :categories="categories"
+                :restaurant="restaurant"
+                :item="item"
+              />
+              <action-confirm
+                :restaurant="restaurant"
+                :item="item"
+                tip="archiver"
+                titre="Confirmer l'archivage"
+                icon="archive-plus"
+                color="error"
+                action="externe/article/archiver"
+              >
+                Voulez vous archiver l'article
+                <b>{{ item.nom.toUpperCase() }}</b>
+              </action-confirm>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions></v-card-actions>
+  </v-card>
 </template>
 
 <script>
