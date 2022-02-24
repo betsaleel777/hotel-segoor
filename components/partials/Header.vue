@@ -20,9 +20,9 @@
           v-can="module.permission"
           class="has-drp"
         >
-          <a :href="module.to"
+          <NuxtLink :to="module.to" exact
             ><v-icon left>{{ module.icon }}</v-icon>
-            <span>{{ module.title }}</span></a
+            <span>{{ module.title }}</span></NuxtLink
           >
         </li>
       </ul>
@@ -34,11 +34,13 @@
           @click="activeExterne = !activeExterne"
         >
           <a href="#"
-            ><i class="ion-briefcase"></i> <span>Restaurants Externes</span></a
+            ><i class="ion-briefcase"></i><span>Restaurants Externes</span></a
           >
           <ul class="sb-drp" :style="{ display: displayable }">
             <li v-for="(restaurant, index) in restaurants" :key="index">
-              <a :href="'/externe/' + restaurant.id">{{ restaurant.nom }}</a>
+              <NuxtLink :to="'/externe/' + restaurant.id">{{
+                restaurant.nom
+              }}</NuxtLink>
             </li>
           </ul>
         </li>

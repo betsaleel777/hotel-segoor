@@ -1,15 +1,5 @@
 <template>
   <section>
-    <div class="pg-tp">
-      <i class="ion-cube"></i>
-      <div class="pr-tp-inr">
-        <h4>Welcome to <strong>ZAWYA</strong><span></span> Panel</h4>
-        <span
-          >Admin Template for medium and large web applications with ery clean
-          and aesthetic style.</span
-        >
-      </div>
-    </div>
     <!-- Page Top -->
     <div class="panel-content">
       <div class="filter-items">

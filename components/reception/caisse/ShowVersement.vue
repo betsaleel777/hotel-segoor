@@ -22,7 +22,7 @@
       <v-card-title class="justify-center primary--text headline"
         ><div>Détail de versement</div>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <v-row>
           <v-col cols="6">
             <span

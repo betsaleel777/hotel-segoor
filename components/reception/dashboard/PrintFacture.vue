@@ -16,158 +16,175 @@
       <v-card-text id="printable">
         <!-- entête de facture -->
         <v-container>
-          <v-row>
-            <v-col cols="12">
-              <div class="text-center">
-                <h2 class="black--text">Facture {{ item.code }}</h2>
+          <div class="invoice-wrp">
+            <div class="invoice-hd">
+              <div class="logo">
+                <h1>
+                  <a href="#" title=""
+                    ><img src="/logo.jpg" alt="logo" height="110" width="110"
+                  /></a>
+                </h1>
               </div>
-            </v-col>
-            <v-col cols="6">
-              <div class="text-left">
-                <h4 class="black--text">
-                  {{ $moment().format('ll') }}
-                </h4>
-                <h4 class="black--text">Maison d'hôte Krinjabo,</h4>
-                <h4 class="black--text">Yamoussoukro, Quartier Millionaire</h4>
-                <h4 class="black--text">numero1/numero2</h4>
-                <h4 class="black--text">votremail@krinjabo.com</h4>
-              </div>
-            </v-col>
-            <v-col cols="3"></v-col>
-            <v-col cols="3">
-              <v-img width="170" height="170" src="/segoor.jpg"></v-img>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-divider></v-divider>
-        <!-- corps de facture -->
-        <v-container>
-          <v-row>
-            <v-col cols="3"> <b>Client:</b> {{ fullName }} </v-col>
-            <v-col cols="3"
-              ><b>Contact:</b> {{ item.client_linked.contact }}</v-col
-            >
-            <v-col cols="3"
-              ><span v-if="item.client_linked.email"
-                ><b>Email:</b> {{ item.client_linked.email }}</span
-              ></v-col
-            >
-            <v-col cols="3">
-              <span v-if="item.client_linked.domicile"
-                ><b>Domicile:</b> {{ item.client_linked.domicile }}</span
+              <h1 class="green-clr">Facture</h1>
+            </div>
+            <div class="invoice-dte">
+              <span
+                >Facture No: <i>{{ item.code }}</i></span
               >
-            </v-col>
-            <v-col cols="12">
-              <div class="text-center">
-                <h3 class="primary--text text--darken-3">HEBERGEMENT</h3>
+              <span
+                >Date: <i>{{ $moment().format('ll') }}</i></span
+              >
+              <a class="brd-rd5" href="#" title="" @click="print"
+                ><v-icon left>mdi-printer</v-icon> Imprimer</a
+              >
+            </div>
+            <div class="invoice-inf">
+              <div class="inf-inr inf-frm">
+                <h4>From</h4>
+                <span
+                  >Hôtel:
+                  <i class="green-clr">Résidence Hotel Krinjabo</i></span
+                >
+                <span>Address: <i>Yamoussoukro Quartier Millionaire</i></span>
+                <span>Phone: <i>+225 00 00 00 00</i></span>
+                <span>Cell: <i>+225 00 00 00 00</i></span>
+                <span
+                  >Paiement dû:
+                  <i class="blue-clr">{{
+                    $moment().add(5, 'days').format('ll')
+                  }}</i></span
+                >
               </div>
-              <v-simple-table>
-                <template #default>
-                  <thead>
-                    <tr>
-                      <th class="text-center">Chambre</th>
-                      <th class="text-center">Quantité</th>
-                      <th class="text-center">Nuitée</th>
-                      <th class="text-center">Total sans Remise</th>
-                      <th class="text-center">Remise</th>
-                      <th class="text-center">Total avec Remise</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="text-center">
-                        {{ item.chambre_linked.nom }}
-                      </td>
-                      <td class="text-center">
-                        {{ quantiteNuitee + ' ' }}
-                        jours
-                      </td>
-                      <td class="text-center">
-                        {{ item.prix | formater }} FCFA
-                      </td>
-                      <td class="text-center">
-                        {{ (item.prix * quantiteNuitee) | formater }} FCFA
-                      </td>
-                      <td class="text-center">
-                        {{ remise | formater }}x{{ quantiteNuitee }} FCFA
-                      </td>
-                      <td class="text-center">
-                        <b>{{ montantAvecRemise | formater }} FCFA</b>
-                      </td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-            </v-col>
-            <v-col cols="12">
-              <div class="text-center">
-                <h3 class="primary--text text--darken-3">CONSOMMATION</h3>
+              <div class="inf-inr inf-to">
+                <h4>Au client</h4>
+                <span
+                  >Nom: <i class="blue-clr">{{ fullName }}</i></span
+                >
+                <span
+                  >Address: <i>{{ item.client_linked.domicile }}</i></span
+                >
+                <span
+                  >Phone: <i>{{ item.client_linked.contact }}</i></span
+                >
+                <span
+                  >Email: <i>{{ item.client_linked.email }}</i></span
+                >
               </div>
-              <v-simple-table>
-                <template #default>
-                  <thead>
-                    <tr>
-                      <th class="text-center">Date</th>
-                      <th class="text-center">Lieu consommation</th>
-                      <th class="text-left">Désignation</th>
-                      <th class="text-center">Quantité</th>
-                      <th class="text-right">Prix</th>
-                      <th class="text-right">Montant</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="consommation in consommations"
-                      :key="consommation.code"
-                    >
-                      <td class="text-center">
-                        {{ $moment(consommation.jour).format('llll') }}
-                      </td>
-                      <td class="text-center">
-                        {{ consommation.lieu }}
-                      </td>
-                      <td class="text-left">{{ consommation.nom }}</td>
-                      <td class="text-center">{{ consommation.quantite }}</td>
-                      <td class="text-right">
-                        {{ consommation.prix | formater }} FCFA
-                      </td>
-                      <td class="text-right">
-                        {{
+            </div>
+            <div class="invoice-table">
+              <table class="table table-bordered">
+                <thead class="table-inverse">
+                  <tr>
+                    <th class="text-center">Chambre</th>
+                    <th class="text-center">Quantité</th>
+                    <th class="text-center">Nuitée</th>
+                    <th class="text-center">Total net</th>
+                    <th class="text-center">Remise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-center">
+                      <span>{{ item.chambre_linked.nom }}</span>
+                    </td>
+                    <td class="text-center">
+                      <span>{{ quantiteNuitee + ' ' }} jours</span>
+                    </td>
+                    <td class="text-center">
+                      <span>{{ item.prix | formater }} FCFA</span>
+                    </td>
+                    <td class="text-center">
+                      <span
+                        >{{
+                          (item.prix * quantiteNuitee) | formater
+                        }}
+                        FCFA</span
+                      >
+                    </td>
+                    <td class="text-center">
+                      <span
+                        >{{ remise | formater }}x{{ quantiteNuitee }} FCFA</span
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="invoice-total">
+              <div class="invoice-total-iner">
+                <span
+                  >Hôtel: <i>{{ montantAvecRemise | formater }} FCFA</i></span
+                >
+                <!-- <span>TAX/VAT: <i>$25.6</i></span> -->
+              </div>
+            </div>
+            <div v-if="consommations.length > 0" class="invoice-table">
+              <table class="table table-bordered">
+                <thead class="table-inverse">
+                  <tr>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Lieu consommation</th>
+                    <th class="text-center">Désignation</th>
+                    <th class="text-center">Quantité</th>
+                    <th class="text-center">Prix</th>
+                    <th class="text-center">Montant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="consommation in consommations"
+                    :key="consommation.code"
+                  >
+                    <td class="text-center">
+                      <span>{{
+                        $moment(consommation.jour).format('llll')
+                      }}</span>
+                    </td>
+                    <td class="text-center">
+                      <span>{{ consommation.lieu }}</span>
+                    </td>
+                    <td class="text-center">
+                      <span>{{ consommation.nom }}</span>
+                    </td>
+                    <td class="text-center">{{ consommation.quantite }}</td>
+                    <td class="text-center">
+                      <span>{{ consommation.prix | formater }} FCFA</span>
+                    </td>
+                    <td class="text-center">
+                      <span
+                        >{{
                           (consommation.quantite * consommation.prix) | formater
                         }}
-                        FCFA
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td class="text-right" colspan="5"><b>Total</b></td>
-                      <td class="text-right">
-                        <b>{{ totalConsomme | formater }} FCFA</b>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </template>
-              </v-simple-table>
-            </v-col>
-            <v-col cols="12">
-              <div class="text-right">
-                <h3 class="pink--text darken-3">
-                  Montant total à payer:
-                  {{ (totalConsomme + montantAvecRemise) | formater }} FCFA
-                </h3>
+                        FCFA</span
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="invoice-total">
+              <div class="invoice-total-iner">
+                <span
+                  >Extra: <i>{{ totalConsomme | formater }}</i></span
+                >
+                <!-- <span>TAX/VAT: <i>$25.6</i></span> -->
               </div>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-divider></v-divider>
-        <!-- pieds de facture -->
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <small>information de bas de facture à mettre</small>
-            </v-col>
-          </v-row>
+            </div>
+            <div class="invoice-total">
+              <div class="invc-total">
+                <span
+                  >TOTAL:
+                  <i>{{
+                    (totalConsomme + montantAvecRemise) | formater
+                  }}</i></span
+                >
+              </div>
+            </div>
+            <p class="note">
+              <span>Note:</span> Lorem ipsum dolor sit amet, consectetur
+              adipiscing elit.
+            </p>
+          </div>
         </v-container>
       </v-card-text>
       <v-card-actions>
@@ -318,7 +335,13 @@ export default {
       const options = {
         name: '_blank',
         specs: ['fullscreen=yes', 'titlebar=yes', 'scrollbars=yes'],
-        styles: ['https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css'],
+        styles: [
+          'https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css',
+          '/css/main.css',
+          '/css/materialize.min.css',
+          '/css/main.css',
+          '/css/responsive.css',
+        ],
         timeout: 1000, // default timeout before the print window appears
         autoClose: true, // if false, the window will not close after printing
         windowTitle: 'facture-' + this.item.code, // override the window title
@@ -337,4 +360,4 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped></style>

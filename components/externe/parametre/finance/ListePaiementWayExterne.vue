@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-4">
     <v-data-table
       v-if="!archiveMode"
       no-data-text="Aucun élément"

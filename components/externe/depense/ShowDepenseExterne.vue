@@ -32,7 +32,7 @@
       </v-card-title>
       <v-card-text justify="center" align="center">
         <div class="text-center mt-3">
-          <h3>Articles Achetés</h3>
+          <h5>Articles Achetés</h5>
         </div>
         <v-simple-table>
           <template #default>

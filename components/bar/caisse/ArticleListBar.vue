@@ -1,6 +1,6 @@
 <template>
   <v-col cols="12">
-    <div class="text-center"><h4>Liste des Articles</h4></div>
+    <div class="text-center"><h6>Liste des Articles</h6></div>
     <v-simple-table>
       <template #default>
         <thead>

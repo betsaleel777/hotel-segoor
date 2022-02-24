@@ -49,12 +49,6 @@
     <template #[`item.montant`]="{ item }">
       {{ item.montant | formater }}
     </template>
-    <template #[`item.consommation`]="{ item }">
-      {{ item.consommation | formater }}
-    </template>
-    <template #[`item.verse`]="{ item }">
-      {{ item.verse | formater }}
-    </template>
     <template #[`item.entree`]="{ item }">
       {{ $moment(item.entree).format('ll') }}
     </template>
@@ -62,6 +56,7 @@
       {{ $moment(item.sortie).format('ll') }}
     </template>
     <template #[`item.actions`]="{ item }">
+      <show-hebergement :item="item" />
       <edit-attribution-form
         v-if="item.status !== 'libérée'"
         :item="item"
@@ -84,11 +79,12 @@
 <script>
 import printjs from 'print-js'
 import { mapActions, mapGetters } from 'vuex'
-import FreeAttribution from '~/components/reception/hall/FreeReception'
-import DeleteAttributionForm from '~/components/reception/hall/DeleteReception'
-import EditAttributionForm from '~/components/reception/hall/EditReception'
+import FreeAttribution from '~/components/reception/hall/FreeReception.vue'
+import DeleteAttributionForm from '~/components/reception/hall/DeleteReception.vue'
+import EditAttributionForm from '~/components/reception/hall/EditReception.vue'
 import CreateReception from '~/components/reception/hall/CreateReception.vue'
 import PaiementReception from '~/components/reception/hall/PaiementReception.vue'
+import ShowHebergement from '~/components/reception/hall/ShowHebergement.vue'
 
 export default {
   components: {
@@ -97,6 +93,7 @@ export default {
     FreeAttribution,
     CreateReception,
     PaiementReception,
+    ShowHebergement,
   },
   filters: {
     upper(value) {
@@ -123,8 +120,6 @@ export default {
         { text: 'Sortie', value: 'sortie', align: 'center' },
         { text: 'Statut', value: 'status', align: 'center' },
         { text: 'Montant chambre', value: 'montant', align: 'center' },
-        { text: 'Consommation', value: 'consommation', align: 'center' },
-        { text: 'Total versé', value: 'verse', align: 'center' },
         { text: 'Actions', value: 'actions', sortable: false, align: 'center' },
       ],
     }

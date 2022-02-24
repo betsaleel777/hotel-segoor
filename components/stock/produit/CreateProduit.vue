@@ -27,7 +27,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <v-form id="form" ref="form" enctype="multipart/form-data">
           <v-container>
             <v-row>

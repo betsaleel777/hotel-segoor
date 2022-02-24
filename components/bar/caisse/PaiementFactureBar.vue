@@ -30,10 +30,10 @@
       <v-card-text justify="center" align="center">
         <v-form ref="form">
           <v-container>
-            <h4 class="pink--text mb-5">
+            <h6 class="pink--text mb-5">
               Le montant qui reste à payer est:
               {{ reste | formater }}
-            </h4>
+            </h6>
             <v-row>
               <v-col cols="3">
                 <v-select

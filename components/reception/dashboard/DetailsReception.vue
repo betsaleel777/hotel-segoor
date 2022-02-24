@@ -16,7 +16,9 @@
           <v-row>
             <v-col cols="6">
               <div class="text-left">
-                <h2 :class="getStatusColor">{{ details.status }}</h2>
+                <h5 :class="getStatusColor">
+                  <b>{{ details.status }}</b>
+                </h5>
                 <p>
                   <b>Client:</b> {{ fullName }} <br />
                   <b>Contact:</b> {{ details.client_linked.contact }}
@@ -25,13 +27,15 @@
             </v-col>
             <v-col cols="6">
               <div class="text-right">
-                <h3>{{ $moment(details.created_at).format('ll') }}</h3>
+                <h5>
+                  <b>{{ $moment(details.created_at).format('ll') }}</b>
+                </h5>
               </div>
             </v-col>
             <v-col cols="12">
               <!-- hébergement -->
               <div class="text-center">
-                <h2 class="primary--text">Hébergement</h2>
+                <h5 class="primary--text">Hébergement</h5>
               </div>
               <v-container>
                 <v-simple-table>
@@ -74,7 +78,7 @@
                 </v-simple-table>
               </v-container>
               <div class="text-center">
-                <h2 class="primary--text">Consommation</h2>
+                <h5 class="primary--text">Consommation</h5>
               </div>
               <v-container v-if="consommations.length === 0">
                 <v-alert outlined type="info" prominent border="right">
@@ -139,7 +143,7 @@
                 </v-simple-table>
               </v-container>
               <div class="text-center">
-                <h2 class="primary--text">Paiements</h2>
+                <h5 class="primary--text">Paiements</h5>
               </div>
               <v-container v-if="!paiementExist">
                 <v-alert outlined type="info" prominent border="right">
@@ -195,10 +199,10 @@
             </v-col>
             <v-col cols="12">
               <div class="text-right">
-                <h3 class="pink--text darken-3">
+                <h6 class="pink--text darken-3">
                   Montant total à payer:
                   {{ reste | formater }} FCFA
-                </h3>
+                </h6>
               </div>
             </v-col>
           </v-row>

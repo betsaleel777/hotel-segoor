@@ -29,7 +29,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <v-container>
           <v-row>
             <v-col cols="6">

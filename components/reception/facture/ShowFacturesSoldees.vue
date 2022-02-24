@@ -27,7 +27,7 @@
         </v-btn>
       </v-card-title>
       <v-divider></v-divider>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <v-data-table
           no-data-text="Aucune Facture"
           :loading="loading"

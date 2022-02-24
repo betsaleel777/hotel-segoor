@@ -27,7 +27,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <v-form ref="form">
           <v-container>
             <v-row>
@@ -73,7 +73,7 @@
                 ></v-textarea>
               </v-col>
               <v-col cols="12">
-                <h3 class="text-center">Composants du coktail</h3>
+                <h6 class="text-center">Composants du coktail</h6>
               </v-col>
             </v-row>
             <article-form-cocktail @update-list="listeUpdate" />
@@ -147,7 +147,6 @@ export default {
     },
     listeUpdate(element) {
       this.ingredients = element
-      console.log(this.ingredients)
     },
   },
 }

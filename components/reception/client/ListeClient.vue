@@ -127,6 +127,8 @@ export default {
         header: '<center><h3>Liste des Clients</h3></center><br>',
         css: [
           'https://cdnjs.cloudflare.com/ajax/libs/vuetify/3.0.0-alpha.11/vuetify.min.css',
+          '/css/materialize.min.css',
+          '/css/responsive.css',
         ],
         style: 'td {text-align: center;font-size: small } ',
       })

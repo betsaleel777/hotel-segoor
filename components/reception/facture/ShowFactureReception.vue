@@ -27,7 +27,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <div class="text-center mt-3">
           <h3 class="primary--text text--darken-3">PAIEMENTS</h3>
         </div>

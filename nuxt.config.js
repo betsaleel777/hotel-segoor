@@ -43,11 +43,6 @@ export default {
       {
         rel: 'stylesheet',
         type: 'text/css',
-        href: '/css/responsive.css',
-      },
-      {
-        rel: 'stylesheet',
-        type: 'text/css',
         href: '/css/color-schemes/color1.css',
         title: 'color1',
       },
@@ -56,12 +51,6 @@ export default {
         type: 'text/css',
         href: '/css/color-schemes/color2.css',
         title: 'color2',
-      },
-      {
-        rel: 'stylesheet',
-        type: 'text/css',
-        href: '/css/color-schemes/color3.css',
-        title: 'color3',
       },
       {
         rel: 'stylesheet',
@@ -97,7 +86,11 @@ export default {
       { src: '/js/main.js', body: 'true' },
     ],
   },
-
+  loadingIndicator: {
+    name: 'three-bounce',
+    color: '#3B8070',
+    background: 'white',
+  },
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

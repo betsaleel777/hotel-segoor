@@ -1,48 +1,50 @@
 <template>
-  <v-data-table
-    no-data-text="Aucun Utilisateurs"
-    :loading="loading"
-    loading-text="En chargement ..."
-    :headers="headers"
-    :items="users"
-    :search="search"
-    :items-per-page="10"
-    locale="fr-FR"
-  >
-    <template #[`top`]>
-      <v-toolbar flat>
-        <create-user :roles="roles" />
-        <v-btn
-          class="ml-2"
-          :disabled="users.length === 0"
-          dark
-          color="primary"
-          @click="print"
-        >
-          <v-icon left>mdi-printer</v-icon>
-          IMPRIMER
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="recherche ..."
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-toolbar>
-    </template>
-    <template #[`item.status`]="{ item }">
-      <v-chip v-if="item.status === 'connecté'" outlined color="success">{{
-        item.status
-      }}</v-chip>
-      <v-chip v-else outlined color="error">{{ item.status }}</v-chip>
-    </template>
-    <template #[`item.actions`]="{ item }">
-      <edit-user :item="item" :roles="roles" />
-      <delete-user :item="item" />
-    </template>
-  </v-data-table>
+  <v-container>
+    <v-data-table
+      no-data-text="Aucun Utilisateurs"
+      :loading="loading"
+      loading-text="En chargement ..."
+      :headers="headers"
+      :items="users"
+      :search="search"
+      :items-per-page="10"
+      locale="fr-FR"
+    >
+      <template #[`top`]>
+        <v-toolbar flat>
+          <create-user :roles="roles" />
+          <v-btn
+            class="ml-2"
+            :disabled="users.length === 0"
+            dark
+            color="primary"
+            @click="print"
+          >
+            <v-icon left>mdi-printer</v-icon>
+            IMPRIMER
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="recherche ..."
+            single-line
+            hide-details
+          ></v-text-field>
+        </v-toolbar>
+      </template>
+      <template #[`item.status`]="{ item }">
+        <v-chip v-if="item.status === 'connecté'" outlined color="success">{{
+          item.status
+        }}</v-chip>
+        <v-chip v-else outlined color="error">{{ item.status }}</v-chip>
+      </template>
+      <template #[`item.actions`]="{ item }">
+        <edit-user :item="item" :roles="roles" />
+        <delete-user :item="item" />
+      </template>
+    </v-data-table>
+  </v-container>
 </template>
 
 <script>

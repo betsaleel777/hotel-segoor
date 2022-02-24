@@ -29,7 +29,7 @@
       </v-card-title>
       <v-card-text>
         <div class="text-center mt-3">
-          <h3 class="primary--text text--darken-3">PAIEMENTS</h3>
+          <h5 class="primary--text text--darken-3">PAIEMENTS</h5>
         </div>
         <v-simple-table>
           <template #default>
@@ -68,95 +68,95 @@
             </tfoot>
           </template>
         </v-simple-table>
-        <v-divider color="secondary"></v-divider>
       </v-card-text>
       <v-card-text id="printable">
-        <!-- entête de facture -->
         <v-container>
-          <v-row>
-            <v-col cols="12">
-              <div class="text-center">
-                <h2 class="black--text">Facture {{ item.code }}</h2>
+          <div class="invoice-wrp">
+            <div class="invoice-hd">
+              <div class="logo">
+                <h1>
+                  <a href="#" title=""
+                    ><img src="/logo.jpg" alt="logo" height="110" width="110"
+                  /></a>
+                </h1>
               </div>
-            </v-col>
-            <v-col cols="6">
-              <div class="text-left">
-                <h4 class="black--text">
-                  {{ $moment().format('ll') }}
-                </h4>
-                <h4 class="black--text">Maison d'hôte Krinjabo,</h4>
-                <h4 class="black--text">Yamoussoukro, Quartier Millionaire</h4>
-                <h4 class="black--text">numero1/numero2</h4>
-                <h4 class="black--text">votremail@krinjabo.com</h4>
+              <h1 class="green-clr">Facture</h1>
+            </div>
+            <div class="invoice-dte">
+              <span
+                >Facture No: <i>{{ item.code }}</i></span
+              >
+              <span
+                >Date: <i>{{ $moment().format('ll') }}</i></span
+              >
+              <a class="brd-rd5" href="#" title="" @click="printer"
+                ><v-icon left>mdi-printer</v-icon> Imprimer</a
+              >
+            </div>
+            <div class="invoice-inf">
+              <div class="inf-inr inf-frm">
+                <h4>Par</h4>
+                <span
+                  >Hôtel:
+                  <i class="green-clr">Résidence Hotel Krinjabo</i></span
+                >
+                <span>Address: <i>Yamoussoukro Quartier Millionaire</i></span>
+                <span>Phone: <i>+225 00 00 00 00</i></span>
+                <span>Cell: <i>+225 00 00 00 00</i></span>
+                <span
+                  >Paiement dû:
+                  <i class="blue-clr">{{
+                    $moment().add(5, 'days').format('ll')
+                  }}</i></span
+                >
               </div>
-            </v-col>
-            <v-col cols="3"></v-col>
-            <v-col cols="3">
-              <v-img width="170" height="170" src="/segoor.jpg"></v-img>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-divider></v-divider>
-        <!-- corps de facture -->
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <div class="text-center">
-                <h3 class="primary--text text--darken-3">CONSOMMATION</h3>
+            </div>
+            <div class="invoice-table">
+              <table class="table table-bordered">
+                <thead class="table-inverse">
+                  <tr>
+                    <th class="text-center">Date</th>
+                    <th class="text-left">Désignation</th>
+                    <th class="text-center">Quantité</th>
+                    <th class="text-right">Prix</th>
+                    <th class="text-right">Montant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="consommation in consommations"
+                    :key="consommation.code"
+                  >
+                    <td class="text-center">
+                      {{ $moment(consommation.jour).format('llll') }}
+                    </td>
+                    <td class="text-left">{{ consommation.nom }}</td>
+                    <td class="text-center">{{ consommation.quantite }}</td>
+                    <td class="text-right">
+                      {{ consommation.prix | formater }} FCFA
+                    </td>
+                    <td class="text-right">
+                      {{
+                        (consommation.quantite * consommation.prix) | formater
+                      }}
+                      FCFA
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="invoice-total">
+              <div class="invoice-total-iner">
+                <span
+                  >Total: <i>{{ item.montant | formater }}</i></span
+                >
               </div>
-              <v-simple-table>
-                <template #default>
-                  <thead>
-                    <tr>
-                      <th class="text-center">Date</th>
-                      <th class="text-left">Désignation</th>
-                      <th class="text-center">Quantité</th>
-                      <th class="text-right">Prix</th>
-                      <th class="text-right">Montant</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="consommation in consommations"
-                      :key="consommation.code"
-                    >
-                      <td class="text-center">
-                        {{ $moment(consommation.jour).format('llll') }}
-                      </td>
-                      <td class="text-left">{{ consommation.nom }}</td>
-                      <td class="text-center">{{ consommation.quantite }}</td>
-                      <td class="text-right">
-                        {{ consommation.prix | formater }} FCFA
-                      </td>
-                      <td class="text-right">
-                        {{
-                          (consommation.quantite * consommation.prix) | formater
-                        }}
-                        FCFA
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td class="text-right" colspan="4"><b>Total</b></td>
-                      <td class="text-right">
-                        <b>{{ item.montant | formater }} FCFA</b>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </template>
-              </v-simple-table>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-divider></v-divider>
-        <!-- pieds de facture -->
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <small>information de bas de facture à mettre</small>
-            </v-col>
-          </v-row>
+            </div>
+            <p class="note">
+              <span>Note:</span> Lorem ipsum dolor sit amet, consectetur
+              adipiscing elit.
+            </p>
+          </div>
         </v-container>
       </v-card-text>
       <v-card-actions>
@@ -217,7 +217,13 @@ export default {
       const options = {
         name: '_blank',
         specs: ['fullscreen=yes', 'titlebar=yes', 'scrollbars=yes'],
-        styles: ['https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css'],
+        styles: [
+          'https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css',
+          '/css/main.css',
+          '/css/materialize.min.css',
+          '/css/main.css',
+          '/css/responsive.css',
+        ],
         timeout: 1000, // default timeout before the print window appears
         autoClose: true, // if false, the window will not close after printing
         windowTitle: 'facture-' + this.item.code, // override the window title

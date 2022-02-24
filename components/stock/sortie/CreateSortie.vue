@@ -32,7 +32,7 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <div class="text-center"><h4>Liste des Articles</h4></div>
+                <div class="text-center"><h6>Liste des Articles</h6></div>
               </v-col>
               <v-col cols="12">
                 <v-text-field

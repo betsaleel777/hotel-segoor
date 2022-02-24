@@ -24,7 +24,7 @@
       <v-card-title>
         <span class="headline primary--text">reserver chambre</span>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <v-form ref="form">
           <v-container>
             <v-row>

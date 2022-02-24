@@ -27,14 +27,14 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <v-form ref="form">
           <v-container>
             <!-- presentation du plat -->
             <v-row>
               <!-- image -->
               <v-col cols="12">
-                <div class="text-center"><h4>Présention du Plat</h4></div>
+                <div class="text-center"><h6>Présention du Plat</h6></div>
               </v-col>
               <v-col cols="4"></v-col>
               <v-col cols="4">
@@ -97,7 +97,7 @@
                 ></v-textarea>
               </v-col>
               <v-col cols="12">
-                <div class="text-center"><h4>Liste des Ingrédients</h4></div>
+                <div class="text-center"><h6>Liste des Ingrédients</h6></div>
               </v-col>
             </v-row>
             <!-- liste des ingredients -->

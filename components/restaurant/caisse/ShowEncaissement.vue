@@ -29,7 +29,7 @@
       </v-card-title>
       <v-card-text justify="center" align="center">
         <div class="text-center mt-3">
-          <h3>Liste des Articles consommés</h3>
+          <h6>Liste des Articles consommés</h6>
         </div>
         <v-simple-table>
           <template #default>
@@ -74,7 +74,7 @@
         </v-simple-table>
         <v-container v-if="item.client === 'Anonyme'">
           <div class="text-center mt-5">
-            <h3>Liste des Paiements</h3>
+            <h6>Liste des Paiements</h6>
           </div>
           <v-simple-table>
             <template #default>

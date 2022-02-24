@@ -14,7 +14,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="mt-5">
         <v-form ref="form">
           <v-container>
             <v-row>
@@ -77,7 +77,7 @@
                 ></v-textarea>
               </v-col>
             </v-row>
-            <center><h4>Composants du mélange</h4></center>
+            <center><h6>Composants du mélange</h6></center>
             <simple-multiple-input
               :key="remount"
               v-model="melanges"

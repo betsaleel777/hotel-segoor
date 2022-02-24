@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <v-data-table
       v-if="!archiveMode"
       no-data-text="Aucune Categories"
@@ -101,7 +101,7 @@
         </action-confirm>
       </template>
     </v-data-table>
-  </div>
+  </v-container>
 </template>
 
 <script>

@@ -21,9 +21,7 @@
     </template>
     <v-card>
       <v-card-title class="justify-center primary--text headline grey lighten-2"
-        ><div>
-          Paiement pour l'hébergement chambre {{ reception.chambre_linked.nom }}
-        </div>
+        ><div>Paiement pour le client {{ reception.client_linked.nom }}</div>
         <v-spacer></v-spacer>
         <v-btn color="error" icon @click="close">
           <v-icon>mdi-close</v-icon>
@@ -32,9 +30,9 @@
       <v-card-text justify="center" align="center">
         <v-form ref="form">
           <v-container>
-            <h4 class="pink--text mb-5">
+            <h6 class="pink--text mb-5">
               le montant qui reste à payer est: {{ reste }} FCFA
-            </h4>
+            </h6>
             <v-row>
               <v-col cols="3">
                 <v-select
