@@ -11,7 +11,7 @@
     "lint": "yarn lint:js"
   },
   "dependencies": {
-    "@fullcalendar/daygrid": "^5.6.0",
+    "@fullcalendar/daygrid": "^5.11.2",
     "@fullcalendar/interaction": "^5.6.0",
     "@fullcalendar/resource-timeline": "^5.6.0",
     "@fullcalendar/vue": "^5.6.0",
