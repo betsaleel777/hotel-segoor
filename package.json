@@ -21,7 +21,7 @@
     "apexcharts": "^3.31.0",
     "caniuse-lite": "^1.0.30001282",
     "collect.js": "^4.28.6",
-    "core-js": "^3.9.1",
+    "core-js": "^3.26.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",
